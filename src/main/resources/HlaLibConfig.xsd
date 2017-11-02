@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+    <xs:simpleType name="NameReservationEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="StrictNameReservation"/>
+            <xs:enumeration value="NameReservationWithReuse"/>
+            <xs:enumeration value="NameReservationDisabled"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="TimeManagementEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Realtime"/>
+            <xs:enumeration value="TimeConstrained"/>
+            <xs:enumeration value="TimeRegulated"/>
+            <xs:enumeration value="TimeConstrainedAndTimeRegulated"/>
+        </xs:restriction>
+    </xs:simpleType>
+	<xs:simpleType name="SharingEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Publish"/>
+			<xs:enumeration value="Subscribe"/>
+			<xs:enumeration value="PublishSubscribe"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="HlaLib">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="federation">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string"/>
+							<xs:element name="fomFile" type="xs:string" minOccurs="0"/>
+                            <xs:element name="fomModule" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="rtiFactoryClassName" type="xs:string" minOccurs="0"/>
+							<xs:element name="nameReservationMode" type="NameReservationEnum" minOccurs="0" default="NameReservationWithReuse"/>
+                            <xs:element name="libraries">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="lib" type="xs:string" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="federate">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="name" type="xs:string"/>
+                            <xs:element name="type" type="xs:string"/>
+							<xs:element name="timeManagement" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element type="TimeManagementEnum" name="scheme"/>
+										<xs:element name="lookahead" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="objectModel" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="objectClass" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="attribute" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required"/>
+															<xs:attribute name="sharing" type="SharingEnum" use="required"/>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="name" type="xs:string" use="required"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="interactions" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="interaction" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="name" type="xs:string" use="required"/>
+												<xs:attribute name="sharing" type="SharingEnum" use="required"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

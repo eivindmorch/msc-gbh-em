@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HlaLib xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="HlaLibConfig.xsd">
+	<federation>
+        <name>rlo</name>
+        <fomFile>%MAK_VRLDIR%\bin64\RPR_FOM_v2.0_1516-2010.xml</fomFile>
+        <fomModule>%MAK_VRLDIR%\bin64\LLBML_v2_6.xml</fomModule>
+        <nameReservationMode>NameReservationWithReuse</nameReservationMode>
+        <libraries>
+            <lib>%MAK_RTIDIR%\lib\java\libfedtime1516e64.dll</lib>
+        </libraries>
+	</federation>
+	<federate>
+		<name>experiment1</name>
+		<type>no.ffi.msc.gbhem</type>
+        <timeManagement>
+            <scheme>TimeConstrainedAndTimeRegulated</scheme>
+            <lookahead>1.0</lookahead>
+        </timeManagement>
+        <objectModel>
+            <objectClass name="HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.Human">
+                <attribute name="EntityType" sharing="Subscribe"/>
+                <attribute name="EntityIdentifier" sharing="Subscribe"/>
+                <attribute name="IsPartOf" sharing="Subscribe"/>
+                <attribute name="Spatial" sharing="Subscribe"/>
+                <attribute name="Marking" sharing="Subscribe" />
+            </objectClass>
+        </objectModel>
+		<interactions>
+            <interaction name="HLAinteractionRoot.RadioSignal.ApplicationSpecificRadioSignal" sharing="PublishSubscribe"/>
+            <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.Move" sharing="Publish"/>
+            <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeading" sharing="Publish"/>
+            <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.Wait" sharing="Publish"/>
+            <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.ChangeOrderedSpeed" sharing="Publish"/>
+        </interactions>
+	</federate>
+</HlaLib>
