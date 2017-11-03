@@ -24,7 +24,7 @@ class Writer {
         }
     }
 
-    private void writeLine(String line) {
+    public void writeLine(String line) {
         try {
             bufferedWriter.write(line);
             bufferedWriter.newLine();
