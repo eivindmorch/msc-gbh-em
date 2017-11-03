@@ -10,26 +10,30 @@ class Writer {
     private BufferedWriter bufferedWriter;
     private String filePathRoot = System.getProperty("user.dir") + "/src/main/resources/";
 
-    Writer(String resFolder, String fileCsvHeader) {
+    Writer(String resPath, String fileCsvHeader) {
         try {
-            String filePath = filePathRoot + resFolder +"/";
+            String filePath = filePathRoot + resPath;
             long fileCount = Files.list(Paths.get(filePath)).count();
             String filename = fileCount + ".csv";
 
+            bufferedWriter = new BufferedWriter(new FileWriter((filePath + filename)));
             writeLine(fileCsvHeader);
 
-            bufferedWriter = new BufferedWriter(new FileWriter((filePath + filename)));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void writeLine(String line) {
+
         try {
             bufferedWriter.write(line);
             bufferedWriter.newLine();
+            bufferedWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 }

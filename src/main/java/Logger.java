@@ -15,8 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
     private FederateManager federateManager;
-    private volatile Unit follower, target;
-    private AtomicInteger aint = new AtomicInteger(100);
+    private volatile Unit follower = new Unit(Unit.Role.FOLLOWER);
+    private volatile Unit target = new Unit(Unit.Role.TARGET);
 
     private transient boolean running = true;
     private volatile boolean constrained = false;
@@ -51,22 +51,13 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
 
             String markingString = physicalEntity.getMarking().getMarking();
 
-            if (updatedEvent.getAttributeHandles().contains(physicalEntity.markingHandle)) {
-                // Init units
-                if (markingString.equals(Unit.Role.FOLLOWER.name())) {
-                    follower = new Unit(Unit.Role.FOLLOWER, physicalEntity);
-                    aint.set(aint.get() + 10);
-                } else if (markingString.equals(Unit.Role.TARGET.name())) {
-                    target = new Unit(Unit.Role.TARGET, physicalEntity);
-                }
-            } else {
                 // Update units
                 if (markingString.equals(Unit.Role.FOLLOWER.name())) {
                     follower.setValues(physicalEntity);
                 } else if (markingString.equals(Unit.Role.TARGET.name())) {
                     target.setValues(physicalEntity);
                 }
-            }
+//            }
             System.out.println("Object updated: " + markingString);
         }
     }
@@ -79,6 +70,10 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
 
     @Override
     public void localObjectRemoved(HlaObject hlaObject) {}
+
+    private void increment(AtomicInteger atomicInteger) {
+        atomicInteger.set(atomicInteger.get() + 10);
+    }
 
     public void run() {
         while (running) {
@@ -104,12 +99,8 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     }
 
     private void tick(double timestamp) {
-        System.out.println(aint);
-        if (follower != null) {
-            follower.writeToFile(timestamp);
-        } else if (target != null) {
-            target.writeToFile(timestamp);
-        }
+        follower.writeToFile(timestamp);
+        target.writeToFile(timestamp);
     }
 
     @Override
@@ -126,7 +117,7 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
 //
     private void checkConditions() {
         if (regulated && constrained) {
-             new Thread(this).start();
+            new Thread(this).start();
         }
     }
 
