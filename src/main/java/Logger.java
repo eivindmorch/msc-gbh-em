@@ -9,8 +9,6 @@ import no.ffi.hlalib.listeners.TimeManagementListener;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
@@ -57,8 +55,9 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
                 } else if (markingString.equals(Unit.Role.TARGET.name())) {
                     target.setValues(physicalEntity);
                 }
-//            }
-            System.out.println("Object updated: " + markingString);
+
+            // To get coordinate updates as often as possible
+            physicalEntity.requestUpdateOnAllAttributes();
         }
     }
 
@@ -70,10 +69,6 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
 
     @Override
     public void localObjectRemoved(HlaObject hlaObject) {}
-
-    private void increment(AtomicInteger atomicInteger) {
-        atomicInteger.set(atomicInteger.get() + 10);
-    }
 
     public void run() {
         while (running) {
@@ -99,8 +94,8 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     }
 
     private void tick(double timestamp) {
-        follower.writeToFile(timestamp);
-        target.writeToFile(timestamp);
+        follower.writeToFile(timestamp, target);
+        target.writeToFile(timestamp, follower);
     }
 
     @Override
