@@ -51,9 +51,16 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
 
                 // Update units
                 if (markingString.equals(Unit.Role.FOLLOWER.name())) {
-                    follower.setValues(physicalEntity);
+                    follower.setRawData(physicalEntity);
+
+                    follower.updateProcessedData(target);
+                    target.updateProcessedData(follower);
+
                 } else if (markingString.equals(Unit.Role.TARGET.name())) {
-                    target.setValues(physicalEntity);
+                    target.setRawData(physicalEntity);
+
+                    follower.updateProcessedData(target);
+                    target.updateProcessedData(follower);
                 }
 
             // To get coordinate updates as often as possible
@@ -94,8 +101,10 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     }
 
     private void tick(double timestamp) {
-        follower.writeToFile(timestamp, target);
-        target.writeToFile(timestamp, follower);
+        if (follower.hasValues && target.hasValues) {
+            follower.writeToFile(timestamp);
+            target.writeToFile(timestamp);
+        }
     }
 
     @Override
