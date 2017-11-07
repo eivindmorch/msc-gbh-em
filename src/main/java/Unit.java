@@ -2,6 +2,7 @@ import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import util.Writer;
 
 public class Unit {
 
