@@ -15,11 +15,11 @@ public class Unit {
 
     private Writer rawDataWriter;
     private String rawDataPath = "raw/";
-    private String rawDataHeader = "timestamp, x, y, z, phi, psi, theta";
+    private String rawDataHeader = "timestamp, posX, posY, posZ, velX, velY, velZ";
 
     private Writer processedDataWriter;
     private String processedDataPath = "processed/";
-    private String processedDataHeader = "";
+    private String processedDataHeader = "timestamp, distance, angle";
 
     Unit(Role role) {
         this.role = role;
@@ -77,7 +77,7 @@ public class Unit {
     void writeToFile(double tick, Unit otherUnit) {
         System.out.println(getProcessedData(otherUnit));
         rawDataWriter.writeLine(tick + ", " + getRawData());
-        processedDataWriter.writeLine(tick + getProcessedData(otherUnit));
+        processedDataWriter.writeLine(tick + ", " + getProcessedData(otherUnit));
     }
 
     @Override
