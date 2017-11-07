@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static util.Values.filePathRoot;
+
 
 public class Reader {
 
     private BufferedReader bufferedReader;
-    private String filePathRoot = System.getProperty("user.dir") + "/src/main/resources/";
     public final List<String> fileHeader;
 
     Reader(String resPath, String filename) {

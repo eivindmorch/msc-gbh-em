@@ -4,6 +4,8 @@ import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import util.Writer;
 
+import static util.Values.*;
+
 public class Unit {
 
     Vector3D posVector;     // Position
@@ -15,12 +17,8 @@ public class Unit {
     }
 
     private Writer rawDataWriter;
-    private String rawDataPath = "raw/";
-    private String rawDataHeader = "timestamp, posX, posY, posZ, velX, velY, velZ";
-
     private Writer processedDataWriter;
-    private String processedDataPath = "processed/";
-    private String processedDataHeader = "timestamp, distance, angle";
+
 
     Unit(Role role) {
         this.role = role;

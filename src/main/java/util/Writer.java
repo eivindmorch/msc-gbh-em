@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static util.Values.filePathRoot;
+
 
 public class Writer {
 
     private BufferedWriter bufferedWriter;
-    private String filePathRoot = System.getProperty("user.dir") + "/src/main/resources/";
 
     public Writer(String resPath, String fileCsvHeader) {
         try {
