@@ -1,6 +1,7 @@
 package util;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +17,8 @@ public class Writer {
     public Writer(String resPath, String fileCsvHeader) {
         try {
             String filePath = filePathRoot + resPath;
+            new File(filePath).mkdirs();
+
             long fileCount = Files.list(Paths.get(filePath)).count();
             String filename = fileCount + ".csv";
 
