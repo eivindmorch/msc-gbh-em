@@ -6,13 +6,14 @@ public class ProcessedData extends Data {
 
     private double distance, angle;
 
-    public ProcessedData(RawData rawData1, RawData rawData2) {
-        setValues(rawData1, rawData2);
+    public ProcessedData(double timestamp, RawData rawData1, RawData rawData2) {
+        setValues(timestamp, rawData1, rawData2);
     }
-    
-    public void setValues(RawData rawData1, RawData rawData2) {
-        distance = calculateDistance(rawData1.posVector, rawData2.posVector);
-        angle = calculateMovementAngle(rawData1, rawData2);
+
+    public void setValues(double timestamp, RawData rawData1, RawData rawData2) {
+        this.timestamp = timestamp;
+        this.distance = calculateDistance(rawData1.posVector, rawData2.posVector);
+        this.angle = calculateMovementAngle(rawData1, rawData2);
     }
 
     // Euclidean distance

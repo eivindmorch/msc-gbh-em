@@ -9,10 +9,7 @@ import static util.Values.*;
 
 public class Unit {
 
-    final Role role;
-    public enum Role {
-        FOLLOWER, TARGET
-    }
+    private final Role role;
 
     private RawData rawData;
     private ProcessedData processedData;
@@ -31,24 +28,23 @@ public class Unit {
         this.processedDataWriter = new Writer(processedDataPath + roleFolder, processedDataHeader);
     }
 
-    void updateProcessedData(Unit otherUnit) {
+    void updateProcessedData(double timestamp, Unit otherUnit) {
         if (processedData == null) {
-            processedData = new ProcessedData(this.rawData, otherUnit.rawData);
-            System.out.println(processedData);
+            processedData = new ProcessedData(timestamp, this.rawData, otherUnit.rawData);
         } else {
-            processedData.setValues(this.rawData, otherUnit.rawData);
-            System.out.println(processedData);
+            processedData.setValues(timestamp, this.rawData, otherUnit.rawData);
         }
+//        printData(role.name(), otherUnit.rawData);
     }
 
-    void setRawData(PhysicalEntityObject physicalEntity) {
+    void setRawData(double timestamp, PhysicalEntityObject physicalEntity) {
         WorldLocationStruct location = physicalEntity.getSpatial().getLocation();
         VelocityVectorStruct velocity = physicalEntity.getSpatial().getVelocity();
         if (rawData == null) {
-            rawData = new RawData(location, velocity);
+            rawData = new RawData(timestamp, location, velocity);
             hasValues = true;
         } else {
-            rawData.setValues(location, velocity);
+            rawData.setValues(timestamp, location, velocity);
         }
     }
 
@@ -65,5 +61,14 @@ public class Unit {
     @Override
     public String toString() {
         return role + ", "  + rawData.toString();
+    }
+
+    private void printData(String role, RawData otherUnitData) {
+        System.out.println("---------------------");
+        System.out.println(role);
+        System.out.println(this.rawData);
+        System.out.println(otherUnitData);
+        System.out.println(processedData);
+        System.out.println("---------------------");
     }
 }

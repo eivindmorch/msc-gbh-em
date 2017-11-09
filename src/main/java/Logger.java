@@ -8,13 +8,15 @@ import no.ffi.hlalib.listeners.HlaObjectUpdateListener;
 import no.ffi.hlalib.listeners.TimeManagementListener;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
+import util.Values.*;
 
 
 public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
     private FederateManager federateManager;
-    private volatile Unit follower = new Unit(Unit.Role.FOLLOWER);
-    private volatile Unit target = new Unit(Unit.Role.TARGET);
+    private volatile Unit follower = new Unit(Role.FOLLOWER);
+    private volatile Unit target = new Unit(Role.TARGET);
+    private volatile double timestamp;
 
     private transient boolean running = true;
     private volatile boolean constrained = false;
@@ -50,17 +52,19 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
             String markingString = physicalEntity.getMarking().getMarking();
 
                 // Update units
-                if (markingString.equals(Unit.Role.FOLLOWER.name())) {
-                    follower.setRawData(physicalEntity);
+                if (markingString.equals(Role.FOLLOWER.name())) {
+                    follower.setRawData(timestamp, physicalEntity);
 
-                    follower.updateProcessedData(target);
-                    target.updateProcessedData(follower);
+                    follower.updateProcessedData(timestamp, target);
+                    target.updateProcessedData(timestamp, follower);
+                    System.out.println("UPDATE");
 
-                } else if (markingString.equals(Unit.Role.TARGET.name())) {
-                    target.setRawData(physicalEntity);
+                } else if (markingString.equals(Role.TARGET.name())) {
+                    target.setRawData(timestamp, physicalEntity);
 
-                    follower.updateProcessedData(target);
-                    target.updateProcessedData(follower);
+                    follower.updateProcessedData(timestamp, target);
+                    target.updateProcessedData(timestamp, follower);
+                    System.out.println("UPDATE");
                 }
 
             // To get coordinate updates as often as possible
@@ -80,6 +84,7 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     public void run() {
         while (running) {
             try {
+                // TODO Should we use time constrained?
                 federateManager.requestTimeAdvanceAndBlock(federateManager.getLogicalTime() + 1.0);
             } catch (SaveInProgress saveInProgress) {
                 saveInProgress.printStackTrace();
@@ -101,6 +106,7 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     }
 
     private void tick(double timestamp) {
+        this.timestamp = timestamp;
         if (follower.hasValues && target.hasValues) {
             follower.updateDataTimestamps(timestamp);
             follower.writeToFile();

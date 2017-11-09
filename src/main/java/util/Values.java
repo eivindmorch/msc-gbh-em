@@ -9,4 +9,8 @@ public class Values {
 
     public static String rawDataHeader = "timestamp, posX, posY, posZ, velX, velY, velZ";
     public static String processedDataHeader = "timestamp, distance, angle";
+
+    public enum Role {
+        FOLLOWER, TARGET
+    }
 }

@@ -9,11 +9,12 @@ public class RawData extends Data {
     Vector3D posVector;     // Position
     Vector3D velVector;     // Velocity
 
-    public RawData(WorldLocationStruct position, VelocityVectorStruct velocity) {
-        setValues(position, velocity);
+    public RawData(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
+        setValues(timestamp, position, velocity);
     }
 
-    public void setValues(WorldLocationStruct position, VelocityVectorStruct velocity) {
+    public void setValues(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
+        this.timestamp = timestamp;
         this.posVector = new Vector3D(position.getX(), position.getY(), position.getZ());
         this.velVector = new Vector3D(velocity.getXVelocity(), velocity.getYVelocity(), velocity.getZVelocity());
     }
