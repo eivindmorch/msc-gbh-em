@@ -4,7 +4,7 @@ import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-public class RawData {
+public class RawData extends Data {
 
     Vector3D posVector;     // Position
     Vector3D velVector;     // Velocity
@@ -19,12 +19,12 @@ public class RawData {
     }
 
     public String getValuesAsCsvString() {
-        return posVector.getX() + ", " + posVector.getY() + ", " + posVector.getZ() + ", "
+        return timestamp + ", " + posVector.getX() + ", " + posVector.getY() + ", " + posVector.getZ() + ", "
                 + velVector.getX() + ", " + velVector.getY() + ", " + velVector.getZ();
     }
 
     @Override
     public String toString() {
-        return this.posVector + ", " + this.velVector;
+        return timestamp + ", " + posVector + ", " + velVector;
     }
 }

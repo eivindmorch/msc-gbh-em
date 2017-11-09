@@ -2,9 +2,9 @@ package data;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-public class ProcessedData {
-    
-    double distance, angle;
+public class ProcessedData extends Data {
+
+    private double distance, angle;
 
     public ProcessedData(RawData rawData1, RawData rawData2) {
         setValues(rawData1, rawData2);
@@ -37,7 +37,7 @@ public class ProcessedData {
     }
 
     public String getValuesAsCsvString() {
-        return distance + ", " + angle;
+        return timestamp + ", " + distance + ", " + angle;
     }
 
     @Override

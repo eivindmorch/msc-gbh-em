@@ -52,9 +52,14 @@ public class Unit {
         }
     }
 
-    void writeToFile(double timestamp) {
-        rawDataWriter.writeLine(timestamp + ", " + rawData.getValuesAsCsvString());
-        processedDataWriter.writeLine(timestamp + ", " + processedData.getValuesAsCsvString());
+    void updateDataTimestamps(double timestamp) {
+        rawData.setTimestamp(timestamp);
+        processedData.setTimestamp(timestamp);
+    }
+
+    void writeToFile() {
+        rawDataWriter.writeLine(rawData.getValuesAsCsvString());
+        processedDataWriter.writeLine(processedData.getValuesAsCsvString());
     }
 
     @Override

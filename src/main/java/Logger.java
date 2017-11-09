@@ -102,8 +102,11 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
 
     private void tick(double timestamp) {
         if (follower.hasValues && target.hasValues) {
-            follower.writeToFile(timestamp);
-            target.writeToFile(timestamp);
+            follower.updateDataTimestamps(timestamp);
+            follower.writeToFile();
+
+            target.updateDataTimestamps(timestamp);
+            target.writeToFile();
         }
     }
 
