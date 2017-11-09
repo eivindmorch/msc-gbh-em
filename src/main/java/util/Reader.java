@@ -37,19 +37,6 @@ public class Reader {
         }
         return null;
     }
-//
-//    void hvasomhelst(List<String> line, ParseMethod... parseMethods) {
-//        for (int i = 0; i < parseMethods.length; i++) {
-//            parseMethods[i](line);
-//        }
-//        hvasomhelst(line, pro);
-//    }
-//
-//    void nummerto() {
-//        String line = reader.readLine();
-//        processedData.setValues(line);
-//    }
-
 
     public static void main(String[] args) {
         Reader reader = new Reader("raw/follower/", "0.csv");
