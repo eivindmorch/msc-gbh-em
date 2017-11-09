@@ -2,12 +2,21 @@ package data;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
+import java.util.List;
+
 public class ProcessedData extends Data {
 
-    private double distance, angle;
+    private double distance;
+        private double angle;
 
     public ProcessedData(double timestamp, RawData rawData1, RawData rawData2) {
         setValues(timestamp, rawData1, rawData2);
+    }
+
+    public ProcessedData(List<String> csvElements) {
+        this.timestamp = Double.valueOf(csvElements.get(0));
+        this.distance = Double.valueOf(csvElements.get(1));
+        this.angle = Double.valueOf(csvElements.get(2));
     }
 
     public void setValues(double timestamp, RawData rawData1, RawData rawData2) {
@@ -39,6 +48,14 @@ public class ProcessedData extends Data {
 
     public String getValuesAsCsvString() {
         return timestamp + ", " + distance + ", " + angle;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public double getAngle() {
+        return angle;
     }
 
     @Override

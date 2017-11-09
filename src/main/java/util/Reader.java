@@ -15,10 +15,9 @@ public class Reader {
     private BufferedReader bufferedReader;
     public final List<String> fileHeader;
 
-    Reader(String resPath, String filename) {
-        String filePath = filePathRoot + resPath;
+    public Reader(String filePath) {
         try {
-            File dataFile = new File((filePath + filename));
+            File dataFile = new File((filePathRoot + filePath));
             bufferedReader = new BufferedReader(new FileReader(dataFile));
         } catch (IOException e) {
             e.printStackTrace();
@@ -26,7 +25,7 @@ public class Reader {
         fileHeader = readLine();
     }
 
-    List<String> readLine() {
+    public List<String> readLine() {
         try {
             String line = bufferedReader.readLine();
             if (line != null) {
@@ -36,15 +35,6 @@ public class Reader {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        Reader reader = new Reader("raw/follower/", "0.csv");
-        List<String> line = reader.fileHeader;
-        while(line != null) {
-            System.out.println(line);
-            line = reader.readLine();
-        }
     }
 
 }
