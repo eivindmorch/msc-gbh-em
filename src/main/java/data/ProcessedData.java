@@ -11,21 +11,17 @@ public class ProcessedData {
     }
     
     public void setValues(RawData rawData1, RawData rawData2) {
-        distance = getDistance(rawData1.posVector, rawData2.posVector);
-        angle = getMovementAngle(rawData1, rawData2);
-    }
-
-    public String getValuesAsCsvString() {
-        return distance + ", " + angle;
+        distance = calculateDistance(rawData1.posVector, rawData2.posVector);
+        angle = calculateMovementAngle(rawData1, rawData2);
     }
 
     // Euclidean distance
-    double getDistance(Vector3D followerPosVector, Vector3D targetPosVector) {
+    private double calculateDistance(Vector3D followerPosVector, Vector3D targetPosVector) {
         return followerPosVector.distance(targetPosVector);
     }
 
     // Relative angle of other units movement direction, with 0 being toward and 180 being away from this unit
-    double getMovementAngle(RawData rawData1, RawData rawData2) {
+    private double calculateMovementAngle(RawData rawData1, RawData rawData2) {
         Vector3D vectorBetweenUnits = rawData1.posVector.subtract(rawData2.posVector);
         
         // TODO Convert to using 3D
@@ -38,6 +34,10 @@ public class ProcessedData {
             angle += 360;
         }
         return angle;
+    }
+
+    public String getValuesAsCsvString() {
+        return distance + ", " + angle;
     }
 
     @Override
