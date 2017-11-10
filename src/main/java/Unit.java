@@ -1,5 +1,6 @@
 import data.ProcessedData;
 import data.RawData;
+import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
@@ -9,7 +10,8 @@ import static util.Values.*;
 
 public class Unit {
 
-    private final Role role;
+    public final ObjectInstanceHandle handle;
+    public final Role role;
 
     private RawData rawData;
     private ProcessedData processedData;
@@ -20,7 +22,8 @@ public class Unit {
     public boolean hasValues;
 
 
-    Unit(Role role) {
+    Unit(ObjectInstanceHandle handle, Role role) {
+        this.handle = handle;
         this.role = role;
 
         String roleFolder = role.name().toLowerCase() + "/";
@@ -34,12 +37,13 @@ public class Unit {
         } else {
             processedData.setValues(timestamp, this.rawData, otherUnit.rawData);
         }
-//        printData(role.name(), otherUnit.rawData);
+        printData(role.name(), otherUnit.rawData);
     }
 
     void setRawData(double timestamp, PhysicalEntityObject physicalEntity) {
         WorldLocationStruct location = physicalEntity.getSpatial().getLocation();
         VelocityVectorStruct velocity = physicalEntity.getSpatial().getVelocity();
+        System.out.println(physicalEntity.isReflected(physicalEntity.spatialHandle));
         if (rawData == null) {
             rawData = new RawData(timestamp, location, velocity);
             hasValues = true;

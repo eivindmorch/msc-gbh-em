@@ -1,3 +1,5 @@
+import hla.rti1516e.ObjectClassHandle;
+import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.*;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
@@ -10,13 +12,14 @@ import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
 import util.Values.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
     private FederateManager federateManager;
-    private volatile Unit follower = new Unit(Role.FOLLOWER);
-    private volatile Unit target = new Unit(Role.TARGET);
-    private volatile double timestamp;
+    private volatile List<Unit> units = new ArrayList<>();
 
     private transient boolean running = true;
     private volatile boolean constrained = false;
@@ -40,8 +43,6 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
         PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
         physicalEntity.addObjectUpdateListener(this);
         physicalEntity.requestUpdateOnAllAttributes();
-
-        System.out.println("An object was added.");
     }
 
     @Override
@@ -51,24 +52,14 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
 
             String markingString = physicalEntity.getMarking().getMarking();
 
-                // Update units
-                if (markingString.equals(Role.FOLLOWER.name())) {
-                    follower.setRawData(timestamp, physicalEntity);
-
-                    follower.updateProcessedData(timestamp, target);
-                    target.updateProcessedData(timestamp, follower);
-                    System.out.println("UPDATE");
-
-                } else if (markingString.equals(Role.TARGET.name())) {
-                    target.setRawData(timestamp, physicalEntity);
-
-                    follower.updateProcessedData(timestamp, target);
-                    target.updateProcessedData(timestamp, follower);
-                    System.out.println("UPDATE");
-                }
-
-            // To get coordinate updates as often as possible
-            physicalEntity.requestUpdateOnAllAttributes();
+            try {
+                Role role = Role.valueOf(markingString);
+                ObjectInstanceHandle handle = physicalEntity.getObjectInstanceHandle();
+                units.add(new Unit(handle, role));
+                System.out.println("Object " + markingString + " was added with handle " + handle);
+            } catch (IllegalArgumentException e) {
+            }
+            physicalEntity.removeObjectUpdateListener(this);
         }
     }
 
@@ -84,35 +75,36 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     public void run() {
         while (running) {
             try {
-                // TODO Should we use time constrained?
-                federateManager.requestTimeAdvanceAndBlock(federateManager.getLogicalTime() + 1.0);
-            } catch (SaveInProgress saveInProgress) {
+                federateManager.requestTimeAdvanceAndBlock(federateManager.getTimestamp());
+            } catch (InterruptedException | RTIexception saveInProgress) {
                 saveInProgress.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (RestoreInProgress restoreInProgress) {
-                restoreInProgress.printStackTrace();
-            } catch (InvalidLogicalTime invalidLogicalTime) {
-                invalidLogicalTime.printStackTrace();
-            } catch (InTimeAdvancingState inTimeAdvancingState) {
-                inTimeAdvancingState.printStackTrace();
-            } catch (LogicalTimeAlreadyPassed logicalTimeAlreadyPassed) {
-                logicalTimeAlreadyPassed.printStackTrace();
-            } catch (RTIexception rtIexception) {
-                rtIexception.printStackTrace();
             }
             tick(federateManager.getLogicalTime());
         }
     }
 
     private void tick(double timestamp) {
-        this.timestamp = timestamp;
-        if (follower.hasValues && target.hasValues) {
-            follower.updateDataTimestamps(timestamp);
-            follower.writeToFile();
+        if (units.size() == 2 ) {
+            updateUnits(timestamp);
 
-            target.updateDataTimestamps(timestamp);
-            target.writeToFile();
+            for (Unit unit : units) {
+                unit.writeToFile();
+            }
+        }
+    }
+
+    private void updateUnits(double timestamp) {
+        for (Unit unit : units) {
+            PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(unit.handle);
+            // TODO Replace with dead reckoning
+            physicalEntity.requestUpdateOnAllAttributes();
+            unit.setRawData(timestamp, physicalEntity);
+        }
+        if (units.size() == 2) {
+            Unit unit0 = units.get(0);
+            Unit unit1 = units.get(1);
+            unit0.updateProcessedData(timestamp, unit1);
+            unit1.updateProcessedData(timestamp, unit0);
         }
     }
 
@@ -127,7 +119,7 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
         constrained = true;
         checkConditions();
     }
-//
+
     private void checkConditions() {
         if (regulated && constrained) {
             new Thread(this).start();
