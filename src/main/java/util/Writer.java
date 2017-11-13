@@ -41,5 +41,13 @@ public class Writer {
         }
     }
 
+    public void close() {
+        try {
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

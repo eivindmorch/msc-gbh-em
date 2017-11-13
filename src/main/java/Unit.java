@@ -74,4 +74,9 @@ public class Unit {
         System.out.println(processedData);
         System.out.println("---------------------");
     }
+
+    void closeWriters() {
+        rawDataWriter.close();
+        processedDataWriter.close();
+    }
 }

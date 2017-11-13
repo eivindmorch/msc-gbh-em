@@ -127,6 +127,20 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     public static void main(String[] args) {
         Logger logger = new Logger();
     }
+
+    public void reset() {
+        // Close unit writers
+        for (Unit unit : units) {
+            unit.closeWriters();
+        }
+        // Reset unit list
+        units = new ArrayList<>();
+
+        // TODO
+        // Reset federation timestamp to 0
+        // Reset scenario
+    }
+
 }
 
 
