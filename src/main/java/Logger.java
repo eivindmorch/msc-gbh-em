@@ -1,4 +1,3 @@
-import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.*;
 import no.ffi.hlalib.HlaLib;
@@ -96,8 +95,7 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     private void updateUnits(double timestamp) {
         for (Unit unit : units) {
             PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(unit.handle);
-            // TODO Replace with dead reckoning
-            physicalEntity.requestUpdateOnAllAttributes();
+            // TODO Test if phycialEntity is updated at all times
             unit.setRawData(timestamp, physicalEntity);
         }
         if (units.size() == 2) {

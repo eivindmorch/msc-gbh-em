@@ -37,13 +37,12 @@ public class Unit {
         } else {
             processedData.setValues(timestamp, this.rawData, otherUnit.rawData);
         }
-        printData(role.name(), otherUnit.rawData);
+//        printData(role.name(), otherUnit.rawData);
     }
 
     void setRawData(double timestamp, PhysicalEntityObject physicalEntity) {
-        WorldLocationStruct location = physicalEntity.getSpatial().getLocation();
-        VelocityVectorStruct velocity = physicalEntity.getSpatial().getVelocity();
-        System.out.println(physicalEntity.isReflected(physicalEntity.spatialHandle));
+        WorldLocationStruct location = physicalEntity.getSpatial().getDeadReckonedLocation();
+        VelocityVectorStruct velocity = physicalEntity.getSpatial().getDeadReckonedVelocity();
         if (rawData == null) {
             rawData = new RawData(timestamp, location, velocity);
             hasValues = true;
