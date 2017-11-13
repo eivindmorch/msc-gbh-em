@@ -95,7 +95,7 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     private void updateUnits(double timestamp) {
         for (Unit unit : units) {
             PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(unit.handle);
-            // TODO Test if phycialEntity is updated at all times
+            // TODO Test if physicalEntity is updated at all times
             unit.setRawData(timestamp, physicalEntity);
         }
         if (units.size() == 2) {
