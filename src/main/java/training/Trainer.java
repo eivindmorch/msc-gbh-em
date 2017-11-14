@@ -1,6 +1,13 @@
 package training;
 
+import com.badlogic.gdx.ai.btree.branch.Sequence;
+import training.btree.task.IsCloseEnough;
+import training.btree.task.IsApproaching;
+import training.btree.task.Move;
+import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.branch.Selector;
 import data.ProcessedData;
+import training.btree.task.Wait;
 import util.Reader;
 
 import java.util.List;
@@ -35,9 +42,19 @@ public class Trainer {
         return Math.pow(Math.abs(exampleDistance - iterationDistance), 2);
     }
 
+    private void behaviourTreeTest() {
+        Selector selector1 = new Selector(new IsApproaching(), new IsCloseEnough());
+        Sequence sequence1 = new Sequence(selector1, new Wait());
+        Sequence sequence2 = new Sequence(sequence1, new Move());
+        BehaviorTree bt = new BehaviorTree(sequence2);
+        System.out.println(bt.getChildCount());
+        System.out.println(bt.getChild(0).getChildCount());
+    }
+
     public static void main(String[] args) {
         Trainer trainer = new Trainer();
-        trainer.run();
+//        trainer.run();
+        trainer.behaviourTreeTest();
     }
 
 
