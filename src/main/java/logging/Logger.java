@@ -1,3 +1,5 @@
+package logging;
+
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.*;
 import no.ffi.hlalib.HlaLib;

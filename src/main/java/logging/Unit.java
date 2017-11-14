@@ -1,3 +1,5 @@
+package logging;
+
 import data.ProcessedData;
 import data.RawData;
 import hla.rti1516e.ObjectInstanceHandle;
