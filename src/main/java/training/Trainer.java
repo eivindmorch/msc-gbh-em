@@ -1,5 +1,6 @@
 package training;
 
+import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import training.btree.task.IsCloseEnough;
 import training.btree.task.IsApproaching;
@@ -42,19 +43,46 @@ public class Trainer {
         return Math.pow(Math.abs(exampleDistance - iterationDistance), 2);
     }
 
-    private void behaviourTreeTest() {
+    private void behaviorTreeTest() {
         Selector selector1 = new Selector(new IsApproaching(), new IsCloseEnough());
         Sequence sequence1 = new Sequence(selector1, new Wait());
         Sequence sequence2 = new Sequence(sequence1, new Move());
-        BehaviorTree bt = new BehaviorTree(sequence2);
-        System.out.println(bt.getChildCount());
-        System.out.println(bt.getChild(0).getChildCount());
+        BehaviorTree btree = new BehaviorTree(sequence2);
+        System.out.println(btree.getChildCount());
+        System.out.println(btree.getChild(0).getChildCount());
+    }
+
+    private Task cloneBehaviorTree(Task btree) {
+        return cloneBehaviorTreeAndInsertChild(btree, null, null, -1);
+    }
+
+    private Task cloneBehaviorTreeAndInsertChild(Task btree, Task insertParent, Task insertChild, int insertIndex) {
+        Task newBtree = instantiateTaskObject(btree);
+
+        for (int i = 0; i < btree.getChildCount(); i++) {
+            if (btree == insertParent && i == insertIndex) {
+                newBtree.addChild(insertChild);
+            }
+            Task child = cloneBehaviorTreeAndInsertChild(btree.getChild(i), insertParent, insertChild, insertIndex);
+            newBtree.addChild(child);
+        }
+        return newBtree;
+    }
+
+    private Task instantiateTaskObject(Task task) {
+        Task newTask = null;
+        try {
+            newTask = task.getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return newTask;
     }
 
     public static void main(String[] args) {
         Trainer trainer = new Trainer();
 //        trainer.run();
-        trainer.behaviourTreeTest();
+        trainer.behaviorTreeTest();
     }
 
 
