@@ -1,12 +1,16 @@
 package util;
 
 import com.badlogic.gdx.ai.btree.BehaviorTree;
+import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.branch.Selector;
+import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.layout.mxCompactTreeLayout;
+import training.btree.task.Named;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,33 +19,23 @@ import java.util.ArrayList;
 public class Grapher extends JFrame{
 
     ArrayList<Object> vertices;
+    mxGraph graph;
+    Object graphParent;
 
     public Grapher() {
         super("Test");
 
         vertices = new ArrayList<>();
 
-        mxGraph graph = new mxGraph();
-        Object parent = graph.getDefaultParent();
+        graph = new mxGraph();
+        graphParent = graph.getDefaultParent();
 
-        graph.getModel().beginUpdate();
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setMinimumSize(new Dimension(400, 400));
 
-        try {
-            vertices.add(graph.insertVertex(parent, null, "?", 0, 0, 0, 0));
-            vertices.add(graph.insertVertex(parent, null, "->", 0, 0, 0, 0));
-            vertices.add(graph.insertVertex(parent, null, "Move", 0, 0, 0, 0));
-            vertices.add(graph.insertVertex(parent, null, "World2!", 0, 0, 0, 0));
-            vertices.add(graph.insertVertex(parent, null, "World2!", 0, 0, 0, 0));
-            vertices.add(graph.insertVertex(parent, null, "World2!", 0, 0, 0, 0));
-            Object e1 = graph.insertEdge(parent, null, "", vertices.get(0), vertices.get(1));
-            Object e2 = graph.insertEdge(parent, null, "", vertices.get(0), vertices.get(2));
-            Object e3 = graph.insertEdge(parent, null, "", vertices.get(1), vertices.get(3));
-            Object e4 = graph.insertEdge(parent, null, "", vertices.get(1), vertices.get(4));
-            Object e5 = graph.insertEdge(parent, null, "", vertices.get(1), vertices.get(5));
-        } finally {
-            graph.getModel().endUpdate();
-        }
+    }
 
+    private void resizeVertices() {
         graph.getModel().beginUpdate();
         try {
             // Resize cells
@@ -56,27 +50,67 @@ public class Grapher extends JFrame{
         } finally {
             graph.getModel().endUpdate();
         }
+    }
 
-        // -- LAYOUT --
+    private void fixLayout() {
         mxCompactTreeLayout treeLayout = new mxCompactTreeLayout(graph);
         treeLayout.setHorizontal(false);
-        treeLayout.execute(parent);
+        treeLayout.execute(graphParent);
+    }
 
-
-        // -- COMPONENT --
+    private void addToContentPane() {
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
         getContentPane().add(graphComponent);
+        this.setVisible(true);
     }
 
     public void graph(BehaviorTree btree) {
-        // TODO
+        graph.getModel().beginUpdate();
+        try {
+            Task root = btree.getChild(0);
+            Object vertex = addVertex(getTaskName(root));
+            graphSubtree(root, vertex);
+        } finally {
+            graph.getModel().endUpdate();
+        }
+        resizeVertices();
+        fixLayout();
+        addToContentPane();
     }
 
-    public static void main(String[] args) {
-        Grapher grapher = new Grapher();
-        grapher.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        grapher.setMinimumSize(new Dimension(400, 400));
-        grapher.setVisible(true);
+    private void graphSubtree(Task root, Object rootVertex) {
+
+        for (int i = 0; i < root.getChildCount(); i++) {
+            Task child = root.getChild(i);
+            String childName = getTaskName(child);
+
+            Object childVertex = addVertex(childName);
+            addEdge(rootVertex, childVertex);
+
+            graphSubtree(child, childVertex);
+        }
+    }
+
+    private String getTaskName(Task task) {
+        if (task instanceof Selector) {
+            return "?";
+        } else if (task instanceof Sequence) {
+            return "->";
+        } else {
+            Named namedTask = (Named) task;
+            return namedTask.getName();
+        }
+    }
+
+    private Object addVertex(String name) {
+        Object vertex = graph.insertVertex(graphParent, null, name, 0, 0, 0, 0);
+        vertices.add(vertex);
+        return vertex;
+    }
+
+    private Object addEdge(Object parent, Object child) {
+        Object edge = graph.insertEdge(graphParent, null, "", parent, child);
+        return edge;
     }
 
 }

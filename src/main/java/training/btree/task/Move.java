@@ -3,8 +3,9 @@ package training.btree.task;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 
-public class Move extends LeafTask {
+public class Move extends LeafTask implements Named {
 
+    private String name = "Move";
 
     @Override
     public Status execute() {
@@ -14,5 +15,10 @@ public class Move extends LeafTask {
     @Override
     protected Task copyTo(Task task) {
         return task;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import data.ProcessedData;
 import training.btree.task.Wait;
+import util.Grapher;
 import util.Reader;
 
 import java.util.List;
@@ -48,8 +49,8 @@ public class Trainer {
         Sequence sequence1 = new Sequence(selector1, new Wait());
         Sequence sequence2 = new Sequence(sequence1, new Move());
         BehaviorTree btree = new BehaviorTree(sequence2);
-        System.out.println(btree.getChildCount());
-        System.out.println(btree.getChild(0).getChildCount());
+        Grapher grapher = new Grapher();
+        grapher.graph(btree);
     }
 
     private Task cloneBehaviorTree(Task btree) {
