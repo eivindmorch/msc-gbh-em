@@ -2,6 +2,7 @@ package training;
 
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
+import logging.Logger;
 import training.btree.task.IsCloseEnough;
 import training.btree.task.IsApproaching;
 import training.btree.task.Move;
@@ -12,7 +13,10 @@ import training.btree.task.Wait;
 import util.Grapher;
 import util.Reader;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static util.Values.*;
 
@@ -86,7 +90,8 @@ public class Trainer {
 
     public static void main(String[] args) {
         Trainer trainer = new Trainer();
-        trainer.behaviorTreeTest();
+//        trainer.behaviorTreeTest();
+        trainer.simEngineTest();
     }
 
     private void behaviorTreeTest() {
@@ -104,4 +109,43 @@ public class Trainer {
         grapher2.graph(cloneBehaviorTreeAndInsertChild(btree, sequence1, new Move(), 2));
     }
 
+    private void simEngineTest() {
+        Logger logger = new Logger();
+
+        String vrfBin64 = System.getenv("MAK_VRFDIR64") + "/bin64/";
+        String llbmlPluginPath = "LLBMLSimHLA1516e_VC10.dll";
+        String fedFile = "RPR_FOM_v2.0_1516-2010.xml";
+        String scenarioPath = "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-constrained-run-to-complete.scnx";
+
+        String core = "cmd /c vrfSimHLA1516e.exe --appNumber 3001 --siteId 1 --timeManagement --execName rlo --fedFileName " + fedFile;
+        String scenario = " --scenarioFileName " + scenarioPath;
+        String fomModules = " --fomModules MAK-VRFExt-1_evolved.xml --fomModules MAK-DIGuy-2_evolved.xml --fomModules MAK-LgrControl-1_evolved.xml --fomModules MAK-VRFAggregate-1_evolved.xml --fomModules MAK-DynamicTerrain-1_evolved.xml --fomModules LLBML_v2_6.xml";
+        String plugins = " --loadPlugin " + llbmlPluginPath; //TODO Test
+        String cmd = core + scenario + fomModules + " --rprFomVersion 2.0" + plugins;
+        System.out.println(cmd);
+
+        // TODO Command works when executing manually, but not when using Runtime exec
+        // TODO Stream output
+        try {
+            Runtime.getRuntime().exec(cmd, null, new File(vrfBin64)).waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+////      TODO Can't find file
+//        List<String> params = java.util.Arrays.asList(
+//                "vrfSimHLA1516e.exe",
+//                "-s 1",
+//                "-a 3001",
+//                "-x test",
+//                "-F " + fedFile);
+//        ProcessBuilder processBuilder = new ProcessBuilder(params);
+//        processBuilder.directory(new File(vrfBin64));
+//        try {
+//            Process process = processBuilder.start();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+    }
 }
