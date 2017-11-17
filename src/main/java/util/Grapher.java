@@ -22,8 +22,8 @@ public class Grapher extends JFrame{
     mxGraph graph;
     Object graphParent;
 
-    public Grapher() {
-        super("Test");
+    public Grapher(String title) {
+        super(title);
 
         vertices = new ArrayList<>();
 
@@ -31,7 +31,7 @@ public class Grapher extends JFrame{
         graphParent = graph.getDefaultParent();
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setMinimumSize(new Dimension(400, 400));
+        this.setMinimumSize(new Dimension(1000, 500));
 
     }
 
