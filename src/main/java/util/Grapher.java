@@ -18,9 +18,9 @@ import java.util.ArrayList;
 
 public class Grapher extends JFrame{
 
-    ArrayList<Object> vertices;
-    mxGraph graph;
-    Object graphParent;
+    private ArrayList<Object> vertices;
+    private mxGraph graph;
+    private Object graphParent;
 
     public Grapher(String title) {
         super(title);
@@ -30,7 +30,7 @@ public class Grapher extends JFrame{
         graph = new mxGraph();
         graphParent = graph.getDefaultParent();
 
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setMinimumSize(new Dimension(1000, 500));
 
     }
