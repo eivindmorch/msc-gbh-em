@@ -14,8 +14,8 @@ import data.ProcessedData;
 import training.btree.task.Wait;
 import util.Grapher;
 import util.Reader;
+import util.SimEngine;
 
-import java.io.*;
 import java.util.List;
 
 import static util.Values.*;
@@ -110,33 +110,9 @@ public class Trainer {
         grapher2.graph(cloneBehaviorTreeAndInsertChild(btree, sequence1, new Move(), 2));
     }
 
-    // TODO Make simEngine as a separate class
     private void simEngineTest() {
         DataLogger dataLogger = new DataLogger();
-
-        String vrfBin64 = System.getenv("MAK_VRFDIR64") + "/bin64/";
-        String llbmlPluginPath = "LLBMLSimHLA1516e_VC10.dll";
-        String fedFile = "RPR_FOM_v2.0_1516-2010.xml";
-        String scenarioPath = "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-constrained-run-to-complete.scnx";
-
-        String core = "cmd /c vrfSimHLA1516e.exe --appNumber 3001 --siteId 1 --timeManagement --execName rlo --fedFileName " + fedFile;
-        String scenario = " --scenarioFileName " + scenarioPath;
-        String fomModules = " --fomModules MAK-VRFExt-1_evolved.xml --fomModules MAK-DIGuy-2_evolved.xml --fomModules MAK-LgrControl-1_evolved.xml --fomModules MAK-VRFAggregate-1_evolved.xml --fomModules MAK-DynamicTerrain-1_evolved.xml --fomModules LLBML_v2_6.xml";
-        String plugins = " --loadPlugin " + llbmlPluginPath; //TODO Test
-        String cmd = core + scenario + fomModules + " --rprFomVersion 2.0" + plugins;
-
-        try {
-            logger.info("Running simEngine with command: " + cmd);
-            Process process = Runtime.getRuntime().exec(cmd, null, new File(vrfBin64));
-
-            logger.info("Starting simulation engine");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            while (true) {
-               logger.info(bufferedReader.readLine());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SimEngine simEngine = new SimEngine();
+        simEngine.run();
     }
 }
