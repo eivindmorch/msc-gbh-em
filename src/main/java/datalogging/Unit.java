@@ -1,4 +1,4 @@
-package logging;
+package datalogging;
 
 import data.ProcessedData;
 import data.RawData;

@@ -1,4 +1,4 @@
-package logging;
+package datalogging;
 
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.*;
@@ -11,13 +11,15 @@ import no.ffi.hlalib.listeners.HlaObjectUpdateListener;
 import no.ffi.hlalib.listeners.TimeManagementListener;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import util.Values.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
+public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
     private FederateManager federateManager;
     private volatile List<Unit> units = new ArrayList<>();
@@ -26,7 +28,9 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     private volatile boolean constrained = false;
     private volatile boolean regulated = false;
 
-    public Logger() {
+    private final Logger logger = LoggerFactory.getLogger(DataLogger.class);
+
+    public DataLogger() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
 
         federateManager = HlaLib.init();
@@ -36,7 +40,8 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
         PhysicalEntityObject.addHlaObjectListener(this);
 
         federateManager.init();
-        System.out.println("Init complete");
+
+        logger.info("DataLogger initiated");
     }
 
     @Override
@@ -57,7 +62,7 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
                 Role role = Role.valueOf(markingString);
                 ObjectInstanceHandle handle = physicalEntity.getObjectInstanceHandle();
                 units.add(new Unit(handle, role));
-                System.out.println("Object " + markingString + " was added with handle " + handle);
+                logger.info("Object " + markingString + " was added with handle " + handle);
             } catch (IllegalArgumentException e) {
             }
             physicalEntity.removeObjectUpdateListener(this);
@@ -127,7 +132,7 @@ public class Logger implements Runnable, HlaObjectListener, HlaObjectUpdateListe
     }
 
     public static void main(String[] args) {
-        Logger logger = new Logger();
+        DataLogger dataLogger = new DataLogger();
     }
 
     public void reset() {

@@ -2,7 +2,9 @@ package training;
 
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
-import logging.Logger;
+import datalogging.DataLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import training.btree.task.IsCloseEnough;
 import training.btree.task.IsApproaching;
 import training.btree.task.Move;
@@ -15,7 +17,6 @@ import util.Reader;
 
 import java.io.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static util.Values.*;
 
@@ -23,6 +24,7 @@ public class Trainer {
 
     private ProcessedData exampleData, iterationData;
     private double fitness;
+    private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
     private void run() {
         Reader exampleDataReader = new Reader(exampleDataFilePath);
@@ -108,8 +110,9 @@ public class Trainer {
         grapher2.graph(cloneBehaviorTreeAndInsertChild(btree, sequence1, new Move(), 2));
     }
 
+    // TODO Make simEngine as a separate class
     private void simEngineTest() {
-        Logger logger = new Logger();
+        DataLogger dataLogger = new DataLogger();
 
         String vrfBin64 = System.getenv("MAK_VRFDIR64") + "/bin64/";
         String llbmlPluginPath = "LLBMLSimHLA1516e_VC10.dll";
@@ -121,37 +124,19 @@ public class Trainer {
         String fomModules = " --fomModules MAK-VRFExt-1_evolved.xml --fomModules MAK-DIGuy-2_evolved.xml --fomModules MAK-LgrControl-1_evolved.xml --fomModules MAK-VRFAggregate-1_evolved.xml --fomModules MAK-DynamicTerrain-1_evolved.xml --fomModules LLBML_v2_6.xml";
         String plugins = " --loadPlugin " + llbmlPluginPath; //TODO Test
         String cmd = core + scenario + fomModules + " --rprFomVersion 2.0" + plugins;
-        System.out.println(cmd);
 
-        // TODO Command works when executing manually, but not when using Runtime exec
-        // TODO Log simengine output to file
         try {
+            logger.info("Running simEngine with command: " + cmd);
             Process process = Runtime.getRuntime().exec(cmd, null, new File(vrfBin64));
 
-            System.out.println();
-            System.out.println("---------- STARTING SIMULATION ENGINE ----------");
+            logger.info("Starting simulation engine");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
             while (true) {
-                System.out.println(bufferedReader.readLine());
+               logger.info(bufferedReader.readLine());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-////      TODO Can't find file
-//        List<String> params = java.util.Arrays.asList(
-//                "vrfSimHLA1516e.exe",
-//                "-s 1",
-//                "-a 3001",
-//                "-x test",
-//                "-F " + fedFile);
-//        ProcessBuilder processBuilder = new ProcessBuilder(params);
-//        processBuilder.directory(new File(vrfBin64));
-//        try {
-//            Process process = processBuilder.start();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
     }
 }

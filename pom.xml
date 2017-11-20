@@ -15,22 +15,33 @@
 
     <dependencies>
 
+        <!-- HlaLib -->
         <dependency>
             <groupId>no.ffi.hlalib</groupId>
             <artifactId>HlaLibEvolved</artifactId>
             <version>4.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>no.ffi.hlalib</groupId>
             <artifactId>HlaLib_RprFom</artifactId>
             <version>2.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>no.ffi.hlalib.llbml</groupId>
             <artifactId>LLBML</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.7</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
