@@ -6,18 +6,18 @@
     <Appenders>
 
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </Console>
 
-        <File name="HlaLib" fileName="logs/hlalib.log">
+        <File name="HlaLib" fileName="logs/hla/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=black, DEBUG=green bold, TRACE=blue}"/>
         </File>
 
-        <File name="Training" fileName="logs/training.log">
+        <File name="Training" filename="logs/training/training-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=black, DEBUG=green bold, TRACE=blue}"/>
         </File>
 
-        <File name="DataLogging" fileName="logs/dataLogging.log">
+        <File name="DataLogging" fileName="logs/datalogging/dataLogging-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=black, DEBUG=green bold, TRACE=blue}"/>
         </File>
 
