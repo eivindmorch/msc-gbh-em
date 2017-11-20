@@ -13,8 +13,7 @@ import training.btree.task.Wait;
 import util.Grapher;
 import util.Reader;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -125,10 +124,17 @@ public class Trainer {
         System.out.println(cmd);
 
         // TODO Command works when executing manually, but not when using Runtime exec
-        // TODO Stream output
+        // TODO Log simengine output to file
         try {
-            Runtime.getRuntime().exec(cmd, null, new File(vrfBin64)).waitFor();
-        } catch (IOException | InterruptedException e) {
+            Process process = Runtime.getRuntime().exec(cmd, null, new File(vrfBin64));
+
+            System.out.println();
+            System.out.println("---------- STARTING SIMULATION ENGINE ----------");
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            while (true) {
+                System.out.println(bufferedReader.readLine());
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
