@@ -137,6 +137,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
     public static void main(String[] args) {
         DataLogger dataLogger = new DataLogger();
+        dataLogger.initiate();
     }
 
     public void reset() {
