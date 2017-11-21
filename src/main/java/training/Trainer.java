@@ -1,14 +1,13 @@
 package training;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import datalogging.DataLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import training.btree.BehaviorTree;
 import training.btree.task.IsCloseEnough;
 import training.btree.task.IsApproaching;
 import training.btree.task.Move;
-import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import data.ProcessedData;
 import training.btree.task.Wait;
@@ -49,50 +48,10 @@ public class Trainer {
         return Math.pow(Math.abs(exampleDistance - iterationDistance), 2);
     }
 
-    private BehaviorTree cloneBehaviorTree(BehaviorTree btree) {
-        Task root = btree.getChild(0);
-        Task newRoot =  cloneSubtreeAndInsertChild(root, null, null, 0);
-        return new BehaviorTree(newRoot);
-    }
-
-    private BehaviorTree cloneBehaviorTreeAndInsertChild(BehaviorTree btree, Task insertParent, Task insertChild, int insertIndex) {
-        Task root = btree.getChild(0);
-        Task newRoot =  cloneSubtreeAndInsertChild(root, insertParent, insertChild, insertIndex);
-        return new BehaviorTree(newRoot);
-    }
-
-    private Task cloneSubtreeAndInsertChild(Task btree, Task insertParent, Task insertChild, int insertIndex) {
-        Task newBtree = instantiateTaskObject(btree);
-        if (insertIndex < 0 || (btree == insertParent && insertIndex > btree.getChildCount())) {
-            throw new IllegalArgumentException("Invalid insertion index: " + insertIndex);
-        }
-        for (int i = 0; i < btree.getChildCount(); i++) {
-            if (btree == insertParent && i == insertIndex) {
-                newBtree.addChild(insertChild);
-            }
-            Task child = cloneSubtreeAndInsertChild(btree.getChild(i), insertParent, insertChild, insertIndex);
-            newBtree.addChild(child);
-        }
-        if (btree == insertParent && btree.getChildCount() == insertIndex) {
-            newBtree.addChild(insertChild);
-        }
-        return newBtree;
-    }
-
-    private Task instantiateTaskObject(Task task) {
-        Task newTask = null;
-        try {
-            newTask = task.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return newTask;
-    }
-
     public static void main(String[] args) {
         Trainer trainer = new Trainer();
-//        trainer.behaviorTreeTest();
-        trainer.simEngineTest();
+        trainer.behaviorTreeTest();
+//        trainer.simEngineTest();
     }
 
     private void behaviorTreeTest() {
@@ -104,10 +63,10 @@ public class Trainer {
         grapher.graph(btree);
 
         Grapher grapher1 = new Grapher("Clone");
-        grapher1.graph(cloneBehaviorTree(btree));
+        grapher1.graph(btree.clone());
 
         Grapher grapher2 = new Grapher("Clone with insertion");
-        grapher2.graph(cloneBehaviorTreeAndInsertChild(btree, sequence1, new Move(), 2));
+        grapher2.graph(btree.cloneAndInsertChild(sequence1, new Move(), 2));
     }
 
     private void simEngineTest() {
