@@ -2,10 +2,11 @@ package training.btree.task;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
+import training.btree.Blackboard;
 
-public class IsApproaching extends LeafTask implements Named {
+public class IsApproaching extends LeafTask<Blackboard> implements Named {
 
-    private String name = "Is approaching?";
+    private final String name = "Is approaching?";
 
     @Override
     public Status execute() {
@@ -13,7 +14,7 @@ public class IsApproaching extends LeafTask implements Named {
     }
 
     @Override
-    protected Task copyTo(Task task) {
+    protected Task<Blackboard> copyTo(Task<Blackboard> task) {
         return task;
     }
 

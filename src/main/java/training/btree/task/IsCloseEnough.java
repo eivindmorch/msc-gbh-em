@@ -2,10 +2,11 @@ package training.btree.task;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
+import training.btree.Blackboard;
 
-public class IsCloseEnough extends LeafTask implements Named {
+public class IsCloseEnough extends LeafTask<Blackboard> implements Named {
 
-    private String name = "Is close enough?";
+    private final String name = "Is close enough?";
 
     @Override
     public Status execute() {
@@ -13,7 +14,7 @@ public class IsCloseEnough extends LeafTask implements Named {
     }
 
     @Override
-    protected Task copyTo(Task task) {
+    protected Task<Blackboard> copyTo(Task<Blackboard> task) {
         return null;
     }
 

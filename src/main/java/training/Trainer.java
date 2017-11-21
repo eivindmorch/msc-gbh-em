@@ -4,7 +4,8 @@ import com.badlogic.gdx.ai.btree.branch.Sequence;
 import datalogging.DataLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import training.btree.BehaviorTree;
+import training.btree.GenBehaviorTree;
+import training.btree.Blackboard;
 import training.btree.task.IsCloseEnough;
 import training.btree.task.IsApproaching;
 import training.btree.task.Move;
@@ -55,10 +56,10 @@ public class Trainer {
     }
 
     private void behaviorTreeTest() {
-        Selector selector1 = new Selector(new IsApproaching(), new IsCloseEnough());
-        Sequence sequence1 = new Sequence(selector1, new Wait());
-        Sequence sequence2 = new Sequence(sequence1, new Move());
-        BehaviorTree btree = new BehaviorTree(sequence2);
+        Selector<Blackboard> selector1 = new Selector(new IsApproaching(), new IsCloseEnough());
+        Sequence<Blackboard> sequence1 = new Sequence(selector1, new Wait());
+        Sequence<Blackboard> sequence2 = new Sequence(sequence1, new Move());
+        GenBehaviorTree btree = new GenBehaviorTree(sequence2, new Blackboard(null));
         Grapher grapher = new Grapher("Original");
         grapher.graph(btree);
 
