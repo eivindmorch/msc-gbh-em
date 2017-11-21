@@ -93,6 +93,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
     }
 
     private void tick(double timestamp) {
+        // TODO Remove when list is resetting
         if (units.size() == 2 ) {
             updateUnits(timestamp);
 
@@ -105,9 +106,9 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
     private void updateUnits(double timestamp) {
         for (Unit unit : units) {
             PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(unit.handle);
-            // TODO Test if physicalEntity is updated at all times
             unit.setRawData(timestamp, physicalEntity);
         }
+        // TODO Remove when list is resetting
         if (units.size() == 2) {
             Unit unit0 = units.get(0);
             Unit unit1 = units.get(1);
@@ -130,7 +131,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
     private void checkConditions() {
         if (regulated && constrained) {
-            new Thread(this).start();
+            new Thread(this).start(); // Wait until simEngine has initiated time-regulation
         }
     }
 
