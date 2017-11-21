@@ -8,12 +8,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class SimEngine {
+public class SimEngine implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(SimEngine.class);
 
     // Todo make SimEngine able to load and reload scenario after init
     public SimEngine() {
+        new Thread(this).start();
     }
 
     public void run() {
