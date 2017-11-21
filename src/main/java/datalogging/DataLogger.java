@@ -32,7 +32,9 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
     public DataLogger() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
+    }
 
+    public void initiate() {
         federateManager = HlaLib.init();
         federateManager.addTimeManagementListener(this);
 
@@ -78,6 +80,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
     @Override
     public void localObjectRemoved(HlaObject hlaObject) {}
 
+    @Override
     public void run() {
         while (running) {
             try {

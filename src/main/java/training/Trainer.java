@@ -112,6 +112,9 @@ public class Trainer {
 
     private void simEngineTest() {
         DataLogger dataLogger = new DataLogger();
+        dataLogger.initiate();
+
         SimEngine simEngine = new SimEngine();
+        simEngine.initiate();
     }
 }

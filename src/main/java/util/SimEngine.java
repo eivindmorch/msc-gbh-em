@@ -14,9 +14,13 @@ public class SimEngine implements Runnable {
 
     // Todo make SimEngine able to load and reload scenario after init
     public SimEngine() {
+    }
+
+    public void initiate() {
         new Thread(this).start();
     }
 
+    @Override
     public void run() {
         String vrfBin64 = System.getenv("MAK_VRFDIR64") + "/bin64/";
         String fedFile = "RPR_FOM_v2.0_1516-2010.xml";
