@@ -28,6 +28,7 @@
 		<interactions>
             <interaction name="HLAinteractionRoot.RadioSignal.ApplicationSpecificRadioSignal" sharing="PublishSubscribe"/>
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.Move" sharing="Publish"/>
+            <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToUnit" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeading" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.Wait" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.ChangeOrderedSpeed" sharing="Publish"/>

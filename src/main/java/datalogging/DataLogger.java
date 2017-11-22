@@ -13,10 +13,14 @@ import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import training.btree.Blackboard;
+import training.btree.GenBehaviorTree;
+import training.btree.task.Move;
 import util.Values.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
@@ -27,6 +31,8 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
     private transient boolean running = true;
     private volatile boolean constrained = false;
     private volatile boolean regulated = false;
+
+    GenBehaviorTree btree;
 
     private final Logger logger = LoggerFactory.getLogger(DataLogger.class);
 
@@ -51,6 +57,9 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
         PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
         physicalEntity.addObjectUpdateListener(this);
         physicalEntity.requestUpdateOnAllAttributes();
+        if (units.size() >= 2) {
+            reset();
+        }
     }
 
     @Override
@@ -99,6 +108,29 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
             for (Unit unit : units) {
                 unit.writeToFile();
+            }
+
+//            Unit unit = units.get(0);
+//            System.out.println(unit.role.name() + " -- " + unit.rawData.velVector.getX() + ", " + unit.rawData.velVector.getY() + ", " + unit.rawData.velVector.getZ());
+
+            Blackboard blackboard;
+            if (units.get(0).role == Role.FOLLOWER) {
+                blackboard = new Blackboard(units.get(0), units.get(1));
+//                System.out.println(units.get(0).processedData.toString());
+            } else {
+                blackboard = new Blackboard(units.get(1), units.get(0));
+//                System.out.println(units.get(1).processedData.toString());
+            }
+            if (btree == null) {
+                Move move = new Move();
+                btree = new GenBehaviorTree(move, blackboard);
+            }
+            btree.step();
+
+            try {
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }

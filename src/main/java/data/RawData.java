@@ -6,8 +6,8 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 public class RawData extends Data {
 
-    Vector3D posVector;     // Position
-    Vector3D velVector;     // Velocity
+    public Vector3D posVector;     // Position
+    public Vector3D velVector;     // Velocity
 
     public RawData(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
         setValues(timestamp, position, velocity);
@@ -15,8 +15,9 @@ public class RawData extends Data {
 
     public void setValues(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
         this.timestamp = timestamp;
-        this.posVector = new Vector3D(position.getX(), position.getY(), position.getZ());
-        this.velVector = new Vector3D(velocity.getXVelocity(), velocity.getYVelocity(), velocity.getZVelocity());
+        // (X=Height, Y=West/East, Z=North/South)
+        this.posVector = new Vector3D(position.getY(), position.getZ(), position.getX());
+        this.velVector = new Vector3D(velocity.getYVelocity(), velocity.getZVelocity(), velocity.getXVelocity());
     }
 
     public String getValuesAsCsvString() {
@@ -26,6 +27,6 @@ public class RawData extends Data {
 
     @Override
     public String toString() {
-        return timestamp + ", " + posVector + ", " + velVector;
+        return "Timestamp: " + timestamp + ", Position:" + posVector + ", Velocity:" + velVector;
     }
 }

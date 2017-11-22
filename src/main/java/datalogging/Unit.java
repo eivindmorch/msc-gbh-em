@@ -15,8 +15,8 @@ public class Unit {
     public final ObjectInstanceHandle handle;
     public final Role role;
 
-    private RawData rawData;
-    private ProcessedData processedData;
+    public RawData rawData;
+    public ProcessedData processedData;
 
     private Writer rawDataWriter;
     private Writer processedDataWriter;

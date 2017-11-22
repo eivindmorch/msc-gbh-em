@@ -6,11 +6,14 @@ public class Blackboard {
 
     public Unit unit;
 
-    public Blackboard(Unit unit) {
+    public Unit otherUnit;
+
+    public Blackboard(Unit unit, Unit otherUnit) {
         this.unit = unit;
+        this.otherUnit = otherUnit;
     }
 
     public Blackboard clone() {
-        return new Blackboard(this.unit);
+        return new Blackboard(this.unit, this.otherUnit);
     }
 }

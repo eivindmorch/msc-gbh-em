@@ -59,7 +59,7 @@ public class Trainer {
         Selector<Blackboard> selector1 = new Selector(new IsApproaching(), new IsCloseEnough());
         Sequence<Blackboard> sequence1 = new Sequence(selector1, new Wait());
         Sequence<Blackboard> sequence2 = new Sequence(sequence1, new Move());
-        GenBehaviorTree btree = new GenBehaviorTree(sequence2, new Blackboard(null));
+        GenBehaviorTree btree = new GenBehaviorTree(sequence2, new Blackboard(null,null));
         Grapher grapher = new Grapher("Original");
         grapher.graph(btree);
 

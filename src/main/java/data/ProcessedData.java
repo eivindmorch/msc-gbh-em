@@ -34,7 +34,7 @@ public class ProcessedData extends Data {
     private double calculateMovementAngle(RawData rawData1, RawData rawData2) {
         Vector3D vectorBetweenUnits = rawData1.posVector.subtract(rawData2.posVector);
         
-        // TODO Convert to using 3D
+        // TODO Replace with util calc
         double dot = vectorBetweenUnits.dotProduct(rawData2.velVector);
         double det = vectorBetweenUnits.getX() * rawData2.velVector.getY() - vectorBetweenUnits.getY() * rawData2.velVector.getX();
         double angle = Math.atan2(dot, det);
@@ -60,6 +60,6 @@ public class ProcessedData extends Data {
 
     @Override
     public String toString() {
-        return getValuesAsCsvString();
+        return "Timestamp: " + timestamp + ", " + "Distance: " + distance + ", " + "Angle: " + angle;
     }
 }
