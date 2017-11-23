@@ -6,8 +6,8 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 public class RawData extends Data {
 
-    Vector3D posVector;     // Position
-    Vector3D velVector;     // Velocity
+    public Vector3D posVector;  // Position
+    public Vector3D velVector;  // Velocity
 
     public RawData(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
         setValues(timestamp, position, velocity);
@@ -26,6 +26,6 @@ public class RawData extends Data {
 
     @Override
     public String toString() {
-        return timestamp + ", " + posVector + ", " + velVector;
+        return "Timestamp: " + timestamp + ", Position:" + posVector + ", Velocity:" + velVector;
     }
 }

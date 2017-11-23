@@ -13,10 +13,14 @@ import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import training.btree.Blackboard;
+import training.btree.GenBehaviorTree;
+import training.btree.task.Move;
 import util.Values.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
@@ -28,6 +32,8 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
     private volatile boolean constrained = false;
     private volatile boolean regulated = false;
 
+    GenBehaviorTree btree;
+
     private final Logger logger = LoggerFactory.getLogger(DataLogger.class);
 
     public DataLogger() {
@@ -38,7 +44,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
         federateManager = HlaLib.init();
         federateManager.addTimeManagementListener(this);
 
-        // Add listener for physical  entities
+        // Add listener for physical entities
         PhysicalEntityObject.addHlaObjectListener(this);
 
         federateManager.init();
@@ -51,6 +57,9 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
         PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
         physicalEntity.addObjectUpdateListener(this);
         physicalEntity.requestUpdateOnAllAttributes();
+        if (units.size() >= 2) {
+            reset();
+        }
     }
 
     @Override
@@ -98,7 +107,25 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
             updateUnits(timestamp);
 
             for (Unit unit : units) {
-                unit.writeToFile();
+                unit.writeDataToFile();
+            }
+
+            Blackboard blackboard;
+            if (units.get(0).role == Role.FOLLOWER) {
+                blackboard = new Blackboard(units.get(0), units.get(1));
+            } else {
+                blackboard = new Blackboard(units.get(1), units.get(0));
+            }
+            if (btree == null) {
+                Move move = new Move();
+                btree = new GenBehaviorTree(move, blackboard);
+            }
+            btree.step();
+
+            try {
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
