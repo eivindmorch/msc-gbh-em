@@ -23,8 +23,9 @@ public class Move extends LeafTask<Blackboard> implements Named {
     private void sendLLBMLTurnToHeadingTask(){
         TurnToHeadingInteraction interaction = new TurnToHeadingInteraction();
         double deg = calculateMovementAngle();
-        deg -= 90;
-        deg = 360 - deg;
+
+        deg = 360 - deg; // Convert from counter-clockwise to clockwise
+        deg += 90;      // Make north 0 degrees instead of east
 
         while (deg >= 360) {
             deg -= 360;
@@ -42,11 +43,10 @@ public class Move extends LeafTask<Blackboard> implements Named {
 
         LlaData lla1 = Calculations.ecefToLla(unit.rawData.posVector);
         LlaData lla2 = Calculations.ecefToLla(otherUnit.rawData.posVector);
-        double angle = Calculations.geodlib(lla1, lla2);
+        double angle = Calculations.absoluteBearing(lla1, lla2);
 
         return(angle);
     }
-
 
     @Override
     protected Task<Blackboard> copyTo(Task<Blackboard> task) {

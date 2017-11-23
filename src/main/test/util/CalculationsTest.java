@@ -30,7 +30,7 @@ class CalculationsTest {
         LlaData lla1 = Calculations.ecefToLla(ecefVector1);
         LlaData lla2 = Calculations.ecefToLla(ecefVector2);
 
-        assertEquals(1, Calculations.geodlib(lla1, lla2));
+        assertEquals(1, Calculations.absoluteBearing(lla1, lla2));
     }
 
     @Test

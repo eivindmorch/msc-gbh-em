@@ -8,7 +8,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 public class Calculations {
 
-    public static double geodlib(LlaData lla1, LlaData lla2) {
+    public static double absoluteBearing(LlaData lla1, LlaData lla2) {
         double lat1 = lla1.getLatitude();
         double long1 = lla1.getLongitude();
 

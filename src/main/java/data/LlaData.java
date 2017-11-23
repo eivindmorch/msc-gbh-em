@@ -2,13 +2,13 @@ package data;
 
 public class LlaData {
 
-    private final double latitude, longitude, height;
+    private final double latitude, longitude, altitude;
 
     // TODO Possibly store in RawData
-    public LlaData(double latitude, double longitude, double height) {
+    public LlaData(double latitude, double longitude, double altitude) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.height = height;
+        this.altitude = altitude;
     }
 
     public double getLatitude() {
@@ -19,12 +19,12 @@ public class LlaData {
         return longitude;
     }
 
-    public double getHeight() {
-        return height;
+    public double getAltitude() {
+        return altitude;
     }
 
     @Override
     public String toString() {
-        return "Lat: " + latitude + ", Lon: " + longitude + ", Height: " + height;
+        return "Lat: " + latitude + ", Lon: " + longitude + ", Altitude: " + altitude;
     }
 }
