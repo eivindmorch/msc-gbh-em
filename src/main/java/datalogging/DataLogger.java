@@ -2,6 +2,7 @@ package datalogging;
 
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.*;
+import model.Unit;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
 import no.ffi.hlalib.events.HlaObjectRemovedEvent;
@@ -27,6 +28,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
     private FederateManager federateManager;
     private volatile List<Unit> units = new ArrayList<>();
+    private volatile List<UnitLogger> unitLoggers = new ArrayList<>();
 
     private transient boolean running = true;
     private volatile boolean constrained = false;
@@ -72,7 +74,9 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
             try {
                 Role role = Role.valueOf(markingString);
                 ObjectInstanceHandle handle = physicalEntity.getObjectInstanceHandle();
-                units.add(new Unit(handle, role));
+                Unit unit = new Unit(handle, role);
+                units.add(unit);
+                unitLoggers.add(new UnitLogger(unit));
                 logger.info("Object " + markingString + " was added with handle " + handle);
             } catch (IllegalArgumentException e) {
             }
@@ -106,8 +110,8 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
         if (units.size() == 2 ) {
             updateUnits(timestamp);
 
-            for (Unit unit : units) {
-                unit.writeDataToFile();
+            for (UnitLogger unitLogger : unitLoggers) {
+                unitLogger.writeDataToFile();
             }
 
             Blackboard blackboard;
@@ -169,11 +173,12 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
     public void reset() {
         // Close unit writers
-        for (Unit unit : units) {
-            unit.closeWriters();
+        for (UnitLogger unitLogger : unitLoggers) {
+            unitLogger.closeWriters();
         }
         // Reset unit list
         units = new ArrayList<>();
+        unitLoggers = new ArrayList<>();
 
         // TODO
         // Reset federation timestamp to 0

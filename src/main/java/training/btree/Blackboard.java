@@ -1,6 +1,6 @@
 package training.btree;
 
-import datalogging.Unit;
+import model.Unit;
 
 public class Blackboard {
 

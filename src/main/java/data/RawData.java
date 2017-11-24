@@ -1,7 +1,7 @@
 package data;
 
 import util.exceptions.IllegalArgumentCombinationException;
-import models.Lla;
+import model.Lla;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -35,7 +35,6 @@ public class RawData extends Data {
         } catch (IllegalArgumentCombinationException e) {
             return null;
         }
-        System.out.println("Movement angle: " + angle);
         return angle;
     }
 

@@ -1,7 +1,7 @@
 package util;
 
 import util.exceptions.IllegalArgumentCombinationException;
-import models.Lla;
+import model.Lla;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.junit.jupiter.api.Test;
 

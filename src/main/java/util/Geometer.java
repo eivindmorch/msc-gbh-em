@@ -1,7 +1,7 @@
 package util;
 
 import util.exceptions.IllegalArgumentCombinationException;
-import models.Lla;
+import model.Lla;
 import net.sf.geographiclib.Constants;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicLine;

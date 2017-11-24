@@ -2,7 +2,7 @@ package training.btree.task;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import datalogging.Unit;
+import model.Unit;
 import util.exceptions.IllegalArgumentCombinationException;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
 import training.btree.Blackboard;
