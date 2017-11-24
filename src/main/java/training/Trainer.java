@@ -1,17 +1,17 @@
 package training;
 
 import com.badlogic.gdx.ai.btree.branch.Sequence;
-import datalogging.DataLogger;
+import federate.Federate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import training.btree.GenBehaviorTree;
-import training.btree.Blackboard;
-import training.btree.task.IsCloseEnough;
-import training.btree.task.IsApproaching;
-import training.btree.task.Move;
+import model.btree.GenBehaviorTree;
+import model.btree.Blackboard;
+import model.btree.task.IsCloseEnough;
+import model.btree.task.IsApproaching;
+import model.btree.task.Move;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import data.ProcessedData;
-import training.btree.task.Wait;
+import model.btree.task.Wait;
 import util.Grapher;
 import util.Reader;
 import util.SimEngine;
@@ -71,8 +71,8 @@ public class Trainer {
     }
 
     private void simEngineTest() {
-        DataLogger dataLogger = new DataLogger();
-        dataLogger.initiate();
+        Federate federate = new Federate();
+        federate.initiate();
 
         SimEngine simEngine = new SimEngine();
         simEngine.initiate();

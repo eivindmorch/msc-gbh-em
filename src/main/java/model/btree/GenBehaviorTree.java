@@ -1,4 +1,4 @@
-package training.btree;
+package model.btree;
 
 import com.badlogic.gdx.ai.btree.Task;
 

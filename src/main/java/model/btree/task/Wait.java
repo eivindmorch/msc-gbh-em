@@ -1,9 +1,9 @@
-package training.btree.task;
+package model.btree.task;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
-import training.btree.Blackboard;
+import model.btree.Blackboard;
 
 public class Wait extends LeafTask<Blackboard> implements Named {
 

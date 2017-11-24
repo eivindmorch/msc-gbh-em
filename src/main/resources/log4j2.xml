@@ -9,7 +9,7 @@
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36} @%L - %msg%n}"/>
         </Console>
 
-        <File name="HlaLib" fileName="logs/hla/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="HlaLib" fileName="logs/hlalib/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
@@ -17,11 +17,15 @@
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
-        <File name="DataLogging" fileName="logs/datalogging/dataLogging-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="UnitLogger" fileName="logs/unitlogger/unitlogger-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
-        <File name="SimEngine" fileName="logs/simengine/simEngine-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="Federate" fileName="logs/federate/federate-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
+        </File>
+
+        <File name="SimEngine" fileName="logs/simengine/simengine-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
@@ -34,8 +38,13 @@
             <AppenderRef ref="HlaLib"/>
         </Logger>
 
-        <Logger name="datalogging" level="debug" additivity="false">
-            <AppenderRef ref="DataLogging"/>
+        <Logger name="logging.UnitLogger" level="debug" additivity="false">
+            <AppenderRef ref="UnitLogger"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="federate" level="debug" additivity="false">
+            <AppenderRef ref="Federate"/>
             <AppenderRef ref="Console"/>
         </Logger>
 

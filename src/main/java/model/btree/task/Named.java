@@ -1,4 +1,4 @@
-package training.btree.task;
+package model.btree.task;
 
 public interface Named {
 

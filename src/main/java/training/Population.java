@@ -1,6 +1,6 @@
 package training;
 
-import training.btree.GenBehaviorTree;
+import model.btree.GenBehaviorTree;
 
 import java.util.ArrayList;
 

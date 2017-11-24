@@ -1,4 +1,4 @@
-package datalogging;
+package federate;
 
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.*;
@@ -14,21 +14,23 @@ import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import training.btree.Blackboard;
-import training.btree.GenBehaviorTree;
-import training.btree.task.Move;
+import model.btree.Blackboard;
+import model.btree.GenBehaviorTree;
+import model.btree.task.Move;
+import logging.UnitLogger;
 import util.Values.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+// TODO Rename
+public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
-public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
+    private final Logger logger = LoggerFactory.getLogger(Federate.class);
 
     private FederateManager federateManager;
     private volatile List<Unit> units = new ArrayList<>();
-    private volatile List<UnitLogger> unitLoggers = new ArrayList<>();
 
     private transient boolean running = true;
     private volatile boolean constrained = false;
@@ -36,9 +38,9 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
     private GenBehaviorTree btree;
 
-    private final Logger logger = LoggerFactory.getLogger(DataLogger.class);
+    private final UnitLogger unitLogger = new UnitLogger();
 
-    public DataLogger() {
+    public Federate() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
     }
 
@@ -51,7 +53,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
         federateManager.init();
 
-        logger.info("DataLogger initiated");
+        logger.info("Federate initiated");
     }
 
     @Override
@@ -76,8 +78,8 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
                 ObjectInstanceHandle handle = physicalEntity.getObjectInstanceHandle();
                 Unit unit = new Unit(handle, role);
                 units.add(unit);
-                unitLoggers.add(new UnitLogger(unit));
-                logger.info("Object " + markingString + " was added with handle " + handle);
+                logger.info("Unit " + markingString + " was added with handle " + handle + ".");
+                unitLogger.register(unit);
             } catch (IllegalArgumentException e) {
             }
             physicalEntity.removeObjectUpdateListener(this);
@@ -110,9 +112,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
         if (units.size() == 2 ) {
             updateUnits(timestamp);
 
-            for (UnitLogger unitLogger : unitLoggers) {
-                unitLogger.writeDataToFile();
-            }
+            unitLogger.logAllRegisteredUnits();
 
             Blackboard blackboard;
             if (units.get(0).getRole() == Role.FOLLOWER) {
@@ -166,23 +166,17 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
         }
     }
 
-    public static void main(String[] args) {
-        DataLogger dataLogger = new DataLogger();
-        dataLogger.initiate();
-    }
-
     public void reset() {
-        // Close unit writers
-        for (UnitLogger unitLogger : unitLoggers) {
-            unitLogger.closeWriters();
-        }
-        // Reset unit list
         units = new ArrayList<>();
-        unitLoggers = new ArrayList<>();
-
+        unitLogger.reset();
         // TODO
         // Reset federation timestamp to 0
         // Reset scenario
+    }
+
+    public static void main(String[] args) {
+        Federate federate = new Federate();
+        federate.initiate();
     }
 
 }

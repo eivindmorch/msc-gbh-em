@@ -1,11 +1,11 @@
-package training.btree.task;
+package model.btree.task;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.Unit;
 import util.exceptions.IllegalArgumentCombinationException;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
-import training.btree.Blackboard;
+import model.btree.Blackboard;
 import util.Geometer;
 
 
