@@ -1,4 +1,4 @@
-package exceptions;
+package util.exceptions;
 
 public class IllegalArgumentCombinationException extends Exception{
 

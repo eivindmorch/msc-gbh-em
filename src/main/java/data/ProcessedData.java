@@ -1,6 +1,6 @@
 package data;
 
-import exceptions.IllegalArgumentCombinationException;
+import util.exceptions.IllegalArgumentCombinationException;
 import util.Geometer;
 
 import java.util.List;

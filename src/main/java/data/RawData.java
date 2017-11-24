@@ -1,6 +1,6 @@
 package data;
 
-import exceptions.IllegalArgumentCombinationException;
+import util.exceptions.IllegalArgumentCombinationException;
 import models.Lla;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
