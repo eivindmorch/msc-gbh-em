@@ -1,13 +1,14 @@
 package data;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import exceptions.IllegalArgumentCombinationException;
+import util.Geometer;
 
 import java.util.List;
 
 public class ProcessedData extends Data {
 
     private double distance;
-        private double angle;
+    private Double otherUnitMovementAngleRelativeToMyPosition;
 
     public ProcessedData(double timestamp, RawData rawData1, RawData rawData2) {
         setValues(timestamp, rawData1, rawData2);
@@ -16,38 +17,33 @@ public class ProcessedData extends Data {
     public ProcessedData(List<String> csvElements) {
         this.timestamp = Double.valueOf(csvElements.get(0));
         this.distance = Double.valueOf(csvElements.get(1));
-        this.angle = Double.valueOf(csvElements.get(2));
+        this.otherUnitMovementAngleRelativeToMyPosition = Double.valueOf(csvElements.get(2));
     }
 
     public void setValues(double timestamp, RawData rawData1, RawData rawData2) {
         this.timestamp = timestamp;
-        this.distance = calculateDistance(rawData1.posVector, rawData2.posVector);
-        this.angle = calculateMovementAngle(rawData1, rawData2);
+        this.distance = Geometer.distance(rawData1.getLla(), rawData2.getLla());
+        this.otherUnitMovementAngleRelativeToMyPosition = calculateMovementAngleRelativeToMyPosition(rawData1, rawData2);
     }
 
-    // Euclidean distance
-    private double calculateDistance(Vector3D followerPosVector, Vector3D targetPosVector) {
-        return followerPosVector.distance(targetPosVector);
-    }
-
-    // Relative angle of other units movement direction, with 0 being toward and 180 being away from this unit
-    private double calculateMovementAngle(RawData rawData1, RawData rawData2) {
-        Vector3D vectorBetweenUnits = rawData1.posVector.subtract(rawData2.posVector);
-        
-        // TODO Convert to using 3D
-        double dot = vectorBetweenUnits.dotProduct(rawData2.velVector);
-        double det = vectorBetweenUnits.getX() * rawData2.velVector.getY() - vectorBetweenUnits.getY() * rawData2.velVector.getX();
-        double angle = Math.atan2(dot, det);
-        angle = angle * 180 / Math.PI;
-        angle -= 90;
-        while (angle < 0) {
-            angle += 360;
+    private Double calculateMovementAngleRelativeToMyPosition(RawData rawData1, RawData rawData2){
+        // GeoLine "between" from unit2 to unit1
+        // Angle = azimuth of "between" - azimuth of unit2 "movement"
+        double angleOfLineFromUnit2ToUnit1;
+        try {
+            angleOfLineFromUnit2ToUnit1 = Geometer.absoluteBearing(rawData2.getLla(), rawData1.getLla());
+        } catch (IllegalArgumentCombinationException e) {
+            return null;
         }
-        return angle;
+        if (rawData2.getMovementAngle() == null) {
+            return null;
+        }
+        double angle = angleOfLineFromUnit2ToUnit1 - rawData2.getMovementAngle();
+        return Geometer.normalise360Angle(angle);
     }
 
     public String getValuesAsCsvString() {
-        return timestamp + ", " + distance + ", " + angle;
+        return timestamp + ", " + distance + ", " + otherUnitMovementAngleRelativeToMyPosition;
     }
 
     public double getDistance() {
@@ -55,11 +51,11 @@ public class ProcessedData extends Data {
     }
 
     public double getAngle() {
-        return angle;
+        return otherUnitMovementAngleRelativeToMyPosition;
     }
 
     @Override
     public String toString() {
-        return getValuesAsCsvString();
+        return "Timestamp: " + timestamp + ", " + "Distance: " + distance + ", " + "Angle: " + otherUnitMovementAngleRelativeToMyPosition;
     }
 }

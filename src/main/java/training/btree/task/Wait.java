@@ -11,7 +11,7 @@ public class Wait extends LeafTask<Blackboard> implements Named {
 
     @Override
     public Status execute() {
-        sendLLBMLWaitTask(getObject().unit.role.name());
+        sendLLBMLWaitTask(getObject().unit.getRole().name());
         return Status.SUCCEEDED;
     }
 

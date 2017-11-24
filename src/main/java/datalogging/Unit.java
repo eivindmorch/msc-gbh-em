@@ -12,17 +12,16 @@ import static util.Values.*;
 
 public class Unit {
 
-    public final ObjectInstanceHandle handle;
-    public final Role role;
+    private final ObjectInstanceHandle handle;
+    private final Role role;
 
     private RawData rawData;
     private ProcessedData processedData;
 
+    private boolean hasValues;
+
     private Writer rawDataWriter;
     private Writer processedDataWriter;
-
-    public boolean hasValues;
-
 
     Unit(ObjectInstanceHandle handle, Role role) {
         this.handle = handle;
@@ -39,7 +38,6 @@ public class Unit {
         } else {
             processedData.setValues(timestamp, this.rawData, otherUnit.rawData);
         }
-//        printData(role.name(), otherUnit.rawData);
     }
 
     void setRawData(double timestamp, PhysicalEntityObject physicalEntity) {
@@ -53,12 +51,7 @@ public class Unit {
         }
     }
 
-    void updateDataTimestamps(double timestamp) {
-        rawData.setTimestamp(timestamp);
-        processedData.setTimestamp(timestamp);
-    }
-
-    void writeToFile() {
+    void writeDataToFile() {
         rawDataWriter.writeLine(rawData.getValuesAsCsvString());
         processedDataWriter.writeLine(processedData.getValuesAsCsvString());
     }
@@ -68,17 +61,28 @@ public class Unit {
         return role + ", "  + rawData.toString();
     }
 
-    private void printData(String role, RawData otherUnitData) {
-        System.out.println("---------------------");
-        System.out.println(role);
-        System.out.println(this.rawData);
-        System.out.println(otherUnitData);
-        System.out.println(processedData);
-        System.out.println("---------------------");
-    }
-
     void closeWriters() {
         rawDataWriter.close();
         processedDataWriter.close();
+    }
+
+    public ObjectInstanceHandle getHandle() {
+        return handle;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public RawData getRawData() {
+        return rawData;
+    }
+
+    public ProcessedData getProcessedData() {
+        return processedData;
+    }
+
+    public boolean hasValues() {
+        return hasValues;
     }
 }
