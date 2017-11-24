@@ -1,31 +1,35 @@
 package util;
 
-import data.LlaData;
+import exceptions.IllegalArgumentCombinationException;
+import models.Lla;
 import net.sf.geographiclib.Constants;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicLine;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-public class Calculations {
+public class Geometer {
 
-    public static double absoluteBearing(LlaData lla1, LlaData lla2) {
-        double lat1 = lla1.getLatitude();
-        double long1 = lla1.getLongitude();
+    private static Geodesic geodesic = new Geodesic(Constants.WGS84_a, Constants.WGS84_f);
 
-        double lat2 = lla2.getLatitude();
-        double long2 = lla2.getLongitude();
-
-        Geodesic geodesic = new Geodesic(Constants.WGS84_a, Constants.WGS84_f);
-        GeodesicLine geoLine = geodesic.InverseLine(lat1, long1, lat2, long2);
-        double azimuth = geoLine.Azimuth();
-        return azimuth;
+    public static double absoluteBearing(Lla fromLla, Lla toLla) throws IllegalArgumentCombinationException {
+        if (fromLla.equals(toLla)) {
+            throw new IllegalArgumentCombinationException();
+        }
+        GeodesicLine geoLine = geodesic.InverseLine(fromLla.getLatitude(), fromLla.getLongitude(), toLla.getLatitude(), toLla.getLongitude());
+        double angle = geoLine.Azimuth();
+        return normalise360Angle(angle);
     }
 
-    public static LlaData ecefToLla(Vector3D ecefVector) {
-        double x = ecefVector.getX();
-        double y = ecefVector.getY();
-        double z = ecefVector.getZ();
+    public static double distance(Lla lla1, Lla lla2) {
+        GeodesicLine geoLine = geodesic.InverseLine(lla1.getLatitude(), lla1.getLongitude(), lla2.getLatitude(), lla2.getLongitude());
+        return geoLine.Distance();
+    }
 
+    public static Lla ecefToLla(Vector3D ecefVector) {
+        return ecefToLla(ecefVector.getX(), ecefVector.getY(), ecefVector.getZ());
+    }
+
+    public static Lla ecefToLla(double x, double y, double z) {
         // Module WGS84
         double RADIUS = 6378137;
         double FLATTENING = 1/298.257223563;
@@ -72,7 +76,7 @@ public class Calculations {
         latitude = Math.toDegrees(latitude);
         longitude = Math.toDegrees(longitude);
 
-        return new LlaData(latitude, longitude, altitude);
+        return new Lla(latitude, longitude, altitude);
     }
 
     private static double replaceZeroWithMinValue(double val) {
@@ -80,6 +84,16 @@ public class Calculations {
             return Double.MIN_VALUE;
         }
         return val;
+    }
+
+    public static double normalise360Angle(double angle) {
+        while (angle >= 360) {
+            angle -= 360;
+        }
+        while (angle < 0) {
+            angle += 360;
+        }
+        return angle;
     }
 
 }

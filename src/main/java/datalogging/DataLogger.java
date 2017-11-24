@@ -32,7 +32,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
     private volatile boolean constrained = false;
     private volatile boolean regulated = false;
 
-    GenBehaviorTree btree;
+    private GenBehaviorTree btree;
 
     private final Logger logger = LoggerFactory.getLogger(DataLogger.class);
 
@@ -111,7 +111,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
             }
 
             Blackboard blackboard;
-            if (units.get(0).role == Role.FOLLOWER) {
+            if (units.get(0).getRole() == Role.FOLLOWER) {
                 blackboard = new Blackboard(units.get(0), units.get(1));
             } else {
                 blackboard = new Blackboard(units.get(1), units.get(0));
@@ -132,7 +132,7 @@ public class DataLogger implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
     private void updateUnits(double timestamp) {
         for (Unit unit : units) {
-            PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(unit.handle);
+            PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(unit.getHandle());
             unit.setRawData(timestamp, physicalEntity);
         }
         // TODO Remove when list is resetting
