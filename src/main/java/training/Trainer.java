@@ -1,7 +1,7 @@
 package training;
 
 import com.badlogic.gdx.ai.btree.branch.Sequence;
-import federate.Federate;
+import simulation.federate.Federate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import model.btree.GenBehaviorTree;
@@ -14,7 +14,7 @@ import data.ProcessedData;
 import model.btree.task.Wait;
 import util.Grapher;
 import util.Reader;
-import util.SimEngine;
+import simulation.SimEngine;
 
 import java.util.List;
 
@@ -26,7 +26,10 @@ public class Trainer {
     private double fitness;
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
-    private void run() {
+    public void init() {
+    }
+
+    private void evaluate() {
         Reader exampleDataReader = new Reader(exampleDataFilePath);
         Reader iterationDataReader = new Reader(iterationDataFilePath);
 
@@ -72,9 +75,9 @@ public class Trainer {
 
     private void simEngineTest() {
         Federate federate = new Federate();
-        federate.initiate();
+        federate.init();
 
         SimEngine simEngine = new SimEngine();
-        simEngine.initiate();
+        simEngine.init();
     }
 }

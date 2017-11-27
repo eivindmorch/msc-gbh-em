@@ -1,8 +1,6 @@
-package federate;
+package simulation.federate;
 
 import hla.rti1516e.exceptions.*;
-import model.btree.Blackboard;
-import unit.UnitHandler;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
 import no.ffi.hlalib.events.HlaObjectRemovedEvent;
@@ -14,11 +12,10 @@ import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import unit.UnitLogger;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 
-// TODO Rename
+
 public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
     private final Logger logger = LoggerFactory.getLogger(Federate.class);
@@ -29,11 +26,14 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     private volatile boolean constrained = false;
     private volatile boolean regulated = false;
 
+    private ArrayList<TickListener> tickListeners;
+    private ArrayList<PhysicalEntityUpdatedListener> physicalEntityUpdatedListeners;
+
     public Federate() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
     }
 
-    public void initiate() {
+    public void init() {
         federateManager = HlaLib.init();
         federateManager.addTimeManagementListener(this);
 
@@ -42,16 +42,18 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
         federateManager.init();
 
+        tickListeners = new ArrayList<>();
+        physicalEntityUpdatedListeners = new ArrayList<>();
+
         logger.info("Federate initiated.");
     }
 
     @Override
     public void remoteObjectDiscovered(HlaObject object) {
-        PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
-        physicalEntity.addObjectUpdateListener(this);
-        physicalEntity.requestUpdateOnAllAttributes();
-        if (UnitHandler.getNumOfUnits() >= 2) {
-            reset();
+        if (object instanceof PhysicalEntityObject) {
+            PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
+            physicalEntity.addObjectUpdateListener(this);
+            physicalEntity.requestUpdateOnAllAttributes();
         }
     }
 
@@ -59,7 +61,9 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     public void hlaObjectUpdated(HlaObjectUpdatedEvent updatedEvent) {
         if (updatedEvent.getHlaObject() instanceof PhysicalEntityObject) {
             PhysicalEntityObject physicalEntity = (PhysicalEntityObject) updatedEvent.getHlaObject();
-            UnitHandler.addUnit(physicalEntity);
+            physicalEntityUpdatedListeners.forEach(
+                    physicalEntityUpdatedListener -> physicalEntityUpdatedListener.physicalEntityUpdated(physicalEntity)
+            );
             physicalEntity.removeObjectUpdateListener(this);
         }
     }
@@ -86,29 +90,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     }
 
     private void tick(double timestamp) {
-        // TODO Remove when list is resetting
-        if (UnitHandler.getNumOfUnits() == 2 ) {
-            UnitHandler.updateUnits(timestamp);
-            UnitLogger.logAllRegisteredUnits();
-
-//            Blackboard blackboard;
-//            if (UnitHandler.get(0).getRole() == Role.FOLLOWER) {
-//                blackboard = new Blackboard(units.get(0), units.get(1));
-//            } else {
-//                blackboard = new Blackboard(units.get(1), units.get(0));
-//            }
-//            if (btree == null) {
-//                Move move = new Move();
-//                btree = new GenBehaviorTree(move, blackboard);
-//            }
-//            btree.step();
-
-            try {
-                TimeUnit.MILLISECONDS.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        tickListeners.forEach(tickListener -> tickListener.tick(timestamp));
     }
 
 
@@ -130,17 +112,12 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         }
     }
 
-    public void reset() {
-        UnitHandler.reset();
-        UnitLogger.reset();
-        // TODO
-        // Reset federation timestamp to 0
-        // Reset scenario
+    public void addTickListener(TickListener tickListener) {
+        tickListeners.add(tickListener);
     }
 
-    public static void main(String[] args) {
-        Federate federate = new Federate();
-        federate.initiate();
+    public void addPhysicalEntityUpdatedListener(PhysicalEntityUpdatedListener physicalEntityUpdatedListener) {
+        physicalEntityUpdatedListeners.add(physicalEntityUpdatedListener);
     }
 
 }
