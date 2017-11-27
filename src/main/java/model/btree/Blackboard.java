@@ -1,19 +1,20 @@
 package model.btree;
 
-import model.Unit;
+import unit.FollowerUnit;
 
 public class Blackboard {
 
-    public Unit unit;
+    private FollowerUnit followerUnit;
 
-    public Unit otherUnit;
+    public Blackboard(FollowerUnit followerUnit) {
+        this.followerUnit = followerUnit;
+    }
 
-    public Blackboard(Unit unit, Unit otherUnit) {
-        this.unit = unit;
-        this.otherUnit = otherUnit;
+    public FollowerUnit getFollowerUnit() {
+        return followerUnit;
     }
 
     public Blackboard clone() {
-        return new Blackboard(this.unit, this.otherUnit);
+        return new Blackboard(this.followerUnit);
     }
 }

@@ -5,13 +5,13 @@ import util.Geometer;
 
 import java.util.List;
 
+// TODO Rename
 public class ProcessedData extends Data {
 
     private double distance;
     private Double otherUnitMovementAngleRelativeToMyPosition;
 
-    public ProcessedData(double timestamp, RawData rawData1, RawData rawData2) {
-        setValues(timestamp, rawData1, rawData2);
+    public ProcessedData() {
     }
 
     public ProcessedData(List<String> csvElements) {
@@ -42,16 +42,21 @@ public class ProcessedData extends Data {
         return Geometer.normalise360Angle(angle);
     }
 
-    public String getValuesAsCsvString() {
-        return timestamp + ", " + distance + ", " + otherUnitMovementAngleRelativeToMyPosition;
-    }
-
     public double getDistance() {
         return distance;
     }
 
     public double getAngle() {
         return otherUnitMovementAngleRelativeToMyPosition;
+    }
+
+    @Override
+    public String getHeader() {
+        return "timestamp, distance, target angle relative to my position";
+    }
+
+    public String getValuesAsCsvString() {
+        return timestamp + ", " + distance + ", " + otherUnitMovementAngleRelativeToMyPosition;
     }
 
     @Override

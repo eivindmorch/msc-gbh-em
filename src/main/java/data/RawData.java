@@ -12,6 +12,9 @@ public class RawData extends Data {
     private Lla lla;
     private Double movementAngle;
 
+    public RawData() {
+    }
+
     public RawData(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
         setValues(timestamp, position, velocity);
     }
@@ -44,6 +47,11 @@ public class RawData extends Data {
 
     public Double getMovementAngle() {
         return movementAngle;
+    }
+
+    @Override
+    public String getHeader() {
+        return "timestamp, latitude, longitude, altitude, movement angle";
     }
 
     public String getValuesAsCsvString() {

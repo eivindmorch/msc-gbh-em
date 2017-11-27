@@ -17,7 +17,7 @@
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
-        <File name="UnitLogger" fileName="logs/unitlogger/unitlogger-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="Unit" fileName="logs/unit/unit-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
@@ -38,8 +38,8 @@
             <AppenderRef ref="HlaLib"/>
         </Logger>
 
-        <Logger name="logging.UnitLogger" level="debug" additivity="false">
-            <AppenderRef ref="UnitLogger"/>
+        <Logger name="unit" level="debug" additivity="false">
+            <AppenderRef ref="Unit"/>
             <AppenderRef ref="Console"/>
         </Logger>
 

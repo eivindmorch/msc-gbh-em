@@ -1,8 +1,8 @@
 package federate;
 
-import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.*;
-import model.Unit;
+import model.btree.Blackboard;
+import unit.UnitHandler;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
 import no.ffi.hlalib.events.HlaObjectRemovedEvent;
@@ -14,14 +14,8 @@ import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import model.btree.Blackboard;
-import model.btree.GenBehaviorTree;
-import model.btree.task.Move;
-import logging.UnitLogger;
-import util.Values.*;
+import unit.UnitLogger;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 // TODO Rename
@@ -30,15 +24,10 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     private final Logger logger = LoggerFactory.getLogger(Federate.class);
 
     private FederateManager federateManager;
-    private volatile List<Unit> units = new ArrayList<>();
 
     private transient boolean running = true;
     private volatile boolean constrained = false;
     private volatile boolean regulated = false;
-
-    private GenBehaviorTree btree;
-
-    private final UnitLogger unitLogger = new UnitLogger();
 
     public Federate() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
@@ -53,7 +42,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
         federateManager.init();
 
-        logger.info("Federate initiated");
+        logger.info("Federate initiated.");
     }
 
     @Override
@@ -61,7 +50,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
         physicalEntity.addObjectUpdateListener(this);
         physicalEntity.requestUpdateOnAllAttributes();
-        if (units.size() >= 2) {
+        if (UnitHandler.getNumOfUnits() >= 2) {
             reset();
         }
     }
@@ -70,18 +59,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     public void hlaObjectUpdated(HlaObjectUpdatedEvent updatedEvent) {
         if (updatedEvent.getHlaObject() instanceof PhysicalEntityObject) {
             PhysicalEntityObject physicalEntity = (PhysicalEntityObject) updatedEvent.getHlaObject();
-
-            String markingString = physicalEntity.getMarking().getMarking();
-
-            try {
-                Role role = Role.valueOf(markingString);
-                ObjectInstanceHandle handle = physicalEntity.getObjectInstanceHandle();
-                Unit unit = new Unit(handle, role);
-                units.add(unit);
-                logger.info("Unit " + markingString + " was added with handle " + handle + ".");
-                unitLogger.register(unit);
-            } catch (IllegalArgumentException e) {
-            }
+            UnitHandler.addUnit(physicalEntity);
             physicalEntity.removeObjectUpdateListener(this);
         }
     }
@@ -109,22 +87,21 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
     private void tick(double timestamp) {
         // TODO Remove when list is resetting
-        if (units.size() == 2 ) {
-            updateUnits(timestamp);
+        if (UnitHandler.getNumOfUnits() == 2 ) {
+            UnitHandler.updateUnits(timestamp);
+            UnitLogger.logAllRegisteredUnits();
 
-            unitLogger.logAllRegisteredUnits();
-
-            Blackboard blackboard;
-            if (units.get(0).getRole() == Role.FOLLOWER) {
-                blackboard = new Blackboard(units.get(0), units.get(1));
-            } else {
-                blackboard = new Blackboard(units.get(1), units.get(0));
-            }
-            if (btree == null) {
-                Move move = new Move();
-                btree = new GenBehaviorTree(move, blackboard);
-            }
-            btree.step();
+//            Blackboard blackboard;
+//            if (UnitHandler.get(0).getRole() == Role.FOLLOWER) {
+//                blackboard = new Blackboard(units.get(0), units.get(1));
+//            } else {
+//                blackboard = new Blackboard(units.get(1), units.get(0));
+//            }
+//            if (btree == null) {
+//                Move move = new Move();
+//                btree = new GenBehaviorTree(move, blackboard);
+//            }
+//            btree.step();
 
             try {
                 TimeUnit.MILLISECONDS.sleep(200);
@@ -134,19 +111,6 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         }
     }
 
-    private void updateUnits(double timestamp) {
-        for (Unit unit : units) {
-            PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(unit.getHandle());
-            unit.setRawData(timestamp, physicalEntity);
-        }
-        // TODO Remove when list is resetting
-        if (units.size() == 2) {
-            Unit unit0 = units.get(0);
-            Unit unit1 = units.get(1);
-            unit0.updateProcessedData(timestamp, unit1);
-            unit1.updateProcessedData(timestamp, unit0);
-        }
-    }
 
     @Override
     public void timeRegulationEnabled(Double logicalTime) {
@@ -167,8 +131,8 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     }
 
     public void reset() {
-        units = new ArrayList<>();
-        unitLogger.reset();
+        UnitHandler.reset();
+        UnitLogger.reset();
         // TODO
         // Reset federation timestamp to 0
         // Reset scenario
