@@ -46,7 +46,7 @@ public class ProcessedData extends Data {
         return distance;
     }
 
-    public double getAngle() {
+    public Double getOtherUnitMovementAngleRelativeToMyPosition() {
         return otherUnitMovementAngleRelativeToMyPosition;
     }
 
