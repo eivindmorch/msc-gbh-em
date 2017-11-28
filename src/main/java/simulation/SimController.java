@@ -26,16 +26,18 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     public void tick(double timestamp) {
         UnitHandler.updateUnits(timestamp);
         UnitLogger.logAllRegisteredUnits();
-
         UnitHandler.tickAllControlledUnits();
 
-//        try {
-//            TimeUnit.MILLISECONDS.sleep(200);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        delay(200);
     }
 
+    private void delay(int milliseconds) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void physicalEntityUpdated(PhysicalEntityObject physicalEntity) {

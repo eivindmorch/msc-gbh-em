@@ -30,7 +30,6 @@ public class Main {
     }
 
     // TODO
-    // 1. Fix move task
-    // 2. Fix condition tasks
-    // 3. Test manual btree
+    // 1. Fix condition tasks
+    // 2. Test manual btree
 }
