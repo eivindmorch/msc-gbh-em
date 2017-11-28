@@ -9,23 +9,28 @@ public class Main {
 //        simController.initSimEngine();
 
 
-        Trainer trainer = new Trainer();
-        trainer.init(); // Generated initial population
+//        Trainer trainer = new Trainer();
+//        trainer.init(); // Generated initial population
 
-//        while (true) {
-//            // Simulate with population btrees
-//                // Start/restart SimEngine with Scenario
-//
-//            // Evaluate population
-////            Trainer.evaluatePopulation();
-//
-//            // Select new population
-////            Trainer.selectNewPopulation();
-//        }
+        while (true) {
+            // Simulate with population btrees
+                // Start/restart SimEngine with Scenario
+
+            // Evaluate population
+//            Trainer.evaluatePopulation();
+
+            // Select new population
+//            Trainer.selectNewPopulation();
+        }
 
     }
 
     public static void main(String[] args) {
         Main.run();
     }
+
+    // TODO
+    // 1. Fix move task
+    // 2. Fix condition tasks
+    // 3. Test manual btree
 }

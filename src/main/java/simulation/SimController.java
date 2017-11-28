@@ -6,8 +6,7 @@ import simulation.federate.Federate;
 import simulation.federate.PhysicalEntityUpdatedListener;
 import simulation.federate.TickListener;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
-import unit.UnitHandler;
-import unit.UnitLogger;
+import unit.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,29 +24,16 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     @Override
     public void tick(double timestamp) {
-        // TODO Remove when list is resetting
-        if (UnitHandler.getNumOfUnits() == 2 ) {
-            UnitHandler.updateUnits(timestamp);
-            UnitLogger.logAllRegisteredUnits();
+        UnitHandler.updateUnits(timestamp);
+        UnitLogger.logAllRegisteredUnits();
 
-//            Blackboard blackboard;
-//            if (UnitHandler.get(0).getRole() == Role.FOLLOWER) {
-//                blackboard = new Blackboard(units.get(0), units.get(1));
-//            } else {
-//                blackboard = new Blackboard(units.get(1), units.get(0));
-//            }
-//            if (btree == null) {
-//                Move move = new Move();
-//                btree = new GenBehaviorTree(move, blackboard);
-//            }
-//            btree.step();
+        UnitHandler.tickAllControlledUnits();
 
-            try {
-                TimeUnit.MILLISECONDS.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        try {
+//            TimeUnit.MILLISECONDS.sleep(200);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
