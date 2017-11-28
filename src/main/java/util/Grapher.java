@@ -10,7 +10,7 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.layout.mxCompactTreeLayout;
-import training.btree.task.Named;
+import model.btree.task.Named;
 
 import javax.swing.*;
 import java.awt.*;

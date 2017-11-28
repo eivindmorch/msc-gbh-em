@@ -7,4 +7,8 @@ public abstract class Data {
     public void setTimestamp(double timestamp) {
         this.timestamp = timestamp;
     }
+
+    public abstract String getValuesAsCsvString();
+
+    public abstract String getHeader();
 }

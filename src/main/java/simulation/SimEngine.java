@@ -1,7 +1,9 @@
-package util;
+package simulation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unit.UnitHandler;
+import unit.UnitLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,7 +18,7 @@ public class SimEngine implements Runnable {
     public SimEngine() {
     }
 
-    public void initiate() {
+    public void init() {
         new Thread(this).start();
     }
 
@@ -47,5 +49,13 @@ public class SimEngine implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void reset() {
+        UnitHandler.reset();
+        UnitLogger.reset();
+        // TODO
+        // Reset federation timestamp to 0
+        // Reset scenario
     }
 }

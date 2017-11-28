@@ -1,11 +1,12 @@
-package training.btree.task;
+package model.btree.task;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import model.Unit;
+import unit.FollowerUnit;
+import unit.Unit;
 import util.exceptions.IllegalArgumentCombinationException;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
-import training.btree.Blackboard;
+import model.btree.Blackboard;
 import util.Geometer;
 
 
@@ -34,13 +35,13 @@ public class Move extends LeafTask<Blackboard> implements Named {
 
         float rad = (float) Math.toRadians(deg);
         interaction.setHeading(rad);
-        interaction.setTaskee(getObject().unit.getRole().name());
+        interaction.setTaskee(getObject().getFollowerUnit().getMarking());
         interaction.sendInteraction();
     }
 
     private double calculateMovementAngle() throws IllegalArgumentCombinationException {
-        Unit unit = getObject().unit;
-        Unit otherUnit = getObject().otherUnit;
+        FollowerUnit unit = getObject().getFollowerUnit();
+        Unit otherUnit = getObject().getFollowerUnit().getTarget();
 
         return(Geometer.absoluteBearing(unit.getRawData().getLla(), otherUnit.getRawData().getLla()));
     }

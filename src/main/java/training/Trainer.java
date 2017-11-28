@@ -1,20 +1,20 @@
 package training;
 
 import com.badlogic.gdx.ai.btree.branch.Sequence;
-import datalogging.DataLogger;
+import simulation.federate.Federate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import training.btree.GenBehaviorTree;
-import training.btree.Blackboard;
-import training.btree.task.IsCloseEnough;
-import training.btree.task.IsApproaching;
-import training.btree.task.Move;
+import model.btree.GenBehaviorTree;
+import model.btree.Blackboard;
+import model.btree.task.IsCloseEnough;
+import model.btree.task.IsApproaching;
+import model.btree.task.Move;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import data.ProcessedData;
-import training.btree.task.Wait;
+import model.btree.task.Wait;
 import util.Grapher;
 import util.Reader;
-import util.SimEngine;
+import simulation.SimEngine;
 
 import java.util.List;
 
@@ -26,7 +26,10 @@ public class Trainer {
     private double fitness;
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
-    private void run() {
+    public void init() {
+    }
+
+    private void evaluate() {
         Reader exampleDataReader = new Reader(exampleDataFilePath);
         Reader iterationDataReader = new Reader(iterationDataFilePath);
 
@@ -59,7 +62,7 @@ public class Trainer {
         Selector<Blackboard> selector1 = new Selector(new IsApproaching(), new IsCloseEnough());
         Sequence<Blackboard> sequence1 = new Sequence(selector1, new Wait());
         Sequence<Blackboard> sequence2 = new Sequence(sequence1, new Move());
-        GenBehaviorTree btree = new GenBehaviorTree(sequence2, new Blackboard(null,null));
+        GenBehaviorTree btree = new GenBehaviorTree(sequence2, new Blackboard(null));
         Grapher grapher = new Grapher("Original");
         grapher.graph(btree);
 
@@ -71,10 +74,10 @@ public class Trainer {
     }
 
     private void simEngineTest() {
-        DataLogger dataLogger = new DataLogger();
-        dataLogger.initiate();
+        Federate federate = new Federate();
+        federate.init();
 
         SimEngine simEngine = new SimEngine();
-        simEngine.initiate();
+        simEngine.init();
     }
 }

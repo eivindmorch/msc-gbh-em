@@ -9,7 +9,7 @@
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36} @%L - %msg%n}"/>
         </Console>
 
-        <File name="HlaLib" fileName="logs/hla/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="HlaLib" fileName="logs/hlalib/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
@@ -17,11 +17,15 @@
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
-        <File name="DataLogging" fileName="logs/datalogging/dataLogging-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="Unit" fileName="logs/unit/unit-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
-        <File name="SimEngine" fileName="logs/simengine/simEngine-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="SimController" fileName="logs/simulation/simcontroller/simcontroller-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
+        </File>
+
+        <File name="SimEngine" fileName="logs/simulation/simengine/simengine-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
         </File>
 
@@ -30,13 +34,12 @@
 
     <Loggers>
 
+        <Root level="error">
+            <appender-ref ref="Console"/>
+        </Root>
+
         <Logger name="no.ffi.hlalib" level="debug" additivity="false">
             <AppenderRef ref="HlaLib"/>
-        </Logger>
-
-        <Logger name="datalogging" level="debug" additivity="false">
-            <AppenderRef ref="DataLogging"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
         <Logger name="training" level="debug" additivity="false">
@@ -44,14 +47,20 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="util.SimEngine" level="debug" additivity="false">
-            <AppenderRef ref="SimEngine"/>
+        <Logger name="unit" level="debug" additivity="false">
+            <AppenderRef ref="Unit"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Root level="error">
-            <appender-ref ref="Console"/>
-        </Root>
+        <Logger name="simulation" level="debug" additivity="false">
+            <AppenderRef ref="SimController"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="simulation.SimEngine" level="debug" additivity="false">
+            <AppenderRef ref="SimEngine"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
 
     </Loggers>
 
