@@ -34,6 +34,9 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     }
 
     public void init() {
+        tickListeners = new ArrayList<>();
+        physicalEntityUpdatedListeners = new ArrayList<>();
+
         federateManager = HlaLib.init();
         federateManager.addTimeManagementListener(this);
 
@@ -41,9 +44,6 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         PhysicalEntityObject.addHlaObjectListener(this);
 
         federateManager.init();
-
-        tickListeners = new ArrayList<>();
-        physicalEntityUpdatedListeners = new ArrayList<>();
 
         logger.info("Federate initiated.");
     }

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class UnitHandler {
 
     private static HashMap<String, List<PhysicalEntityObject>> targetFollowerMap = new HashMap<>();
     private static HashMap<String, Unit> markingUnitMap = new HashMap<>();
+    private static ArrayList<ControlledUnit> controlledUnits = new ArrayList<>();
 
     public static void addUnit(PhysicalEntityObject physicalEntity) {
         String marking = physicalEntity.getMarking().getMarking();
@@ -41,14 +43,27 @@ public class UnitHandler {
             return;
         }
 
-        markingUnitMap.put(marking, unit);
+        String unitName = getUnitName(marking);
+        markingUnitMap.put(unitName, unit);
         logger.info("Unit " + marking + " was added with handle " + handle + ".");
         UnitLogger.register(unit);
 
         // Initiates all scheduled Followers with this unit as Target
-        if (targetFollowerMap.get(marking) != null) {
-            targetFollowerMap.get(marking).forEach(UnitHandler::addUnit);
+        if (targetFollowerMap.get(unitName) != null) {
+            targetFollowerMap.get(unitName).forEach(UnitHandler::addUnit);
         }
+
+        if (unit instanceof FollowerUnit) {
+            UnitHandler.addControlledUnit(new ControlledUnit(unit));
+        }
+    }
+
+    public static void addControlledUnit(ControlledUnit controlledUnit) {
+        controlledUnits.add(controlledUnit);
+    }
+
+    public static Collection<Unit> getUnits() {
+        return markingUnitMap.values();
     }
 
     public static void updateUnits(double timestamp) {
@@ -65,6 +80,13 @@ public class UnitHandler {
         return marking.startsWith("T");
     }
 
+    private static String getUnitName(String marking) {
+        if (isFollower(marking)) {
+            return marking.substring(0, marking.indexOf('-'));
+        }
+        return marking;
+    }
+
     private static String getTargetNameFromFollowerMarking(String marking) {
         return marking.substring(marking.indexOf('-') + 1, marking.length());
     }
@@ -74,6 +96,11 @@ public class UnitHandler {
     }
 
     public static void reset() {
-        markingUnitMap = new HashMap<>();
+    }
+
+    public static void tickAllControlledUnits() {
+        for (ControlledUnit controlledUnit : controlledUnits) {
+            controlledUnit.tick();
+        }
     }
 }

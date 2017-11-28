@@ -2,10 +2,12 @@ package model.btree.task;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
+import model.Lla;
+import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import unit.FollowerUnit;
 import unit.Unit;
 import util.exceptions.IllegalArgumentCombinationException;
-import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
 import model.btree.Blackboard;
 import util.Geometer;
 
@@ -22,7 +24,7 @@ public class Move extends LeafTask<Blackboard> implements Named {
 
     // TODO Investigate issues with MoveTask in HlaLib
     private void sendLLBMLTurnToHeadingTask(){
-        TurnToHeadingInteraction interaction = new TurnToHeadingInteraction();
+        MoveToLocationInteraction interaction = new MoveToLocationInteraction();
         double deg;
 
         try {
@@ -31,10 +33,16 @@ public class Move extends LeafTask<Blackboard> implements Named {
             return;
         }
 
-        deg = normaliseDegForLlbml(deg);
+        Lla currentLla = getObject().getFollowerUnit().getRawData().getLla();
+        Lla destinationLla = Geometer.getDestinationPointFromAzimuthAngle(currentLla, deg, 100);
 
-        float rad = (float) Math.toRadians(deg);
-        interaction.setHeading(rad);
+        GeodeticLocationStruct geoLocationStruct = new GeodeticLocationStruct(
+                (float)destinationLla.getLatitude(),
+                (float)destinationLla.getLongitude(),
+                (float)destinationLla.getAltitude()
+        );
+
+        interaction.setDestination(geoLocationStruct);
         interaction.setTaskee(getObject().getFollowerUnit().getMarking());
         interaction.sendInteraction();
     }

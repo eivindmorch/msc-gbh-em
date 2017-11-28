@@ -6,6 +6,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static util.Geometer.getDestinationPointFromAzimuthAngle;
 
 class GeometerTest {
 
@@ -25,6 +26,14 @@ class GeometerTest {
         Lla lla2 = Geometer.ecefToLla(ecefVector2);
 
         assertEquals(147.17407566330704, Geometer.absoluteBearing(lla1, lla2));
+    }
+
+    @Test
+    void getDestinationPointFromAzimuthAngleTest() {
+        Lla lla = new Lla(10.008938452906103, 60.01929267705622, 136.54059425368905);
+        double azimuthAngle = 120;
+
+        assertEquals(new Lla(9.963724267920348, 60.09827247228762, 136.54059425368905), getDestinationPointFromAzimuthAngle(lla, azimuthAngle, 10000));
     }
 
 }

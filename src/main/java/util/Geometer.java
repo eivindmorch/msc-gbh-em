@@ -1,5 +1,6 @@
 package util;
 
+import net.sf.geographiclib.GeodesicData;
 import util.exceptions.IllegalArgumentCombinationException;
 import model.Lla;
 import net.sf.geographiclib.Constants;
@@ -18,6 +19,12 @@ public class Geometer {
         GeodesicLine geoLine = geodesic.InverseLine(fromLla.getLatitude(), fromLla.getLongitude(), toLla.getLatitude(), toLla.getLongitude());
         double angle = geoLine.Azimuth();
         return normalise360Angle(angle);
+    }
+
+    public static Lla getDestinationPointFromAzimuthAngle(Lla lla, double azimuthAngle, double distanceInMeters) {
+        GeodesicLine geoLine = geodesic.Line(lla.getLatitude(), lla.getLongitude(), azimuthAngle);
+        GeodesicData geoData = geoLine.Position(distanceInMeters);
+        return new Lla(geoData.lat2, geoData.lon2, lla.getAltitude());
     }
 
     public static double distance(Lla lla1, Lla lla2) {
