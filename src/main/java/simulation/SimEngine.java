@@ -13,13 +13,17 @@ import java.io.InputStreamReader;
 public class SimEngine implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(SimEngine.class);
+    private volatile boolean running;
+    private Process process;
 
     // Todo make SimEngine able to load and reload scenario after init
     public SimEngine() {
     }
 
     public void init() {
-        new Thread(this).start();
+        this.running = true;
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -36,26 +40,22 @@ public class SimEngine implements Runnable {
         String cmd = core + scenario + fomModules + rprVersion + plugins;
 
         try {
-            logger.info("Running simEngine with command: " + cmd);
-            Process process = Runtime.getRuntime().exec(cmd, null, new File(vrfBin64));
+            logger.info("Running simulation engine with command: " + cmd);
+            process = Runtime.getRuntime().exec(cmd, null, new File(vrfBin64));
 
-            logger.info("Starting simulation engine");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             // Todo replace with thread
-            while (true) {
+            while (running) {
                 logger.info(bufferedReader.readLine());
             }
+            process.destroy();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void reset() {
-        UnitHandler.reset();
-        UnitLogger.reset();
-        // TODO
-        // Reset federation timestamp to 0
-        // Reset scenario
+    void destroy() {
+        this.running = false;
     }
 }

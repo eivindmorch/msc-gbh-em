@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class SimController implements TickListener, PhysicalEntityUpdatedListener {
 
     private final Logger logger = LoggerFactory.getLogger(SimController.class);
+    private SimEngine simEngine;
 
 
     public void init() {
@@ -45,7 +46,15 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     }
 
     public void initSimEngine() {
-        SimEngine simEngine = new SimEngine();
+        simEngine = new SimEngine();
         simEngine.init();
+    }
+
+    public void reset() {
+        logger.info("Resetting SimEngine");
+        if (simEngine != null) {
+            simEngine.destroy();
+            simEngine.init();
+        }
     }
 }
