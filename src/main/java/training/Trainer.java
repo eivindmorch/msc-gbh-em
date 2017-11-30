@@ -10,7 +10,7 @@ import model.btree.task.follower.IsCloseEnough;
 import model.btree.task.follower.IsApproaching;
 import model.btree.task.follower.Move;
 import com.badlogic.gdx.ai.btree.branch.Selector;
-import data.ProcessedData;
+import data.FollowerProcessedData;
 import model.btree.task.general.Wait;
 import util.Grapher;
 import util.Reader;
@@ -22,7 +22,7 @@ import static util.Values.*;
 
 public class Trainer {
 
-    private ProcessedData exampleData, iterationData;
+    private FollowerProcessedData exampleData, iterationData;
     private double fitness;
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
@@ -37,10 +37,10 @@ public class Trainer {
         List<String> iterationDataLine = iterationDataReader.readLine();
 
         while (exampleDataLine != null && iterationDataLine != null) {
-            ProcessedData exampleData = new ProcessedData(exampleDataLine);
-            ProcessedData iterationData = new ProcessedData(iterationDataLine);
+            FollowerProcessedData exampleData = new FollowerProcessedData(exampleDataLine);
+            FollowerProcessedData iterationData = new FollowerProcessedData(iterationDataLine);
 
-            fitness += distanceFitness(exampleData.getDistance(), iterationData.getDistance());
+            fitness += distanceFitness(exampleData.getDistanceToTarget(), iterationData.getDistanceToTarget());
 
             exampleDataLine = exampleDataReader.readLine();
             iterationDataLine = iterationDataReader.readLine();

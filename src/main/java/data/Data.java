@@ -8,7 +8,7 @@ public abstract class Data {
         this.timestamp = timestamp;
     }
 
-    public abstract String getValuesAsCsvString();
-
     public abstract String getHeader();
+
+    public abstract String getValuesAsCsvString();
 }

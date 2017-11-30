@@ -21,7 +21,7 @@ public class IsApproaching extends LeafTask<Blackboard> implements Named {
     @Override
     public Status execute() {
         Double otherUnitMovementAngleRelativeToMyPosition =
-                getObject().getFollowerUnit().getProcessedData().getOtherUnitMovementAngleRelativeToMyPosition();
+                getObject().getFollowerUnit().getFollowerProcessedData().getTargetMovementAngleRelativeToFollowerPosition();
 
         if (otherUnitMovementAngleRelativeToMyPosition == null) {
             return Status.FAILED;

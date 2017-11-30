@@ -20,7 +20,7 @@ public class IsCloseEnough extends LeafTask<Blackboard> implements Named {
 
     @Override
     public Status execute() {
-        double distance = getObject().getFollowerUnit().getProcessedData().getDistance();
+        double distance = getObject().getFollowerUnit().getFollowerProcessedData().getDistanceToTarget();
         if (distance < distanceLimit) {
             return Status.SUCCEEDED;
         }
