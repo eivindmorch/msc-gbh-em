@@ -17,6 +17,11 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
 
     public void init() {
+        Rti rti = new Rti();
+        rti.init();
+
+        delay(5000);
+
         Federate federate = new Federate();
         federate.init();
         federate.addTickListener(this);
@@ -51,10 +56,19 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     }
 
     public void reset() {
-        logger.info("Resetting SimEngine");
+        logger.info("Resetting simulation.");
+
         if (simEngine != null) {
             simEngine.destroy();
+        }
+
+        UnitHandler.reset();
+
+        delay(10000);
+
+        if (simEngine != null) {
             simEngine.init();
         }
+
     }
 }

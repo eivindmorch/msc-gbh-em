@@ -22,7 +22,6 @@ public class Move extends LeafTask<Blackboard> implements Named {
         return Status.SUCCEEDED;
     }
 
-    // TODO Investigate issues with MoveTask in HlaLib
     private void sendLLBMLTurnToHeadingTask(){
         MoveToLocationInteraction interaction = new MoveToLocationInteraction();
         double deg;

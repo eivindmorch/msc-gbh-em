@@ -58,7 +58,7 @@ public class UnitHandler {
         }
     }
 
-    public static void addControlledUnit(ControlledUnit controlledUnit) {
+    private static void addControlledUnit(ControlledUnit controlledUnit) {
         controlledUnits.add(controlledUnit);
     }
 
@@ -96,6 +96,9 @@ public class UnitHandler {
     }
 
     public static void reset() {
+        targetFollowerMap = new HashMap<>();
+        markingUnitMap = new HashMap<>();
+        controlledUnits = new ArrayList<>();
     }
 
     public static void tickAllControlledUnits() {
