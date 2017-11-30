@@ -1,8 +1,9 @@
-package model.btree.task;
+package model.btree.task.follower;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.btree.Blackboard;
+import model.btree.task.Named;
 
 public class IsCloseEnough extends LeafTask<Blackboard> implements Named {
 

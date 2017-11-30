@@ -4,7 +4,11 @@ import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import model.btree.Blackboard;
 import model.btree.GenBehaviorTree;
-import model.btree.task.*;
+import model.btree.task.follower.IsApproaching;
+import model.btree.task.follower.IsCloseEnough;
+import model.btree.task.follower.Move;
+import model.btree.task.follower.TurnToHeading;
+import model.btree.task.general.Wait;
 
 public class ControlledUnit {
 

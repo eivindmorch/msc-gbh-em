@@ -1,8 +1,9 @@
-package model.btree.task;
+package model.btree.task.follower;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.Lla;
+import model.btree.task.Named;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import unit.FollowerUnit;

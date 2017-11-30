@@ -1,7 +1,8 @@
-package model.btree.task;
+package model.btree.task.general;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
+import model.btree.task.Named;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 import model.btree.Blackboard;
 
