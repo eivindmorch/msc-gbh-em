@@ -5,40 +5,41 @@ import util.Geometer;
 
 import java.util.List;
 
-// TODO Rename
-public class FollowerProcessedData extends Data {
+public class FollowerProcessedDataRow extends DataRow {
+
+    private String dataSetName = "FollowerProcessedData";
 
     private double distanceToTarget;
     private Double targetMovementAngleRelativeToFollowerPosition;
 
-    public FollowerProcessedData() {
+    public FollowerProcessedDataRow() {
     }
 
-    public FollowerProcessedData(List<String> csvElements) {
+    public FollowerProcessedDataRow(List<String> csvElements) {
         this.timestamp = Double.valueOf(csvElements.get(0));
         this.distanceToTarget = Double.valueOf(csvElements.get(1));
         this.targetMovementAngleRelativeToFollowerPosition = Double.valueOf(csvElements.get(2));
     }
 
-    public void setValues(double timestamp, RawData rawData1, RawData rawData2) {
+    public void setValues(double timestamp, RawDataRow rawDataRow1, RawDataRow rawDataRow) {
         this.timestamp = timestamp;
-        this.distanceToTarget = Geometer.distance(rawData1.getLla(), rawData2.getLla());
-        this.targetMovementAngleRelativeToFollowerPosition = calculateMovementAngleRelativeToMyPosition(rawData1, rawData2);
+        this.distanceToTarget = Geometer.distance(rawDataRow1.getLla(), rawDataRow.getLla());
+        this.targetMovementAngleRelativeToFollowerPosition = calculateMovementAngleRelativeToMyPosition(rawDataRow1, rawDataRow);
     }
 
-    private Double calculateMovementAngleRelativeToMyPosition(RawData rawData1, RawData rawData2){
+    private Double calculateMovementAngleRelativeToMyPosition(RawDataRow rawDataRow1, RawDataRow rawDataRow){
         // GeoLine "between" from unit2 to unit1
         // Angle = azimuth of "between" - azimuth of unit2 "movement"
         double angleOfLineFromUnit2ToUnit1;
         try {
-            angleOfLineFromUnit2ToUnit1 = Geometer.absoluteBearing(rawData2.getLla(), rawData1.getLla());
+            angleOfLineFromUnit2ToUnit1 = Geometer.absoluteBearing(rawDataRow.getLla(), rawDataRow1.getLla());
         } catch (IllegalArgumentCombinationException e) {
             return null;
         }
-        if (rawData2.getMovementAngle() == null) {
+        if (rawDataRow.getMovementAngle() == null) {
             return null;
         }
-        double angle = angleOfLineFromUnit2ToUnit1 - rawData2.getMovementAngle();
+        double angle = angleOfLineFromUnit2ToUnit1 - rawDataRow.getMovementAngle();
         return Geometer.normalise360Angle(angle);
     }
 
@@ -48,6 +49,11 @@ public class FollowerProcessedData extends Data {
 
     public Double getTargetMovementAngleRelativeToFollowerPosition() {
         return targetMovementAngleRelativeToFollowerPosition;
+    }
+
+    @Override
+    public String getDataSetName() {
+        return this.dataSetName;
     }
 
     @Override

@@ -7,15 +7,17 @@ import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import util.Geometer;
 
-public class RawData extends Data {
+public class RawDataRow extends DataRow {
+
+    private String dataSetName = "RawData";
 
     private Lla lla;
     private Double movementAngle;
 
-    public RawData() {
+    public RawDataRow() {
     }
 
-    public RawData(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
+    public RawDataRow(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
         setValues(timestamp, position, velocity);
     }
 
@@ -47,6 +49,11 @@ public class RawData extends Data {
 
     public Double getMovementAngle() {
         return movementAngle;
+    }
+
+    @Override
+    public String getDataSetName() {
+        return this.dataSetName;
     }
 
     @Override

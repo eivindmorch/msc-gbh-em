@@ -1,8 +1,9 @@
 package unit;
 
-import data.Data;
+import data.DataRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.SystemStatus;
 import util.Writer;
 
 import java.util.ArrayList;
@@ -41,17 +42,41 @@ public class UnitLogger {
 
         UnitDataWriter(Unit unit) {
             this.unit = unit;
-            String unitFolder = unit.getMarking() + "/";
 
             dataWriters = new ArrayList<>();
-            for (Data dataSet : unit.getDataSets()) {
-                dataWriters.add(new Writer("data/" + unitFolder + dataSet.getClass().getSimpleName() + "/", dataSet.getHeader()));
+            for (DataRow dataRow : unit.getDataRows()) {
+                // TODO Check if terminology is correct
+                dataWriters.add(new Writer(
+                        "data/training/" +
+                                SystemStatus.startTime + "/" +
+                                "epoch" + SystemStatus.currentTrainingEpoch + "/" +
+                                "scenario" + SystemStatus.currentTrainingScenario + "/" +
+                                "chromosome" + SystemStatus.currentTrainingChromosome + "/" +
+                                unit.getMarking(),
+                        dataRow.getDataSetName() + ".csv"
+                ));
+            }
+            writeMetaDataToFile();
+            writeHeadersToFile();
+        }
+
+        void writeMetaDataToFile() {
+            for (int i = 0; i < dataWriters.size(); i++) {
+                Writer dataWriter = dataWriters.get(i);
+                dataWriter.writeLine("# System start time: " + SystemStatus.startTime);
+                dataWriter.writeLine("# Scenario: " + SystemStatus.currentScenario);
+            }
+        }
+
+        void writeHeadersToFile() {
+            for (int i = 0; i < dataWriters.size(); i++) {
+                dataWriters.get(i).writeLine(unit.getDataRows().get(i).getHeader());
             }
         }
 
         void writeDataToFile() {
             for (int i = 0; i < dataWriters.size(); i++) {
-                dataWriters.get(i).writeLine(unit.getDataSets().get(i).getValuesAsCsvString());
+                dataWriters.get(i).writeLine(unit.getDataRows().get(i).getValuesAsCsvString());
             }
         }
 

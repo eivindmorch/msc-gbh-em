@@ -28,8 +28,4 @@ public class Main {
     public static void main(String[] args) {
         Main.run();
     }
-
-    // TODO
-    // 1. Fix condition tasks
-    // 2. Test manual btree
 }

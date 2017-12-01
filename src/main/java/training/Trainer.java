@@ -10,26 +10,34 @@ import model.btree.task.follower.IsCloseEnough;
 import model.btree.task.follower.IsApproaching;
 import model.btree.task.follower.Move;
 import com.badlogic.gdx.ai.btree.branch.Selector;
-import data.FollowerProcessedData;
+import data.FollowerProcessedDataRow;
 import model.btree.task.general.Wait;
 import util.Grapher;
 import util.Reader;
 import simulation.SimEngine;
+import util.SystemStatus;
 
 import java.util.List;
 
-import static util.Values.*;
+import static util.Settings.*;
 
 public class Trainer {
 
-    private FollowerProcessedData exampleData, iterationData;
+    private FollowerProcessedDataRow exampleData, iterationData;
     private double fitness;
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
     public void init() {
     }
 
-    private void evaluate() {
+    private void runTrainingRound(Population population, Example example) {
+        SystemStatus.currentScenario = example.getScenario();
+        // TODO run simulation
+        population.evaluatePopulation(example);
+        population.selectNextPopulation();
+    }
+
+    private void evaluate(Example example) {
         Reader exampleDataReader = new Reader(exampleDataFilePath);
         Reader iterationDataReader = new Reader(iterationDataFilePath);
 
@@ -37,8 +45,8 @@ public class Trainer {
         List<String> iterationDataLine = iterationDataReader.readLine();
 
         while (exampleDataLine != null && iterationDataLine != null) {
-            FollowerProcessedData exampleData = new FollowerProcessedData(exampleDataLine);
-            FollowerProcessedData iterationData = new FollowerProcessedData(iterationDataLine);
+            FollowerProcessedDataRow exampleData = new FollowerProcessedDataRow(exampleDataLine);
+            FollowerProcessedDataRow iterationData = new FollowerProcessedDataRow(iterationDataLine);
 
             fitness += distanceFitness(exampleData.getDistanceToTarget(), iterationData.getDistanceToTarget());
 

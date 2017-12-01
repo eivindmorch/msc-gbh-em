@@ -4,21 +4,28 @@ import util.Geometer;
 
 import java.util.List;
 
-public class FollowerEvaluationData extends Data {
+public class FollowerEvaluationDataRow extends DataRow {
+
+    private String dataSetName = "FollowerEvaluationData";
 
     private double distanceToTarget;
 
-    public FollowerEvaluationData() {
+    public FollowerEvaluationDataRow() {
     }
 
-    public FollowerEvaluationData(List<String> csvElements) {
+    public FollowerEvaluationDataRow(List<String> csvElements) {
         this.timestamp = Double.valueOf(csvElements.get(0));
         this.distanceToTarget = Double.valueOf(csvElements.get(1));
     }
 
-    public void setValues(double timestamp, RawData rawData1, RawData rawData2) {
+    public void setValues(double timestamp, RawDataRow rawDataRow1, RawDataRow rawDataRow) {
         this.timestamp = timestamp;
-        this.distanceToTarget = Geometer.distance(rawData1.getLla(), rawData2.getLla());
+        this.distanceToTarget = Geometer.distance(rawDataRow1.getLla(), rawDataRow.getLla());
+    }
+
+    @Override
+    public String getDataSetName() {
+        return this.dataSetName;
     }
 
     @Override

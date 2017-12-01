@@ -45,7 +45,7 @@ public class TurnToHeading extends LeafTask<Blackboard> implements Named {
         FollowerUnit unit = getObject().getFollowerUnit();
         Unit otherUnit = getObject().getFollowerUnit().getTarget();
 
-        return(Geometer.absoluteBearing(unit.getRawData().getLla(), otherUnit.getRawData().getLla()));
+        return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), otherUnit.getRawDataRow().getLla()));
     }
 
     @Override

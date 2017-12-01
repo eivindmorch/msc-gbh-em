@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import unit.UnitHandler;
 import unit.UnitLogger;
+import util.SystemStatus;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,9 +25,10 @@ public class SimEngine implements Runnable {
 
     @Override
     public void run() {
-        String vrfBin64 = System.getenv("MAK_VRFDIR64") + "/bin64/";
+        String vrfDir = System.getenv("MAK_VRFDIR64");
+        String vrfBin64 = vrfDir + "/bin64/";
         String fedFile = "RPR_FOM_v2.0_1516-2010.xml";
-        String scenarioPath = "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-constrained-run-to-complete.scnx";
+        String scenarioPath = vrfDir + "/userData/scenarios/it3903/" + SystemStatus.currentScenario;
 
         String core = "cmd /c vrfSimHLA1516e.exe --appNumber 3001 --siteId 1 --timeManagement --execName rlo --fedFileName " + fedFile;
         String scenario = " --scenarioFileName " + scenarioPath;

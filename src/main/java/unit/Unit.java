@@ -1,7 +1,7 @@
 package unit;
 
-import data.Data;
-import data.RawData;
+import data.DataRow;
+import data.RawDataRow;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
@@ -16,15 +16,15 @@ public class Unit {
     private String marking;
     private final ObjectInstanceHandle handle;
 
-    List<Data> dataSets;
-    private RawData rawData;
+    List<DataRow> dataRows;
+    private RawDataRow rawDataRow;
 
     public Unit(String marking, ObjectInstanceHandle handle) {
         this.marking = marking;
         this.handle = handle;
-        this.dataSets = new ArrayList<>();
-        this.rawData = new RawData();
-        this.dataSets.add(rawData);
+        this.dataRows = new ArrayList<>();
+        this.rawDataRow = new RawDataRow();
+        this.dataRows.add(rawDataRow);
     }
 
     public void updateData(double timestamp) {
@@ -35,24 +35,24 @@ public class Unit {
     private void setRawData(double timestamp, PhysicalEntityObject physicalEntity) {
         WorldLocationStruct location = physicalEntity.getSpatial().getDeadReckonedLocation();
         VelocityVectorStruct velocity = physicalEntity.getSpatial().getDeadReckonedVelocity();
-        rawData.setValues(timestamp, location, velocity);
+        rawDataRow.setValues(timestamp, location, velocity);
     }
 
     @Override
     public String toString() {
-        return marking + ", "  + rawData.toString();
+        return marking + ", "  + rawDataRow.toString();
     }
 
     public ObjectInstanceHandle getHandle() {
         return handle;
     }
 
-    public RawData getRawData() {
-        return rawData;
+    public RawDataRow getRawDataRow() {
+        return rawDataRow;
     }
 
-    public List<Data> getDataSets() {
-        return dataSets;
+    public List<DataRow> getDataRows() {
+        return dataRows;
     }
 
     public String getMarking() {

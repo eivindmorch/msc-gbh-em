@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static util.Values.filePathRoot;
+import static util.Settings.filePathRoot;
 
 
 public class Reader {
@@ -25,6 +25,8 @@ public class Reader {
         fileHeader = readLine();
     }
 
+    // TODO Handle metadata
+    // TODO Move handling of metadata and converting to List to the class that uses reader -- make Reader non-specialised
     public List<String> readLine() {
         try {
             String line = bufferedReader.readLine();

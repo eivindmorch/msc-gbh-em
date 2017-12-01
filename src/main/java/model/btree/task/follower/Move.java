@@ -23,7 +23,6 @@ public class Move extends LeafTask<Blackboard> implements Named {
         return Status.SUCCEEDED;
     }
 
-    // TODO Investigate issues with MoveTask in HlaLib
     private void sendLLBMLTurnToHeadingTask(){
         MoveToLocationInteraction interaction = new MoveToLocationInteraction();
         double deg;
@@ -34,7 +33,7 @@ public class Move extends LeafTask<Blackboard> implements Named {
             return;
         }
 
-        Lla currentLla = getObject().getFollowerUnit().getRawData().getLla();
+        Lla currentLla = getObject().getFollowerUnit().getRawDataRow().getLla();
         Lla destinationLla = Geometer.getDestinationPointFromAzimuthAngle(currentLla, deg, 100);
 
         GeodeticLocationStruct geoLocationStruct = new GeodeticLocationStruct(
@@ -52,7 +51,7 @@ public class Move extends LeafTask<Blackboard> implements Named {
         FollowerUnit unit = getObject().getFollowerUnit();
         Unit otherUnit = getObject().getFollowerUnit().getTarget();
 
-        return(Geometer.absoluteBearing(unit.getRawData().getLla(), otherUnit.getRawData().getLla()));
+        return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), otherUnit.getRawDataRow().getLla()));
     }
 
     private double normaliseDegForLlbml(double deg) {

@@ -12,7 +12,11 @@ public class Population {
 
     public void mutate(GenBehaviorTree btree) {}
 
-    public void selectNextPopulation() {
+    void evaluatePopulation(Example example) {
+
+    }
+
+    void selectNextPopulation() {
         // Elitism
         // Tournament crossover
     }
