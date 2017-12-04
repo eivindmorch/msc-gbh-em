@@ -31,6 +31,8 @@
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeading" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.Wait" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.ChangeOrderedSpeed" sharing="Publish"/>
+            <interaction name="HLAinteractionRoot.StartResume" sharing="PublishSubscribe"/>
+            <interaction name="HLAinteractionRoot.StopFreeze" sharing="PublishSubscribe"/>
         </interactions>
 	</federate>
 </HlaLib>

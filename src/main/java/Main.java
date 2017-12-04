@@ -1,12 +1,50 @@
 import simulation.SimController;
+import simulation.federate.Federate;
 import training.Trainer;
+
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     public static void run() {
+        Federate federate = new Federate();
+        federate.init();
+
         SimController simController = new SimController();
-        simController.init();
-//        simController.initSimEngine();
+
+        federate.addTickListener(simController);
+        federate.addPhysicalEntityUpdatedListener(simController);
+
+        simController.initSimEngine();
+
+//        try {
+//            TimeUnit.SECONDS.sleep(3);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        simController.startScenario();
+//
+//        try {
+//            TimeUnit.SECONDS.sleep(3);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        simController.stopScenario();
+//
+//        try {
+//            TimeUnit.SECONDS.sleep(3);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        simController.stopScenario();
+//
+//        try {
+//            TimeUnit.SECONDS.sleep(3);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        simController.startScenario();
+
 
 
 //        Trainer trainer = new Trainer();

@@ -29,9 +29,11 @@ public class SimEngine implements Runnable {
         String vrfBin64 = vrfDir + "/bin64/";
         String fedFile = "RPR_FOM_v2.0_1516-2010.xml";
         String scenarioPath = vrfDir + "/userData/scenarios/it3903/" + SystemStatus.currentScenario;
+        String batchPath = vrfDir + "/userData/scenarios/it3903/" + "sampleScenarioBatch.bsn";
 
         String core = "cmd /c vrfSimHLA1516e.exe --appNumber 3001 --siteId 1 --timeManagement --execName rlo --fedFileName " + fedFile;
         String scenario = " --scenarioFileName " + scenarioPath;
+        String batch = " -B " + batchPath;
         String fomModules = " --fomModules MAK-VRFExt-1_evolved.xml --fomModules MAK-DIGuy-2_evolved.xml --fomModules MAK-LgrControl-1_evolved.xml --fomModules MAK-VRFAggregate-1_evolved.xml --fomModules MAK-DynamicTerrain-1_evolved.xml --fomModules LLBML_v2_6.xml";
         String plugins = " --loadPlugin LLBMLSimHLA1516e_VC10.dll";
         String rprVersion = " --rprFomVersion 2.0";
