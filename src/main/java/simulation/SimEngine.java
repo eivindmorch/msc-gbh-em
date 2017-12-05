@@ -19,7 +19,7 @@ public class SimEngine implements Runnable {
     public SimEngine() {
     }
 
-    public void init() {
+    public void start() {
         new Thread(this).start();
     }
 

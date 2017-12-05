@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static util.Settings.filePathRoot;
+import static settings.SystemSettings.filePathRoot;
 
 
 public class Reader {

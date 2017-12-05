@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static util.Settings.filePathRoot;
+import static settings.SystemSettings.filePathRoot;
 
 
 public class Writer {

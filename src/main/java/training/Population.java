@@ -8,17 +8,8 @@ public class Population {
 
     ArrayList<GenBehaviorTree> population;
 
-    public void crossover(GenBehaviorTree btree1, GenBehaviorTree btree2) {}
+    public void crossover(int index1, int index2) {}
 
-    public void mutate(GenBehaviorTree btree) {}
-
-    void evaluatePopulation(Example example) {
-
-    }
-
-    void selectNextPopulation() {
-        // Elitism
-        // Tournament crossover
-    }
+    public void mutate(int index) {}
 
 }
