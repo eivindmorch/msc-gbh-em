@@ -2,64 +2,86 @@ package simulation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import unit.UnitHandler;
-import unit.UnitLogger;
-import util.SystemStatus;
+import settings.SimSettings;
+import util.ProcessLoggerThread;
+import util.SystemUtil;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
 
+// Todo make SimEngine able to load and reload scenario after init
 public class SimEngine implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(SimEngine.class);
 
-    // Todo make SimEngine able to load and reload scenario after init
-    public SimEngine() {
-    }
+    private CountDownLatch latch;
 
-    public void start() {
-        new Thread(this).start();
+     public void start() {
+         latch = new CountDownLatch(1);
+         Thread thread = new Thread(this);
+         thread.start();
     }
 
     @Override
     public void run() {
-        String vrfDir = System.getenv("MAK_VRFDIR64");
-        String vrfBin64 = vrfDir + "/bin64/";
-        String fedFile = "RPR_FOM_v2.0_1516-2010.xml";
-        String scenarioPath = vrfDir + "/userData/scenarios/it3903/" + SystemStatus.currentScenario;
-        String batchPath = vrfDir + "/userData/scenarios/it3903/" + "sampleScenarioBatch.bsn";
+        String vrfBin64Dir = SimSettings.vrfDirectory + "/bin64/";
+        String scenarioPath = SimSettings.vrfDirectory + "/userData/scenarios/" + SimSettings.scenario;
+        String executable = vrfBin64Dir + "vrfSimHLA1516e.exe";
 
-        String core = "cmd /c vrfSimHLA1516e.exe --appNumber 3001 --siteId 1 --timeManagement --execName rlo --fedFileName " + fedFile;
-        String scenario = " --scenarioFileName " + scenarioPath;
-        String batch = " -B " + batchPath;
-        String fomModules = " --fomModules MAK-VRFExt-1_evolved.xml --fomModules MAK-DIGuy-2_evolved.xml --fomModules MAK-LgrControl-1_evolved.xml --fomModules MAK-VRFAggregate-1_evolved.xml --fomModules MAK-DynamicTerrain-1_evolved.xml --fomModules LLBML_v2_6.xml";
-        String plugins = " --loadPlugin LLBMLSimHLA1516e_VC10.dll";
-        String rprVersion = " --rprFomVersion 2.0";
-        String cmd = core + scenario + fomModules + rprVersion + plugins;
+        // Options
+        String appNumber = "--appNumber " + SimSettings.applicationNumber;
+        String siteId = "--siteId " + SimSettings.siteId;
+        String execName = "--execName " + SimSettings.federationName;
+        String fedFileName = "--fedFileName " + SimSettings.federationFile;
+        String scenarioFileName = "--scenarioFileName " + scenarioPath;
+        String rprFomVersion = "--rprFomVersion " + SimSettings.rprFomVersion;
+        String timeManagement = SimSettings.useTimeManagement ? "--timeManagement" :  "";
+        String startInRunMode = SimSettings.startInRunMode ? "--startInRunMode" : "";
+
+        ArrayList<String> plugins = new ArrayList<>(SimSettings.plugins.length);
+        for (int i = 0; i < SimSettings.plugins.length; i++) {
+            plugins.add("--loadPlugin " + SimSettings.plugins[i]);
+        }
+        ArrayList<String> fomModules = new ArrayList<>(SimSettings.fomModules.length);
+        for (int i = 0; i < SimSettings.fomModules.length; i++) {
+            fomModules.add("--fomModules " + SimSettings.fomModules[i]);
+        }
+
+        ArrayList<String> processParams = new ArrayList<>();
+        processParams.addAll(Arrays.asList(executable, appNumber, siteId, timeManagement, execName, fedFileName, scenarioFileName));
+        processParams.addAll(fomModules);
+        processParams.add(rprFomVersion);
+        processParams.addAll(plugins);
+        processParams.add(startInRunMode);
 
         try {
-            logger.info("Running simEngine with command: " + cmd);
-            Process process = Runtime.getRuntime().exec(cmd, null, new File(vrfBin64));
+            logger.info("Running simulation engine with parameters: " + SystemUtil.commandOptionsListToString(processParams));
+            ProcessBuilder processBuilder = new ProcessBuilder(processParams);
+            processBuilder.directory(new File(vrfBin64Dir));
+            Process process = processBuilder.start();
 
-            logger.info("Starting simulation engine");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            ProcessLoggerThread processLoggerThread = new ProcessLoggerThread(process, logger);
+            processLoggerThread.start();
 
-            // Todo replace with thread
-            while (true) {
-                logger.info(bufferedReader.readLine());
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            processLoggerThread.destroy();
+            process.destroy();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void reset() {
-        UnitHandler.reset();
-        UnitLogger.reset();
-        // TODO
-        // Reset federation timestamp to 0
-        // Reset scenario
+    public void destroy() {
+        // TODO Does not destroy subprocesses
+        logger.info("Destroying simulation engine.");
+        latch.countDown();
     }
+
 }

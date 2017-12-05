@@ -6,11 +6,13 @@ import model.btree.task.follower.IsApproaching;
 import model.btree.task.follower.IsCloseEnough;
 import model.btree.task.follower.Move;
 import model.btree.task.general.Wait;
+import simulation.Rti;
 import simulation.SimController;
+import simulation.SimEngine;
 import simulation.federate.Federate;
 import util.Grapher;
 
-import java.util.concurrent.TimeUnit;
+import static util.SystemUtil.sleepSeconds;
 
 public class Main {
 
@@ -19,6 +21,11 @@ public class Main {
     }
 
     public static void run() {
+        Rti rti = new Rti();
+        rti.start();
+
+        sleepSeconds(5);
+
         Federate federate = Federate.getInstance();
         federate.init();
 
@@ -27,35 +34,15 @@ public class Main {
         federate.addTickListener(simController);
         federate.addPhysicalEntityUpdatedListener(simController);
 
-//        simController.startSimEngine();
+        SimEngine simEngine = new SimEngine();
+        simEngine.start();
 
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        simController.resume();
-
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        simController.freeze();
-
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        simController.freeze();
-
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        simController.resume();
+        sleepSeconds(20);
+        System.out.println("20sec");
+        simEngine.destroy();
+        sleepSeconds(10);
+        System.out.println("10sec");
+        rti.destroy();
 
     }
 
