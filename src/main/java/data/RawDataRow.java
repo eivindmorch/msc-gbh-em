@@ -1,11 +1,11 @@
 package data;
 
-import util.exceptions.IllegalArgumentCombinationException;
 import model.Lla;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import util.Geometer;
+import util.exceptions.IllegalArgumentCombinationException;
 
 public class RawDataRow extends DataRow {
 

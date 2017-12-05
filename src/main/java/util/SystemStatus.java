@@ -4,7 +4,7 @@ import settings.SystemSettings;
 
 import java.util.Date;
 
-public class SystemStatus {
+public abstract class SystemStatus {
 
     public static String startTime = SystemSettings.dateFormat.format(new Date());
     public static String currentScenario = "follow_time-contrained-earth.scnx"; // TODO

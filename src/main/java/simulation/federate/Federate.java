@@ -1,17 +1,15 @@
 package simulation.federate;
 
-import hla.rti1516e.exceptions.*;
+import hla.rti1516e.exceptions.RTIexception;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
 import no.ffi.hlalib.datatypes.enumeratedData.StopFreezeReasonEnum8;
 import no.ffi.hlalib.datatypes.fixedRecordData.EntityIdentifierStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.FederateIdentifierStruct;
-import no.ffi.hlalib.events.HlaInteractionReceivedEvent;
 import no.ffi.hlalib.events.HlaObjectRemovedEvent;
 import no.ffi.hlalib.events.HlaObjectUpdatedEvent;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.StartResumeInteraction;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.StopFreezeInteraction;
-import no.ffi.hlalib.listeners.HlaInteractionListener;
 import no.ffi.hlalib.listeners.HlaObjectListener;
 import no.ffi.hlalib.listeners.HlaObjectUpdateListener;
 import no.ffi.hlalib.listeners.TimeManagementListener;

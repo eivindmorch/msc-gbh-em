@@ -1,14 +1,14 @@
 package util;
 
-import net.sf.geographiclib.GeodesicData;
-import util.exceptions.IllegalArgumentCombinationException;
 import model.Lla;
 import net.sf.geographiclib.Constants;
 import net.sf.geographiclib.Geodesic;
+import net.sf.geographiclib.GeodesicData;
 import net.sf.geographiclib.GeodesicLine;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import util.exceptions.IllegalArgumentCombinationException;
 
-public class Geometer {
+public abstract class Geometer {
 
     private static Geodesic geodesic = new Geodesic(Constants.WGS84_a, Constants.WGS84_f);
 

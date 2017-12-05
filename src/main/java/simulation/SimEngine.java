@@ -6,7 +6,8 @@ import settings.SimSettings;
 import util.ProcessLoggerThread;
 import util.SystemUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;

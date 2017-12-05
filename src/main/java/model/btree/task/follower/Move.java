@@ -3,14 +3,14 @@ package model.btree.task.follower;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.Lla;
+import model.btree.Blackboard;
 import model.btree.task.Named;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import unit.FollowerUnit;
 import unit.Unit;
-import util.exceptions.IllegalArgumentCombinationException;
-import model.btree.Blackboard;
 import util.Geometer;
+import util.exceptions.IllegalArgumentCombinationException;
 
 
 public class Move extends LeafTask<Blackboard> implements Named {

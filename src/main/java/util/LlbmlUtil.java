@@ -1,6 +1,6 @@
 package util;
 
-public class LlbmlUtil {
+public abstract class LlbmlUtil {
 
     public static double normaliseDegForLlbml(double deg) {
         deg = 360 - deg; // Convert from counter-clockwise to clockwise

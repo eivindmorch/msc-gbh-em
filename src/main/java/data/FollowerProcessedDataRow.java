@@ -1,7 +1,7 @@
 package data;
 
-import util.exceptions.IllegalArgumentCombinationException;
 import util.Geometer;
+import util.exceptions.IllegalArgumentCombinationException;
 
 import java.util.List;
 

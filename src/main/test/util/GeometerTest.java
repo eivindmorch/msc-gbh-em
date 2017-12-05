@@ -1,11 +1,11 @@
 package util;
 
-import util.exceptions.IllegalArgumentCombinationException;
 import model.Lla;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.junit.jupiter.api.Test;
+import util.exceptions.IllegalArgumentCombinationException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static util.Geometer.getDestinationPointFromAzimuthAngle;
 
 class GeometerTest {

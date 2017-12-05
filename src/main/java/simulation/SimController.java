@@ -2,15 +2,15 @@ package simulation;
 
 
 import no.ffi.hlalib.datatypes.enumeratedData.StopFreezeReasonEnum8;
-
+import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import settings.SimSettings;
 import simulation.federate.Federate;
 import simulation.federate.PhysicalEntityUpdatedListener;
 import simulation.federate.TickListener;
-import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
-import unit.*;
+import unit.UnitHandler;
+import unit.UnitLogger;
 import util.SystemUtil;
 
 
