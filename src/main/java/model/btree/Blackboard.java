@@ -2,6 +2,7 @@ package model.btree;
 
 import unit.FollowerUnit;
 
+// TODO Generalise to T extends Unit
 public class Blackboard {
 
     private FollowerUnit followerUnit;

@@ -4,6 +4,10 @@ import com.badlogic.gdx.ai.btree.Task;
 
 public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree<Blackboard> {
 
+    public GenBehaviorTree(Task<Blackboard> task) {
+        super(task);
+    }
+
     public GenBehaviorTree(Task<Blackboard> task, Blackboard blackboard) {
         super(task);
         super.setObject(blackboard);

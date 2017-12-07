@@ -45,7 +45,7 @@ public class UnitHandler {
 
         String unitName = getUnitName(marking);
         markingUnitMap.put(unitName, unit);
-        logger.info("Unit " + marking + " was added with handle " + handle + ".");
+        logger.info("Unit added -- Marking: " + marking + ", Handle: " + handle);
         UnitLogger.register(unit);
 
         // Initiates all scheduled Followers with this unit as Target
@@ -53,12 +53,14 @@ public class UnitHandler {
             targetFollowerMap.get(unitName).forEach(UnitHandler::addUnit);
         }
 
+        // TODO Replace with "c" in marking
         if (unit instanceof FollowerUnit) {
-            UnitHandler.addControlledUnit(new ControlledUnit(unit));
+            UnitHandler.addControlledUnit(new ControlledUnit((FollowerUnit) unit));
         }
     }
 
     public static void addControlledUnit(ControlledUnit controlledUnit) {
+        logger.info("Controlled unit added -- Marking: " + controlledUnit.unit.getMarking());
         controlledUnits.add(controlledUnit);
     }
 
@@ -100,7 +102,7 @@ public class UnitHandler {
 
     public static void tickAllControlledUnits() {
         for (ControlledUnit controlledUnit : controlledUnits) {
-            controlledUnit.tick();
+            controlledUnit.sendUnitCommands();
         }
     }
 }

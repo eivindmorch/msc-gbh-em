@@ -6,27 +6,27 @@
     <Appenders>
 
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36} @%L - %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}&#9;@%L&#9;- %msg%n}"/>
         </Console>
 
         <File name="HlaLib" fileName="logs/hlalib/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
         </File>
 
         <File name="Training" filename="logs/training/training-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
         </File>
 
         <File name="Unit" fileName="logs/unit/unit-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
         </File>
 
         <File name="SimController" fileName="logs/simulation/simcontroller/simcontroller-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
         </File>
 
         <File name="SimEngine" fileName="logs/simulation/simengine/simengine-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
         </File>
 
     </Appenders>

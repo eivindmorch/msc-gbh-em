@@ -3,6 +3,7 @@ package unit;
 import data.DataRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.SystemMode;
 import util.SystemStatus;
 import util.Writer;
 
@@ -25,7 +26,7 @@ public class UnitLogger {
 
     public static void register(Unit unit) {
         unitDataWriters.add(new UnitDataWriter(unit));
-        logger.info("Unit " + unit.getMarking() + " was registered for data logging.");
+        logger.info("Unit registered for logging -- Marking: " + unit.getMarking());
     }
 
     public static void logAllRegisteredUnits() {
@@ -47,12 +48,25 @@ public class UnitLogger {
             for (DataRow dataRow : unit.getDataRows()) {
                 // TODO Check if terminology is correct
                 dataWriters.add(new Writer(
-                        SystemStatus.getDataFileStorageFolder() + unit.getMarking(),
+                        getDataFileStorageFolder() + unit.getMarking(),
                         dataRow.getDataSetName() + ".csv"
                 ));
             }
             writeMetaDataToFile();
             writeHeadersToFile();
+        }
+
+        private String getDataFileStorageFolder() {
+            StringBuilder stringBuilder = new StringBuilder("data/");
+            stringBuilder.append(SystemStatus.systemMode.name().toLowerCase()).append("/");
+            stringBuilder.append(SystemStatus.startTime).append("/");
+            if (SystemStatus.systemMode == SystemMode.TRAINING) {
+                stringBuilder
+                        .append("epoch").append(SystemStatus.currentTrainingEpoch).append("/")
+                        .append("scenario").append(SystemStatus.currentTrainingScenario).append("/")
+                        .append("chromosome").append(SystemStatus.currentTrainingChromosome).append("/");
+            }
+            return stringBuilder.toString();
         }
 
         void writeMetaDataToFile() {
