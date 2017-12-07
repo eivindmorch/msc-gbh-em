@@ -1,4 +1,4 @@
-package model.btree.task.follower;
+package model.btree.task.unit.followerunit;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;

@@ -3,11 +3,11 @@ package training;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import model.btree.GenBehaviorTree;
-import model.btree.task.follower.IsApproaching;
-import model.btree.task.follower.IsCloseEnough;
-import model.btree.task.follower.Move;
-import model.btree.task.follower.TurnToHeading;
-import model.btree.task.general.Wait;
+import model.btree.task.unit.followerunit.IsApproaching;
+import model.btree.task.unit.followerunit.IsCloseEnough;
+import model.btree.task.unit.followerunit.Move;
+import model.btree.task.unit.followerunit.TurnToHeading;
+import model.btree.task.unit.Wait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import settings.TrainingSettings;
@@ -67,6 +67,7 @@ public class Trainer {
 
     private void simulatePopulation() {
         for (int i = 0; i < TrainingSettings.populationSize; i++) {
+            // TODO
 //            setControlledUnitBtreeMap(population.get(i));
             setControlledUnitBtreeMap(testBtree());
             simController.startResume();

@@ -1,4 +1,4 @@
-package model.btree.task.general;
+package model.btree.task.unit;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
