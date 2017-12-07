@@ -22,7 +22,7 @@ public class ExampleLogger {
     }
 
     public void run() {
-        simController.resume();
+        simController.startResume();
     }
 
     public static void main(String[] args) {
