@@ -6,6 +6,8 @@ import settings.TrainingSettings;
 import simulation.SimController;
 import simulation.federate.Federate;
 import training.algorithms.Algorithm;
+import util.SystemMode;
+import util.SystemStatus;
 
 
 public class Trainer {
@@ -16,6 +18,8 @@ public class Trainer {
     private boolean running;
 
     public Trainer() {
+        SystemStatus.systemMode = SystemMode.TRAINING;
+
         try {
             algorithm = TrainingSettings.algorithm.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {

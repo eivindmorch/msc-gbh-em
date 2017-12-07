@@ -1,11 +1,15 @@
 import simulation.SimController;
 import simulation.federate.Federate;
+import util.SystemMode;
+import util.SystemStatus;
 
 public class ExampleLogger {
 
     SimController simController;
 
     public ExampleLogger() {
+        SystemStatus.systemMode = SystemMode.EXAMPLE_LOGGING;
+
         Federate federate = Federate.getInstance();
         federate.init();
 
@@ -14,10 +18,14 @@ public class ExampleLogger {
         federate.addTickListener(simController);
         federate.addPhysicalEntityUpdatedListener(simController);
 
-        simController.startSimEngine();
+//        simController.startSimEngine();
     }
 
     public void run() {
         simController.resume();
+    }
+
+    public static void main(String[] args) {
+        ExampleLogger exampleLogger = new ExampleLogger();
     }
 }

@@ -47,12 +47,7 @@ public class UnitLogger {
             for (DataRow dataRow : unit.getDataRows()) {
                 // TODO Check if terminology is correct
                 dataWriters.add(new Writer(
-                        "data/training/" +
-                                SystemStatus.startTime + "/" +
-                                "epoch" + SystemStatus.currentTrainingEpoch + "/" +
-                                "scenario" + SystemStatus.currentTrainingScenario + "/" +
-                                "chromosome" + SystemStatus.currentTrainingChromosome + "/" +
-                                unit.getMarking(),
+                        SystemStatus.getDataFileStorageFolder() + unit.getMarking(),
                         dataRow.getDataSetName() + ".csv"
                 ));
             }
