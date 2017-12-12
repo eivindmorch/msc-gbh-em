@@ -104,10 +104,12 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         while (running) {
             try {
                 // TODO Wait until SimEngine is connected to RTI federation
+                // TODO Synchronisation points (scenario loaded)
                 federateManager.requestTimeAdvanceAndBlock(federateManager.getTimestamp());
             } catch (InterruptedException | RTIexception saveInProgress) {
                 saveInProgress.printStackTrace();
             }
+            // TODO Possible to use simulated exercise time?
             tick(federateManager.getLogicalTime());
         }
     }

@@ -54,12 +54,6 @@ public class Move extends LeafTask<Blackboard> implements Named {
         return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), otherUnit.getRawDataRow().getLla()));
     }
 
-    private double normaliseDegForLlbml(double deg) {
-        deg = 360 - deg; // Convert from counter-clockwise to clockwise
-        deg += 90;       // Make north 0 degrees instead of east
-        return deg;
-    }
-
     @Override
     protected Task<Blackboard> copyTo(Task<Blackboard> task) {
         return task;
