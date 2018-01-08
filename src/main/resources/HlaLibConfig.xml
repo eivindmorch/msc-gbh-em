@@ -4,6 +4,7 @@
         <name>rlo</name>
         <fomFile>%MAK_VRLDIR%\bin64\RPR_FOM_v2.0_1516-2010.xml</fomFile>
         <fomModule>%MAK_VRLDIR%\bin64\LLBML_v2_6.xml</fomModule>
+        <fomModule>%MAK_VRLDIR%\bin64\RemoteControl.xml</fomModule>
         <nameReservationMode>NameReservationWithReuse</nameReservationMode>
         <libraries>
             <lib>%MAK_RTIDIR%\lib\java\libfedtime1516e64.dll</lib>
@@ -33,6 +34,7 @@
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.ChangeOrderedSpeed" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.StartResume" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.StopFreeze" sharing="Publish"/>
+            <interaction name="HLAinteractionRoot.CgfControl" sharing="Publish"/>
         </interactions>
 	</federate>
 </HlaLib>

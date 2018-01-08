@@ -3,13 +3,12 @@ package simulation.federate;
 import hla.rti1516e.exceptions.RTIexception;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
-import no.ffi.hlalib.datatypes.enumeratedData.StopFreezeReasonEnum8;
 import no.ffi.hlalib.datatypes.fixedRecordData.EntityIdentifierStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.FederateIdentifierStruct;
+import no.ffi.hlalib.datatypes.variantRecordData.CgfCommand;
 import no.ffi.hlalib.events.HlaObjectRemovedEvent;
 import no.ffi.hlalib.events.HlaObjectUpdatedEvent;
-import no.ffi.hlalib.interactions.HLAinteractionRoot.StartResumeInteraction;
-import no.ffi.hlalib.interactions.HLAinteractionRoot.StopFreezeInteraction;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.CgfControlInteraction;
 import no.ffi.hlalib.listeners.HlaObjectListener;
 import no.ffi.hlalib.listeners.HlaObjectUpdateListener;
 import no.ffi.hlalib.listeners.TimeManagementListener;
@@ -136,33 +135,18 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         }
     }
 
-    public void sendStartResumeInteraction() {
-        logger.info("Sending StartResumeInteraction");
-        StartResumeInteraction startResumeInteraction = new StartResumeInteraction();
+    // Commands: Play, Pause, Rewind, SetSpeed(HLAfloat64BE), LoadScenario(HLAASCIIstring), SaveScenario(HLAASCIIstring)
+    public void sendCgfControlInteraction(CgfCommand cgfCommand) {
+        CgfControlInteraction cgfControlInteraction = new CgfControlInteraction();
+        cgfControlInteraction.setCommand(cgfCommand);
 
         EntityIdentifierStruct receivingEntity = new EntityIdentifierStruct();
-        receivingEntity.setFederateIdentifier(new FederateIdentifierStruct(0xFFFF, 0xFFFF));
-        startResumeInteraction.setReceivingEntity(receivingEntity);
+        // 0xFFFF for all federates
+        receivingEntity.setFederateIdentifier(new FederateIdentifierStruct(0, 0));
+        cgfControlInteraction.setCommandRecipient(receivingEntity);
 
-        logger.debug("SENDING StartResumeInteraction with following data:");
-        logger.debug("Receiving entity: " + startResumeInteraction.getReceivingEntity().getFederateIdentifier());
-
-        startResumeInteraction.sendInteraction();
-    }
-
-    public void sendStopFreezeInteraction(StopFreezeReasonEnum8 reason) {
-        logger.info("Sending StopFreezeInteraction");
-        StopFreezeInteraction stopFreezeInteraction = new StopFreezeInteraction();
-
-        EntityIdentifierStruct receivingEntity = new EntityIdentifierStruct();
-        receivingEntity.setFederateIdentifier(new FederateIdentifierStruct(0xFFFF, 0xFFFF));
-        stopFreezeInteraction.setReceivingEntity(receivingEntity);
-        stopFreezeInteraction.setReason(reason);
-
-        logger.debug("SENDING StopFreezeInteraction with following data:");
-        logger.debug("Receiving entity: " + stopFreezeInteraction.getReceivingEntity().getFederateIdentifier());
-
-        stopFreezeInteraction.sendInteraction();
+        logger.debug("Sending CgfControlInteraction with command " + cgfCommand.getCommand().name() + ".");
+        cgfControlInteraction.sendInteraction();
     }
 
 }

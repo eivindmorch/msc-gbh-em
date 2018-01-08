@@ -19,11 +19,13 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     private final Logger logger = LoggerFactory.getLogger(SimController.class);
 
     public void startResume() {
-        Federate.getInstance().sendStartResumeInteraction();
+        // TODO
+//        Federate.getInstance().sendStartResumeInteraction();
     }
 
     public void freeze() {
-        Federate.getInstance().sendStopFreezeInteraction(StopFreezeReasonEnum8.Recess);
+        // TODO
+//        Federate.getInstance().sendStopFreezeInteraction(StopFreezeReasonEnum8.Recess);
     }
 
     @Override

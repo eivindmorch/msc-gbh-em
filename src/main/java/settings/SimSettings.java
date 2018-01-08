@@ -7,7 +7,6 @@ public class SimSettings {
 
     // SimEngine
     public static String vrfDirectory = System.getenv("MAK_VRFDIR64");
-    public static String scenario = "it3903/follow_time-contrained-earth.scnx";
 
     public static int siteId = 1;
     public static int applicationNumber = 3001;
@@ -18,7 +17,8 @@ public class SimSettings {
     public static boolean startInRunMode = false;
 
     public static String[] plugins = new String[] {
-            "LLBMLSimHLA1516e_VC10.dll"
+            "LLBMLSimHLA1516e_VC10.dll",
+            "VrfCgfControl.dll"
     };
 
     public static String[] fomModules = new String[] {
@@ -27,7 +27,8 @@ public class SimSettings {
             "MAK-LgrControl-1_evolved.xml",
             "MAK-VRFAggregate-1_evolved.xml",
             "MAK-DynamicTerrain-1_evolved.xml",
-            "LLBML_v2_6.xml"
+            "LLBML_v2_6.xml",
+            "RemoteControl.xml"
     };
 
     // General

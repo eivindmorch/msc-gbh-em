@@ -32,6 +32,13 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- CgfRemote -->
+        <dependency>
+            <groupId>no.ffi.hlalib.cgfremote</groupId>
+            <artifactId>CgfRemote</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

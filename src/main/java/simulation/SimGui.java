@@ -12,51 +12,43 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
-// Todo make SimEngine able to load and reload scenario after init
-public class SimEngine implements Runnable {
+public class SimGui implements Runnable {
 
-    private Logger logger = LoggerFactory.getLogger(SimEngine.class);
+    private Logger logger = LoggerFactory.getLogger(SimGui.class);
 
     private CountDownLatch latch;
 
-     public void start() {
-         latch = new CountDownLatch(1);
-         Thread thread = new Thread(this);
-         thread.start();
+    public void start() {
+        latch = new CountDownLatch(1);
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     @Override
     public void run() {
         String vrfBin64Dir = SimSettings.vrfDirectory + "/bin64/";
-        String executable = vrfBin64Dir + "vrfSimHLA1516e.exe";
+        String executable = vrfBin64Dir + "vrfGui.exe";
 
         // Options
-        String appNumber = "--appNumber " + SimSettings.applicationNumber;
+        String protocol = "--hla1516e";
+        String appNumber = "--appNumber " + (SimSettings.applicationNumber + 1);
         String siteId = "--siteId " + SimSettings.siteId;
         String execName = "--execName " + SimSettings.federationName;
         String fedFileName = "--fedFileName " + SimSettings.federationFile;
         String rprFomVersion = "--rprFomVersion " + SimSettings.rprFomVersion;
-        String timeManagement = SimSettings.useTimeManagement ? "--timeManagement" :  "";
-        String startInRunMode = SimSettings.startInRunMode ? "--startInRunMode" : "";
 
-        ArrayList<String> plugins = new ArrayList<>(SimSettings.plugins.length);
-        for (int i = 0; i < SimSettings.plugins.length; i++) {
-            plugins.add("--loadPlugin " + SimSettings.plugins[i]);
-        }
         ArrayList<String> fomModules = new ArrayList<>(SimSettings.fomModules.length);
         for (int i = 0; i < SimSettings.fomModules.length; i++) {
             fomModules.add("--fomModules " + SimSettings.fomModules[i]);
         }
 
         ArrayList<String> processParams = new ArrayList<>();
-        processParams.addAll(Arrays.asList(executable, appNumber, siteId, timeManagement, execName, fedFileName));
+        processParams.addAll(Arrays.asList(executable, protocol, appNumber, siteId, execName, fedFileName));
         processParams.addAll(fomModules);
         processParams.add(rprFomVersion);
-        processParams.addAll(plugins);
-        processParams.add(startInRunMode);
 
         try {
-            logger.info("Running simulation engine with parameters: " + SystemUtil.commandOptionsListToString(processParams));
+            logger.info("Running simulation GUI with parameters: " + SystemUtil.commandOptionsListToString(processParams));
             ProcessBuilder processBuilder = new ProcessBuilder(processParams);
             processBuilder.directory(new File(vrfBin64Dir));
             Process process = processBuilder.start();
@@ -79,7 +71,7 @@ public class SimEngine implements Runnable {
 
     public void destroy() {
         // TODO Does not destroy subprocesses
-        logger.info("Destroying simulation engine.");
+        logger.info("Destroying simulation GUI.");
         latch.countDown();
     }
 
