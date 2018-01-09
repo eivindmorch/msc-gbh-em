@@ -10,19 +10,14 @@ public class ExampleLogger {
     public ExampleLogger() {
         SystemStatus.systemMode = SystemMode.EXAMPLE_LOGGING;
 
-        Federate federate = Federate.getInstance();
-        federate.init();
+        Federate.getInstance().start();
 
-        simController = new SimController();
-
-        federate.addTickListener(simController);
-        federate.addPhysicalEntityUpdatedListener(simController);
-
-//        simController.startSimEngine();
+        Federate.getInstance().addTickListener(SimController.getInstance());
+        Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
     }
 
     public void run() {
-        simController.startResume();
+        simController.play();
     }
 
     public static void main(String[] args) {

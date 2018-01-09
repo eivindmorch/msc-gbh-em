@@ -11,20 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class UnitLogger {
+public abstract class UnitLogger {
 
     private static final Logger logger = LoggerFactory.getLogger(UnitLogger.class);
 
     private static volatile List<UnitDataWriter> unitDataWriters = new ArrayList<>();
 
-    public static void reset() {
-        for (UnitDataWriter unitDataWriter : unitDataWriters) {
-            unitDataWriter.closeWriters();
-        }
-        unitDataWriters = new ArrayList<>();
-    }
-
-    public static void register(Unit unit) {
+    static void register(Unit unit) {
         unitDataWriters.add(new UnitDataWriter(unit));
         logger.info("Unit registered for logging -- Marking: " + unit.getMarking());
     }
@@ -35,11 +28,17 @@ public class UnitLogger {
         }
     }
 
+    public static void reset() {
+        for (UnitDataWriter unitDataWriter : unitDataWriters) {
+            unitDataWriter.closeWriters();
+        }
+        unitDataWriters = new ArrayList<>();
+    }
+
     private static class UnitDataWriter {
 
         Unit unit;
         private List<Writer> dataWriters;
-
 
         UnitDataWriter(Unit unit) {
             this.unit = unit;

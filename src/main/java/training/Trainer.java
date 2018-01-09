@@ -11,6 +11,7 @@ import model.btree.task.unit.Wait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import settings.TrainingSettings;
+import simulation.Rti;
 import simulation.SimController;
 import simulation.federate.Federate;
 import training.algorithms.Algorithm;
@@ -21,6 +22,8 @@ import util.SystemStatus;
 
 import java.util.HashMap;
 
+import static util.SystemUtil.sleepSeconds;
+
 
 public class Trainer {
 
@@ -28,31 +31,30 @@ public class Trainer {
 
     private Algorithm algorithm;
     private boolean running;
-    private SimController simController;
 
     public Trainer() {
         SystemStatus.systemMode = SystemMode.TRAINING;
-
         try {
             algorithm = TrainingSettings.algorithm.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        Federate federate = Federate.getInstance();
-        federate.init();
+
+        Rti.getInstance().start();
+
+        sleepSeconds(5);
+        Federate.getInstance().start();
 
         setControlledUnitBtreeMap(testBtree());
 
-        simController = new SimController();
-
-        federate.addTickListener(simController);
-        federate.addPhysicalEntityUpdatedListener(simController);
+        Federate.getInstance().addTickListener(SimController.getInstance());
+        Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
 //        simController.startSimEngine();
     }
 
     public void run() {
-        simController.reset();
+        SimController.getInstance().rewind();
         algorithm.setup();
         while (running) {
             for (int i = 0; i < TrainingSettings.epochs; i++) {
@@ -70,8 +72,8 @@ public class Trainer {
             // TODO
 //            setControlledUnitBtreeMap(population.get(i));
             setControlledUnitBtreeMap(testBtree());
-            simController.startResume();
-            simController.reset();
+            SimController.getInstance().play();
+            SimController.getInstance().rewind();
         }
     }
 

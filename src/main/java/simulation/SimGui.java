@@ -31,7 +31,7 @@ public class SimGui implements Runnable {
 
         // Options
         String protocol = "--hla1516e";
-        String appNumber = "--appNumber " + (SimSettings.applicationNumber + 1);
+        String appNumber = "--appNumber " + (SimSettings.simGUIApplicationNumber);
         String siteId = "--siteId " + SimSettings.siteId;
         String execName = "--execName " + SimSettings.federationName;
         String fedFileName = "--fedFileName " + SimSettings.federationFile;

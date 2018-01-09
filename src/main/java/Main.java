@@ -6,81 +6,78 @@ import model.btree.task.unit.followerunit.IsApproaching;
 import model.btree.task.unit.followerunit.IsCloseEnough;
 import model.btree.task.unit.followerunit.Move;
 import model.btree.task.unit.Wait;
-import no.ffi.hlalib.datatypes.enumeratedData.CommandType;
-import no.ffi.hlalib.datatypes.variantRecordData.CgfCommand;
+import model.btree.task.unit.followerunit.TurnToHeading;
 import simulation.Rti;
 import simulation.SimController;
-import simulation.SimEngine;
-import simulation.SimGui;
 import simulation.federate.Federate;
+import unit.FollowerUnit;
+import unit.Unit;
 import util.Grapher;
+import util.SystemStatus;
+
+import java.util.HashMap;
 
 import static util.SystemUtil.sleepSeconds;
 
 public class Main {
 
     public static void main(String[] args) {
-        Main.run();
+        new Main();
     }
 
-    public static void run() {
-        Rti rti = new Rti();
-        rti.start();
+    public Main() {
+        run();
+    }
+
+    public void run() {
+        // Setup
+        Rti.getInstance().start();
 
         sleepSeconds(5);
-        Federate federate = Federate.getInstance();
-        federate.init();
+        Federate.getInstance().start();
 
-        SimController simController = new SimController();
+        setControlledUnitBtreeMap(testBtree());
 
-        federate.addTickListener(simController);
-        federate.addPhysicalEntityUpdatedListener(simController);
+        Federate.getInstance().addTickListener(SimController.getInstance());
+        Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
-        SimEngine simEngine = new SimEngine();
-        simEngine.start();
+        sleepSeconds(5);
+        SimController.getInstance().startSimEngine();
 
         sleepSeconds(10);
-        SimGui simGui = new SimGui();
-        simGui.start();
-
-        sleepSeconds(20);
-        CgfCommand scenarioCommand = new CgfCommand();
-        scenarioCommand.setCommand(CommandType.LoadScenario);
-        scenarioCommand.getLoadScenario().setString("C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-contrained-earth.scnx");
-        Federate.getInstance().sendCgfControlInteraction(scenarioCommand);
+        SimController.getInstance().startSimGui();
 
 
-        CgfCommand cmd = new CgfCommand();
+        // Tests
+        sleepSeconds(10);
+        SimController.getInstance().loadScenario(
+                "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-contrained-makland.scnx"
+        );
 
-        sleepSeconds(5);
-        cmd.setCommand(CommandType.Play);
-        Federate.getInstance().sendCgfControlInteraction(cmd);
+        sleepSeconds(10);
+        SimController.getInstance().play();
 
-        sleepSeconds(5);
-        cmd.setCommand(CommandType.Pause);
-        Federate.getInstance().sendCgfControlInteraction(cmd);
+        sleepSeconds(10);
+        SimController.getInstance().pause();
 
-        sleepSeconds(5);
-        cmd.setCommand(CommandType.Rewind);
-        Federate.getInstance().sendCgfControlInteraction(cmd);
+        sleepSeconds(10);
+        SimController.getInstance().rewind();
 
-        sleepSeconds(5);
-        cmd.setCommand(CommandType.Play);
-        Federate.getInstance().sendCgfControlInteraction(cmd);
+        sleepSeconds(10);
+        SimController.getInstance().play();
 
-        sleepSeconds(5);
-        cmd.setCommand(CommandType.Pause);
-        Federate.getInstance().sendCgfControlInteraction(cmd);
+        sleepSeconds(10);
+        SimController.getInstance().pause();
 
-        sleepSeconds(5);
-        CgfCommand scenarioCommand2 = new CgfCommand();
-        scenarioCommand2.setCommand(CommandType.LoadScenario);
-        scenarioCommand2.getLoadScenario().setString("C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-contrained-carrier.scnx");
-        Federate.getInstance().sendCgfControlInteraction(scenarioCommand2);
+        sleepSeconds(10);
+        SimController.getInstance().loadScenario(
+                "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-contrained-earth.scnx"
+        );
+        sleepSeconds(10);
+        SimController.getInstance().play();
 
 //        sleepSeconds(20);
 //        rti.destroy();
-
     }
 
     private void behaviorTreeTest() {
@@ -96,5 +93,19 @@ public class Main {
 
         Grapher grapher2 = new Grapher("Clone with insertion");
         grapher2.graph(btree.cloneAndInsertChild(sequence1, new Move(), 2));
+    }
+
+    public GenBehaviorTree testBtree() {
+        Sequence waitAndTurnToSequence = new Sequence(new Wait(), new TurnToHeading());
+        Selector shouldMoveSelector = new Selector(new IsApproaching(15), new IsCloseEnough(5));
+        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, waitAndTurnToSequence);
+        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new Move());
+        return new GenBehaviorTree(waitOrMoveSelector);
+    }
+
+    private void setControlledUnitBtreeMap(GenBehaviorTree btree) {
+        HashMap<Class<? extends Unit>, GenBehaviorTree> controlledUnitBtreeMap = new HashMap<>();
+        controlledUnitBtreeMap.put(FollowerUnit.class, btree);
+        SystemStatus.controlledUnitBtreeMap = controlledUnitBtreeMap;
     }
 }

@@ -3,6 +3,7 @@ package simulation.federate;
 import hla.rti1516e.exceptions.RTIexception;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
+import no.ffi.hlalib.datatypes.enumeratedData.CommandType;
 import no.ffi.hlalib.datatypes.fixedRecordData.EntityIdentifierStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.FederateIdentifierStruct;
 import no.ffi.hlalib.datatypes.variantRecordData.CgfCommand;
@@ -46,7 +47,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         return instance;
     }
 
-    public void init() {
+    public void start() {
         tickListeners = new ArrayList<>();
         physicalEntityUpdatedListeners = new ArrayList<>();
 
@@ -135,17 +136,44 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         }
     }
 
-    // Commands: Play, Pause, Rewind, SetSpeed(HLAfloat64BE), LoadScenario(HLAASCIIstring), SaveScenario(HLAASCIIstring)
-    public void sendCgfControlInteraction(CgfCommand cgfCommand) {
+    public void sendCgfPlayInteraction() {
+        CgfCommand cgfCommand = new CgfCommand();
+        cgfCommand.setCommand(CommandType.Play);
+        sendCgfControlInteraction(cgfCommand);
+    }
+
+    public void sendCgfPauseInteraction() {
+        CgfCommand cgfCommand = new CgfCommand();
+        cgfCommand.setCommand(CommandType.Pause);
+        sendCgfControlInteraction(cgfCommand);
+    }
+
+    public void sendCgfRewindInteraction() {
+        CgfCommand cgfCommand = new CgfCommand();
+        cgfCommand.setCommand(CommandType.Rewind);
+        sendCgfControlInteraction(cgfCommand);
+    }
+
+    public void sendCgfLoadScenarioInteraction(String scenarioPath) {
+        CgfCommand cgfCommand = new CgfCommand();
+        cgfCommand.setCommand(CommandType.LoadScenario);
+        cgfCommand.getLoadScenario().setString(scenarioPath);
+        sendCgfControlInteraction(cgfCommand);
+    }
+
+    // Possible commands:
+    // Play, Pause, Rewind, SetSpeed(HLAfloat64BE), LoadScenario(HLAASCIIstring), SaveScenario(HLAASCIIstring)
+    private void sendCgfControlInteraction(CgfCommand cgfCommand) {
         CgfControlInteraction cgfControlInteraction = new CgfControlInteraction();
         cgfControlInteraction.setCommand(cgfCommand);
 
         EntityIdentifierStruct receivingEntity = new EntityIdentifierStruct();
-        // 0xFFFF for all federates
+        // 0 = wildcard
+        // TODO Should use 0xFFFF
         receivingEntity.setFederateIdentifier(new FederateIdentifierStruct(0, 0));
         cgfControlInteraction.setCommandRecipient(receivingEntity);
 
-        logger.debug("Sending CgfControlInteraction with command " + cgfCommand.getCommand().name() + ".");
+        logger.info("Sending CgfControlInteraction with command " + cgfCommand.getCommand().name() + ".");
         cgfControlInteraction.sendInteraction();
     }
 

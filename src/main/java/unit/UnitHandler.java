@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-public class UnitHandler {
+public abstract class UnitHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UnitHandler.class);
 
@@ -44,22 +44,25 @@ public class UnitHandler {
         }
 
         String unitName = getUnitName(marking);
-        markingUnitMap.put(unitName, unit);
-        logger.info("Unit added -- Marking: " + marking + ", Handle: " + handle);
-        UnitLogger.register(unit);
+        if (markingUnitMap.get(unitName) == null) {
+            markingUnitMap.put(unitName, unit);
+            logger.info("Unit added -- Marking: " + marking + ", Handle: " + handle);
+            UnitLogger.register(unit);
 
-        // Initiates all scheduled Followers with this unit as Target
-        if (targetFollowerMap.get(unitName) != null) {
-            targetFollowerMap.get(unitName).forEach(UnitHandler::addUnit);
+            // Initiates all scheduled Followers with this unit as Target
+            if (targetFollowerMap.get(unitName) != null) {
+                targetFollowerMap.get(unitName).forEach(UnitHandler::addUnit);
+            }
+
+            // TODO Replace with "c" in marking
+            if (unit instanceof FollowerUnit) {
+                UnitHandler.addControlledUnit(new ControlledUnit((FollowerUnit) unit));
+            }
         }
 
-        // TODO Replace with "c" in marking
-        if (unit instanceof FollowerUnit) {
-            UnitHandler.addControlledUnit(new ControlledUnit((FollowerUnit) unit));
-        }
     }
 
-    public static void addControlledUnit(ControlledUnit controlledUnit) {
+    private static void addControlledUnit(ControlledUnit controlledUnit) {
         logger.info("Controlled unit added -- Marking: " + controlledUnit.unit.getMarking());
         controlledUnits.add(controlledUnit);
     }
@@ -97,12 +100,15 @@ public class UnitHandler {
         return markingUnitMap.size();
     }
 
-    public static void reset() {
-    }
-
     public static void tickAllControlledUnits() {
         for (ControlledUnit controlledUnit : controlledUnits) {
             controlledUnit.sendUnitCommands();
         }
+    }
+
+    public static void reset() {
+        targetFollowerMap = new HashMap<>();
+        markingUnitMap = new HashMap<>();
+        controlledUnits = new ArrayList<>();
     }
 }

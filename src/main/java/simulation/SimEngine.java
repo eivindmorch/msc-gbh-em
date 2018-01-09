@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
-// Todo make SimEngine able to load and reload scenario after init
 public class SimEngine implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(SimEngine.class);
@@ -31,7 +30,7 @@ public class SimEngine implements Runnable {
         String executable = vrfBin64Dir + "vrfSimHLA1516e.exe";
 
         // Options
-        String appNumber = "--appNumber " + SimSettings.applicationNumber;
+        String appNumber = "--appNumber " + SimSettings.simEngineApplicationNumber;
         String siteId = "--siteId " + SimSettings.siteId;
         String execName = "--execName " + SimSettings.federationName;
         String fedFileName = "--fedFileName " + SimSettings.federationFile;
@@ -77,6 +76,7 @@ public class SimEngine implements Runnable {
         }
     }
 
+    // TODO Ask Martin if we can extends CgfControl with Destroy command
     public void destroy() {
         // TODO Does not destroy subprocesses
         logger.info("Destroying simulation engine.");

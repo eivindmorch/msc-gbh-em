@@ -1,8 +1,8 @@
 package simulation;
 
 
-import no.ffi.hlalib.datatypes.enumeratedData.StopFreezeReasonEnum8;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import settings.SimSettings;
@@ -11,21 +11,26 @@ import simulation.federate.PhysicalEntityUpdatedListener;
 import simulation.federate.TickListener;
 import unit.UnitHandler;
 import unit.UnitLogger;
+import util.SystemStatus;
 import util.SystemUtil;
 
 
 public class SimController implements TickListener, PhysicalEntityUpdatedListener {
 
+    private static SimController instance;
+
     private final Logger logger = LoggerFactory.getLogger(SimController.class);
 
-    public void startResume() {
-        // TODO
-//        Federate.getInstance().sendStartResumeInteraction();
-    }
+    private SimEngine simEngine;
+    private SimGui simGui;
 
-    public void freeze() {
-        // TODO
-//        Federate.getInstance().sendStopFreezeInteraction(StopFreezeReasonEnum8.Recess);
+    private SimController() {}
+
+    public static SimController getInstance() {
+        if (instance == null) {
+            instance = new SimController();
+        }
+        return instance;
     }
 
     @Override
@@ -41,13 +46,36 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         UnitHandler.addUnit(physicalEntity);
     }
 
+    public void play() {
+        Federate.getInstance().sendCgfPlayInteraction();
+    }
+
+    public void pause() {
+        Federate.getInstance().sendCgfPauseInteraction();
+    }
+
+    public void rewind() {
+        UnitHandler.reset();
+        UnitLogger.reset();
+        Federate.getInstance().sendCgfPauseInteraction();
+        // TODO Delay here? Ask Rikke/Martin
+        Federate.getInstance().sendCgfRewindInteraction();
+    }
+
+    public void loadScenario(String scenarioPath) {
+        UnitHandler.reset();
+        UnitLogger.reset();
+        Federate.getInstance().sendCgfLoadScenarioInteraction(scenarioPath);
+        SystemStatus.currentScenario = FilenameUtils.getBaseName(scenarioPath);
+    }
+
     public void startSimEngine() {
-        SimEngine simEngine = new SimEngine();
+        simEngine = new SimEngine();
         simEngine.start();
     }
 
-    public void reset() {
-        UnitHandler.reset();
-        UnitLogger.reset();
+    public void startSimGui() {
+        simGui = new SimGui();
+        simGui.start();
     }
 }
