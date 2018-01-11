@@ -1,4 +1,6 @@
-package data;
+package data.rows;
+
+import java.util.List;
 
 public abstract class DataRow {
 
@@ -13,4 +15,6 @@ public abstract class DataRow {
     public abstract String getHeader();
 
     public abstract String getValuesAsCsvString();
+
+    public abstract void setValues(List<String> csvElements);
 }

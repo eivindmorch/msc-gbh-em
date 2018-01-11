@@ -5,16 +5,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static settings.SystemSettings.filePathRoot;
+import static settings.SystemSettings.resourcesFilePath;
 
 
 public class Writer {
 
     private BufferedWriter bufferedWriter;
 
-    public Writer(String resourceFolderPath, String fileName) {
+    public Writer(String intraResourcesFolderPath, String fileName) {
         try {
-            String absoluteFolderPath = filePathRoot + resourceFolderPath;
+            String absoluteFolderPath = resourcesFilePath + intraResourcesFolderPath;
             new File(absoluteFolderPath).mkdirs();
 
             bufferedWriter = new BufferedWriter(new FileWriter((absoluteFolderPath + "/" + fileName)));

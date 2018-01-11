@@ -1,6 +1,6 @@
 package unit;
 
-import data.DataRow;
+import data.rows.DataRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.SystemMode;
@@ -47,7 +47,7 @@ public abstract class UnitLogger {
             for (DataRow dataRow : unit.getDataRows()) {
                 // TODO Check if terminology is correct
                 dataWriters.add(new Writer(
-                        getDataFileStorageFolder() + unit.getMarking(),
+                        getDataFileIntraResourcesFolderPath() + unit.getMarking(),
                         dataRow.getDataSetName() + ".csv"
                 ));
             }
@@ -55,7 +55,8 @@ public abstract class UnitLogger {
             writeHeadersToFile();
         }
 
-        private String getDataFileStorageFolder() {
+        // TODO Move to util method
+        private String getDataFileIntraResourcesFolderPath() {
             StringBuilder stringBuilder = new StringBuilder("data/");
             stringBuilder.append(SystemStatus.systemMode.name().toLowerCase()).append("/");
             stringBuilder.append(SystemStatus.startTime).append("/");

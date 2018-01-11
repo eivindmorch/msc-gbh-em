@@ -23,6 +23,7 @@ public abstract class UnitHandler {
         String marking = physicalEntity.getMarking().getMarking();
         ObjectInstanceHandle handle = physicalEntity.getObjectInstanceHandle();
 
+        // TODO Move method to experiment-dependent package
         Unit unit;
         if (isTarget(marking)) {
             unit = new Unit(marking, handle);
@@ -55,11 +56,11 @@ public abstract class UnitHandler {
             }
 
             // TODO Replace with "c" in marking
+            // TODO Fix checking of unit type
             if (unit instanceof FollowerUnit) {
-                UnitHandler.addControlledUnit(new ControlledUnit((FollowerUnit) unit));
+                UnitHandler.addControlledUnit(new ControlledUnit<>((FollowerUnit) unit));
             }
         }
-
     }
 
     private static void addControlledUnit(ControlledUnit controlledUnit) {
@@ -77,10 +78,12 @@ public abstract class UnitHandler {
         }
     }
 
+    // TODO Move method to experiment-dependent package
     private static boolean isFollower(String marking) {
         return marking.startsWith("F");
     }
 
+    // TODO Move method to experiment-dependent package
     private static boolean isTarget(String marking) {
         return marking.startsWith("T");
     }
@@ -92,6 +95,7 @@ public abstract class UnitHandler {
         return marking;
     }
 
+    // TODO Move method to experiment-dependent package
     private static String getTargetNameFromFollowerMarking(String marking) {
         return marking.substring(marking.indexOf('-') + 1, marking.length());
     }

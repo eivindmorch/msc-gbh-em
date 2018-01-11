@@ -1,8 +1,8 @@
 package unit;
 
-import data.FollowerEvaluationDataRow;
-import data.FollowerProcessedDataRow;
-import data.RawDataRow;
+import data.rows.FollowerEvaluationDataRow;
+import data.rows.FollowerProcessedDataRow;
+import data.rows.RawDataRow;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;

@@ -11,13 +11,13 @@ import util.Geometer;
 import util.LlbmlUtil;
 import util.exceptions.IllegalArgumentCombinationException;
 
-public class TurnToHeading extends LeafTask<Blackboard> implements Named {
+public class TurnToHeading extends LeafTask<Blackboard<FollowerUnit>> implements Named {
 
     private final String name = "Turn to heading";
 
     @Override
     public Status execute() {
-        sendLLBMLTurnToHeadingTask(getObject().getFollowerUnit().getMarking());
+        sendLLBMLTurnToHeadingTask(getObject().getUnit().getMarking());
         return Status.SUCCEEDED;
     }
 
@@ -42,15 +42,15 @@ public class TurnToHeading extends LeafTask<Blackboard> implements Named {
     }
 
     private double calculateHeadingAngle() throws IllegalArgumentCombinationException {
-        FollowerUnit unit = getObject().getFollowerUnit();
-        Unit otherUnit = getObject().getFollowerUnit().getTarget();
+        FollowerUnit unit = getObject().getUnit();
+        Unit otherUnit = getObject().getUnit().getTarget();
 
         return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), otherUnit.getRawDataRow().getLla()));
     }
 
     @Override
-    protected Task<Blackboard> copyTo(Task<Blackboard> task) {
-        return null;
+    protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
+        return task;
     }
 
     @Override

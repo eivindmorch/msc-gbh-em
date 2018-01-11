@@ -38,7 +38,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         UnitHandler.updateUnits(timestamp);
         UnitLogger.logAllRegisteredUnits();
         UnitHandler.tickAllControlledUnits();
-        SystemUtil.sleepMilliseconds(SimSettings.simulationTickDelayInMilliseconds);
+//        SystemUtil.sleepMilliseconds(SimSettings.simulationTickDelayInMilliseconds);
     }
 
     @Override
@@ -47,14 +47,17 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     }
 
     public void play() {
+        logger.info("Playing scenario.");
         Federate.getInstance().sendCgfPlayInteraction();
     }
 
     public void pause() {
+        logger.info("Pausing scenario.");
         Federate.getInstance().sendCgfPauseInteraction();
     }
 
     public void rewind() {
+        logger.info("Rewinding scenario.");
         UnitHandler.reset();
         UnitLogger.reset();
         Federate.getInstance().sendCgfPauseInteraction();
@@ -63,6 +66,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     }
 
     public void loadScenario(String scenarioPath) {
+        logger.info("Loading scenario " + scenarioPath + ".");
         UnitHandler.reset();
         UnitLogger.reset();
         Federate.getInstance().sendCgfLoadScenarioInteraction(scenarioPath);
@@ -70,11 +74,13 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     }
 
     public void startSimEngine() {
+        logger.info("Starting SimEngine.");
         simEngine = new SimEngine();
         simEngine.start();
     }
 
     public void startSimGui() {
+        logger.info("Starting SimGui.");
         simGui = new SimGui();
         simGui.start();
     }

@@ -12,7 +12,7 @@ public class Wait extends LeafTask<Blackboard> implements Named {
 
     @Override
     public Status execute() {
-        sendLLBMLWaitTask(getObject().getFollowerUnit().getMarking());
+        sendLLBMLWaitTask(getObject().getUnit().getMarking());
         return Status.SUCCEEDED;
     }
 

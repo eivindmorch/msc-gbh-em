@@ -4,8 +4,9 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.btree.Blackboard;
 import model.btree.task.Named;
+import unit.FollowerUnit;
 
-public class IsCloseEnough extends LeafTask<Blackboard> implements Named {
+public class IsCloseEnough extends LeafTask<Blackboard<FollowerUnit>> implements Named {
 
     private final String name = "Is close enough?";
     private double distanceLimit;
@@ -20,7 +21,7 @@ public class IsCloseEnough extends LeafTask<Blackboard> implements Named {
 
     @Override
     public Status execute() {
-        double distance = getObject().getFollowerUnit().getFollowerProcessedDataRow().getDistanceToTarget();
+        double distance = getObject().getUnit().getFollowerProcessedDataRow().getDistanceToTarget();
         if (distance < distanceLimit) {
             return Status.SUCCEEDED;
         }
@@ -28,8 +29,8 @@ public class IsCloseEnough extends LeafTask<Blackboard> implements Named {
     }
 
     @Override
-    protected Task<Blackboard> copyTo(Task<Blackboard> task) {
-        return null;
+    protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
+        return task;
     }
 
     @Override

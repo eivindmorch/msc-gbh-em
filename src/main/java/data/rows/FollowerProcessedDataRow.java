@@ -1,4 +1,4 @@
-package data;
+package data.rows;
 
 import util.Geometer;
 import util.exceptions.IllegalArgumentCombinationException;
@@ -19,6 +19,11 @@ public class FollowerProcessedDataRow extends DataRow {
         this.timestamp = Double.valueOf(csvElements.get(0));
         this.distanceToTarget = Double.valueOf(csvElements.get(1));
         this.targetMovementAngleRelativeToFollowerPosition = Double.valueOf(csvElements.get(2));
+    }
+
+    @Override
+    public void setValues(List<String> csvElements) {
+
     }
 
     public void setValues(double timestamp, RawDataRow rawDataRow1, RawDataRow rawDataRow) {

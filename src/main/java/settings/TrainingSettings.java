@@ -10,5 +10,5 @@ public abstract class TrainingSettings {
     public static final Class<? extends Algorithm> algorithm = NSGA2.class;
 
     public static final int epochs = 10;
-    public static final int populationSize = 100;
+
 }

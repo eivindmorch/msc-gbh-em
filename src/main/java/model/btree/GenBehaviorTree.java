@@ -1,34 +1,64 @@
 package model.btree;
 
 import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.branch.Selector;
+import com.badlogic.gdx.ai.btree.branch.Sequence;
+import model.btree.task.unit.Wait;
+import model.btree.task.unit.followerunit.IsApproaching;
+import model.btree.task.unit.followerunit.IsCloseEnough;
+import model.btree.task.unit.followerunit.Move;
+import model.btree.task.unit.followerunit.TurnToHeading;
+import unit.Unit;
 
-public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree<Blackboard> {
+public class GenBehaviorTree<T extends Unit> extends com.badlogic.gdx.ai.btree.BehaviorTree<Blackboard<T>> {
 
-    public GenBehaviorTree(Task<Blackboard> task) {
-        super(task);
-    }
-
-    public GenBehaviorTree(Task<Blackboard> task, Blackboard blackboard) {
+    public GenBehaviorTree(Task<Blackboard<T>> task, Blackboard<T> blackboard) {
         super(task);
         super.setObject(blackboard);
     }
 
+    public static GenBehaviorTree generateRandomTree() {
+        return generateTestTree();
+    }
+
+    public static GenBehaviorTree generateTestTree() {
+        // TODO Replace with randomisation
+        Sequence waitAndTurnToSequence = new Sequence(new Wait(), new TurnToHeading());
+        Selector shouldMoveSelector = new Selector(new IsApproaching(15), new IsCloseEnough(5));
+        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, waitAndTurnToSequence);
+        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new Move());
+        return new GenBehaviorTree(waitOrMoveSelector, new Blackboard<>(null));
+    }
+
     @Override
     public GenBehaviorTree clone() {
-        Task<Blackboard> root = this.getChild(0);
-        Task<Blackboard> newRoot =  cloneBehaviorTreeAndInsertSubtree(root, null, null, 0);
+        Task<Blackboard<T>> root = this.getChild(0);
+        Task<Blackboard<T>> newRoot =
+                cloneBehaviorTreeAndInsertSubtree(root, null, null, 0);
         return new GenBehaviorTree(newRoot, this.getObject().clone());
     }
 
-    public GenBehaviorTree cloneAndInsertChild(Task<Blackboard> insertParent, Task<Blackboard> insertChild, int insertIndex) {
-        Task<Blackboard> root = this.getChild(0);
-        Task<Blackboard> newRoot =  cloneBehaviorTreeAndInsertSubtree(root, insertParent, insertChild, insertIndex);
+    public GenBehaviorTree cloneAndInsertChild(
+                Task<Blackboard<T>> insertParent,
+                Task<Blackboard<T>> insertChild, int insertIndex
+        ) {
+        Task<Blackboard<T>> root = this.getChild(0);
+        Task<Blackboard<T>> newRoot =
+                cloneBehaviorTreeAndInsertSubtree(root, insertParent, insertChild, insertIndex);
         return new GenBehaviorTree(newRoot, this.getObject().clone());
     }
 
-    private Task<Blackboard> cloneBehaviorTreeAndInsertSubtree(
-            Task<Blackboard> root, Task<Blackboard> insertParent, Task<Blackboard> subtreeRoot, int insertIndex) {
-        Task<Blackboard> newRoot = instantiateTaskObject(root);
+    // TODO Mutations:
+    // cloneAndRemoveChild
+    // cloneAndFlipTwoChildren
+
+    private Task<Blackboard<T>> cloneBehaviorTreeAndInsertSubtree(
+                Task<Blackboard<T>> root,
+                Task<Blackboard<T>> insertParent,
+                Task<Blackboard<T>> subtreeRoot,
+                int insertIndex
+        ) {
+        Task<Blackboard<T>> newRoot = instantiateTaskObject(root);
         if (insertIndex < 0 || (root == insertParent && insertIndex > root.getChildCount())) {
             throw new IllegalArgumentException("Invalid insertion index: " + insertIndex);
         }
@@ -36,7 +66,7 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree<Blac
             if (root == insertParent && i == insertIndex) {
                 newRoot.addChild(subtreeRoot);
             }
-            Task<Blackboard> child =
+            Task<Blackboard<T>> child =
                     cloneBehaviorTreeAndInsertSubtree(root.getChild(i), insertParent, subtreeRoot, insertIndex);
             newRoot.addChild(child);
         }
@@ -46,8 +76,8 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree<Blac
         return newRoot;
     }
 
-    private Task<Blackboard> instantiateTaskObject(Task<Blackboard> task) {
-        Task<Blackboard> newTask = null;
+    private Task<Blackboard<T>> instantiateTaskObject(Task<Blackboard<T>> task) {
+        Task<Blackboard<T>> newTask = null;
         try {
             //noinspection unchecked
             newTask = task.getClass().newInstance();

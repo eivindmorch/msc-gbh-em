@@ -1,7 +1,12 @@
 package training.algorithms;
 
+import training.Trainer;
 
-public class NSGA2 implements Algorithm {
+public class NSGA2 extends Algorithm {
+
+    public NSGA2(Trainer trainer) {
+        super(trainer);
+    }
 
     @Override
     public void setup() {
@@ -10,14 +15,11 @@ public class NSGA2 implements Algorithm {
 
     @Override
     public void epoch() {
-//        evaluateFitness();
+
     }
 
     @Override
     public void cleanup() {
 
-    }
-
-    private void evaluate() {
     }
 }

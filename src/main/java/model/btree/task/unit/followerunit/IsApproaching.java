@@ -4,8 +4,9 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.btree.Blackboard;
 import model.btree.task.Named;
+import unit.FollowerUnit;
 
-public class IsApproaching extends LeafTask<Blackboard> implements Named {
+public class IsApproaching extends LeafTask<Blackboard<FollowerUnit>> implements Named {
 
     private final String name = "Is approaching?";
     private double degreeLimit;
@@ -21,7 +22,7 @@ public class IsApproaching extends LeafTask<Blackboard> implements Named {
     @Override
     public Status execute() {
         Double otherUnitMovementAngleRelativeToMyPosition =
-                getObject().getFollowerUnit().getFollowerProcessedDataRow().getTargetMovementAngleRelativeToFollowerPosition();
+                getObject().getUnit().getFollowerProcessedDataRow().getTargetMovementAngleRelativeToFollowerPosition();
 
         if (otherUnitMovementAngleRelativeToMyPosition == null) {
             return Status.FAILED;
@@ -33,7 +34,7 @@ public class IsApproaching extends LeafTask<Blackboard> implements Named {
     }
 
     @Override
-    protected Task<Blackboard> copyTo(Task<Blackboard> task) {
+    protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
         return task;
     }
 

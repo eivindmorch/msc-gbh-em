@@ -2,25 +2,37 @@ package unit;
 
 import model.btree.Blackboard;
 import model.btree.GenBehaviorTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import util.SystemStatus;
 
-class ControlledUnit {
+import java.util.HashMap;
 
-    Unit unit;
-    GenBehaviorTree btree;
+public class ControlledUnit<T extends Unit> {
 
-    // TODO Generalise
-    ControlledUnit(FollowerUnit followerUnit) {
-        this.unit = followerUnit;
-        SystemStatus.controlledUnitBtreeMap.get(unit.getClass()).setObject(new Blackboard(followerUnit));
-        this.btree = SystemStatus.controlledUnitBtreeMap.get(unit.getClass()).clone();
+    private final Logger logger = LoggerFactory.getLogger(ControlledUnit.class);
+
+    T unit;
+    private GenBehaviorTree btree;
+
+    ControlledUnit(T unit) {
+        this.unit = unit;
+        this.btree = ControlledUnit.controlledUnitBtreeMap.get(unit.getClass()).clone();
+        this.btree.setObject(new Blackboard<>(unit));
     }
 
     void sendUnitCommands() {
         if (btree == null) {
-            System.out.println("null tree");
+            logger.error("BehaviorTree is null!");
             return;
         }
         btree.step();
+    }
+
+    private static HashMap<Class<? extends Unit>, GenBehaviorTree> controlledUnitBtreeMap = new HashMap<>();
+    public static void setControlledUnitBtreeMap(Class<? extends Unit> unitClass, GenBehaviorTree btree) {
+        HashMap<Class<? extends Unit>, GenBehaviorTree> controlledUnitBtreeMap = new HashMap<>();
+        controlledUnitBtreeMap.put(unitClass, btree);
+        ControlledUnit.controlledUnitBtreeMap = controlledUnitBtreeMap;
     }
 }

@@ -1,5 +1,6 @@
 package training;
 
+//TODO Rename to FitnessFunctions?
 public class FitnessEvaluator {
 
     static double distanceFitness(double exampleDistance, double iterationDistance, double exponent) {

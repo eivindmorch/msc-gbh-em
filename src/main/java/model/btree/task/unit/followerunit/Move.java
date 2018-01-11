@@ -13,7 +13,7 @@ import util.Geometer;
 import util.exceptions.IllegalArgumentCombinationException;
 
 
-public class Move extends LeafTask<Blackboard> implements Named {
+public class Move extends LeafTask<Blackboard<FollowerUnit>> implements Named {
 
     private final String name = "Move";
 
@@ -33,7 +33,7 @@ public class Move extends LeafTask<Blackboard> implements Named {
             return;
         }
 
-        Lla currentLla = getObject().getFollowerUnit().getRawDataRow().getLla();
+        Lla currentLla = getObject().getUnit().getRawDataRow().getLla();
         Lla destinationLla = Geometer.getDestinationPointFromAzimuthAngle(currentLla, deg, 100);
 
         GeodeticLocationStruct geoLocationStruct = new GeodeticLocationStruct(
@@ -43,19 +43,19 @@ public class Move extends LeafTask<Blackboard> implements Named {
         );
 
         interaction.setDestination(geoLocationStruct);
-        interaction.setTaskee(getObject().getFollowerUnit().getMarking());
+        interaction.setTaskee(getObject().getUnit().getMarking());
         interaction.sendInteraction();
     }
 
     private double calculateMovementAngle() throws IllegalArgumentCombinationException {
-        FollowerUnit unit = getObject().getFollowerUnit();
-        Unit otherUnit = getObject().getFollowerUnit().getTarget();
+        FollowerUnit unit = getObject().getUnit();
+        Unit otherUnit = getObject().getUnit().getTarget();
 
         return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), otherUnit.getRawDataRow().getLla()));
     }
 
     @Override
-    protected Task<Blackboard> copyTo(Task<Blackboard> task) {
+    protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
         return task;
     }
 

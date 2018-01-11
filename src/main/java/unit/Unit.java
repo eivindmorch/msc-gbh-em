@@ -1,7 +1,7 @@
 package unit;
 
-import data.DataRow;
-import data.RawDataRow;
+import data.rows.DataRow;
+import data.rows.RawDataRow;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;

@@ -1,4 +1,4 @@
-package data;
+package data.rows;
 
 import util.Geometer;
 
@@ -13,7 +13,8 @@ public class FollowerEvaluationDataRow extends DataRow {
     public FollowerEvaluationDataRow() {
     }
 
-    public FollowerEvaluationDataRow(List<String> csvElements) {
+    @Override
+    public void setValues(List<String> csvElements) {
         this.timestamp = Double.valueOf(csvElements.get(0));
         this.distanceToTarget = Double.valueOf(csvElements.get(1));
     }
@@ -30,12 +31,12 @@ public class FollowerEvaluationDataRow extends DataRow {
 
     @Override
     public String getHeader() {
-        return "distance to target";
+        return "timestamp, distance to target";
     }
 
     @Override
     public String getValuesAsCsvString() {
-        return String.valueOf(distanceToTarget);
+        return timestamp + ", " + distanceToTarget;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package data;
+package data.rows;
 
 import model.Lla;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
@@ -6,6 +6,8 @@ import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import util.Geometer;
 import util.exceptions.IllegalArgumentCombinationException;
+
+import java.util.List;
 
 public class RawDataRow extends DataRow {
 
@@ -19,6 +21,11 @@ public class RawDataRow extends DataRow {
 
     public RawDataRow(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
         setValues(timestamp, position, velocity);
+    }
+
+    @Override
+    public void setValues(List<String> csvElements) {
+
     }
 
     public void setValues(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {

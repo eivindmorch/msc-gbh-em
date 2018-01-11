@@ -1,21 +1,21 @@
 package model.btree;
 
-import unit.FollowerUnit;
+import unit.Unit;
 
-// TODO Generalise to T extends Unit
-public class Blackboard {
+public class Blackboard<T extends Unit> {
 
-    private FollowerUnit followerUnit;
+    private T unit;
 
-    public Blackboard(FollowerUnit followerUnit) {
-        this.followerUnit = followerUnit;
+    public Blackboard(T unit) {
+        this.unit = unit;
     }
 
-    public FollowerUnit getFollowerUnit() {
-        return followerUnit;
+    public T getUnit() {
+        return unit;
     }
 
+    @Override
     public Blackboard clone() {
-        return new Blackboard(this.followerUnit);
+        return new Blackboard<>(this.unit);
     }
 }

@@ -1,3 +1,5 @@
+import com.badlogic.gdx.ai.btree.LeafTask;
+import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import model.btree.Blackboard;
@@ -6,16 +8,13 @@ import model.btree.task.unit.followerunit.IsApproaching;
 import model.btree.task.unit.followerunit.IsCloseEnough;
 import model.btree.task.unit.followerunit.Move;
 import model.btree.task.unit.Wait;
-import model.btree.task.unit.followerunit.TurnToHeading;
 import simulation.Rti;
 import simulation.SimController;
 import simulation.federate.Federate;
+import unit.ControlledUnit;
 import unit.FollowerUnit;
 import unit.Unit;
 import util.Grapher;
-import util.SystemStatus;
-
-import java.util.HashMap;
 
 import static util.SystemUtil.sleepSeconds;
 
@@ -36,7 +35,7 @@ public class Main {
         sleepSeconds(5);
         Federate.getInstance().start();
 
-        setControlledUnitBtreeMap(testBtree());
+        ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, GenBehaviorTree.generateTestTree());
 
         Federate.getInstance().addTickListener(SimController.getInstance());
         Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
@@ -51,11 +50,18 @@ public class Main {
         // Tests
         sleepSeconds(10);
         SimController.getInstance().loadScenario(
-                "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-contrained-makland.scnx"
+                "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-contrained-earth.scnx"
         );
 
         sleepSeconds(10);
         SimController.getInstance().play();
+//        while (true) {
+//            sleepSeconds(10);
+//            SimController.getInstance().rewind();
+//            sleepSeconds(2);
+//            SimController.getInstance().play();
+//        }
+
 
         sleepSeconds(10);
         SimController.getInstance().pause();
@@ -76,15 +82,17 @@ public class Main {
         sleepSeconds(10);
         SimController.getInstance().play();
 
+
+
 //        sleepSeconds(20);
 //        rti.destroy();
     }
 
     private void behaviorTreeTest() {
-        Selector<Blackboard> selector1 = new Selector(new IsApproaching(), new IsCloseEnough());
-        Sequence<Blackboard> sequence1 = new Sequence(selector1, new Wait());
-        Sequence<Blackboard> sequence2 = new Sequence(sequence1, new Move());
-        GenBehaviorTree btree = new GenBehaviorTree(sequence2, new Blackboard(null));
+        Selector<Blackboard<FollowerUnit>> selector1 = new Selector<>(new IsApproaching(), new IsCloseEnough());
+        Sequence<Blackboard<? extends Unit>> sequence1 = new Sequence(selector1, new Wait());
+        Sequence<Blackboard<? extends Unit>> sequence2 = new Sequence(sequence1, new Move());
+        GenBehaviorTree btree = new GenBehaviorTree(sequence2, new Blackboard<FollowerUnit>(null));
         Grapher grapher = new Grapher("Original");
         grapher.graph(btree);
 
@@ -95,17 +103,4 @@ public class Main {
         grapher2.graph(btree.cloneAndInsertChild(sequence1, new Move(), 2));
     }
 
-    public GenBehaviorTree testBtree() {
-        Sequence waitAndTurnToSequence = new Sequence(new Wait(), new TurnToHeading());
-        Selector shouldMoveSelector = new Selector(new IsApproaching(15), new IsCloseEnough(5));
-        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, waitAndTurnToSequence);
-        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new Move());
-        return new GenBehaviorTree(waitOrMoveSelector);
-    }
-
-    private void setControlledUnitBtreeMap(GenBehaviorTree btree) {
-        HashMap<Class<? extends Unit>, GenBehaviorTree> controlledUnitBtreeMap = new HashMap<>();
-        controlledUnitBtreeMap.put(FollowerUnit.class, btree);
-        SystemStatus.controlledUnitBtreeMap = controlledUnitBtreeMap;
-    }
 }
