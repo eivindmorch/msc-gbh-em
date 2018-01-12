@@ -3,10 +3,10 @@ package model.btree.task.unit;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.btree.Blackboard;
-import model.btree.task.Named;
+import model.btree.task.NamedTask;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
-public class Wait extends LeafTask<Blackboard> implements Named {
+public class Wait extends LeafTask<Blackboard> implements NamedTask {
 
     private final String name = "Wait";
 

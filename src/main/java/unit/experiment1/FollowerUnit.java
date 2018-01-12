@@ -1,21 +1,21 @@
-package unit;
+package unit.experiment1;
 
-import data.rows.FollowerEvaluationDataRow;
-import data.rows.FollowerProcessedDataRow;
-import data.rows.RawDataRow;
+import data.rows.experiment1.FollowerEvaluationDataRow;
+import data.rows.experiment1.FollowerProcessedDataRow;
+import data.rows.experiment1.RawDataRow;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 
 
-public class FollowerUnit extends Unit {
+public class FollowerUnit extends Experiment1Unit {
 
     private FollowerProcessedDataRow followerProcessedDataRow;
     private FollowerEvaluationDataRow followerEvaluationDataRow;
-    private Unit target;
+    private Experiment1Unit target;
 
-    public FollowerUnit(ObjectInstanceHandle handle, String marking, Unit target) {
+    public FollowerUnit(String marking, ObjectInstanceHandle handle, Experiment1Unit target) {
         super(marking, handle);
         this.target = target;
 
@@ -28,32 +28,38 @@ public class FollowerUnit extends Unit {
 
     @Override
     public void updateData(double timestamp) {
-        super.updateData(timestamp);
+        PhysicalEntityObject targetPhysicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(target.getHandle());
+        updateRawData(timestamp);
+        updateProcessedData(timestamp, targetPhysicalEntity);
+        updateEvaluationData(timestamp, targetPhysicalEntity);
+    }
 
-        PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(target.getHandle());
-        updateProcessedData(timestamp, physicalEntity);
-        updateEvaluationData(timestamp, physicalEntity);
+    private void updateRawData(double timestamp) {
+        PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(getHandle());
+        WorldLocationStruct location = physicalEntity.getSpatial().getDeadReckonedLocation();
+        VelocityVectorStruct velocity = physicalEntity.getSpatial().getDeadReckonedVelocity();
+        getRawDataRow().setValues(timestamp, location, velocity);
     }
 
     private void updateProcessedData(double timestamp, PhysicalEntityObject targetPhysicalEntity) {
         WorldLocationStruct targetLocation = targetPhysicalEntity.getSpatial().getDeadReckonedLocation();
         VelocityVectorStruct targetVelocity = targetPhysicalEntity.getSpatial().getDeadReckonedVelocity();
         RawDataRow targetRawDataRow = new RawDataRow(timestamp, targetLocation, targetVelocity);
-        followerProcessedDataRow.setValues(timestamp, this.getRawDataRow(), targetRawDataRow);
+        followerProcessedDataRow.setValues(timestamp, getRawDataRow(), targetRawDataRow);
     }
 
     private void updateEvaluationData(double timestamp, PhysicalEntityObject targetPhysicalEntity) {
         WorldLocationStruct targetLocation = targetPhysicalEntity.getSpatial().getDeadReckonedLocation();
         VelocityVectorStruct targetVelocity = targetPhysicalEntity.getSpatial().getDeadReckonedVelocity();
         RawDataRow targetRawDataRow = new RawDataRow(timestamp, targetLocation, targetVelocity);
-        followerEvaluationDataRow.setValues(timestamp, this.getRawDataRow(), targetRawDataRow);
+        followerEvaluationDataRow.setValues(timestamp, getRawDataRow(), targetRawDataRow);
     }
 
     public FollowerProcessedDataRow getFollowerProcessedDataRow() {
         return followerProcessedDataRow;
     }
 
-    public Unit getTarget() {
+    public Experiment1Unit getTarget() {
         return target;
     }
 }

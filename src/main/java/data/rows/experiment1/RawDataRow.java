@@ -1,5 +1,6 @@
-package data.rows;
+package data.rows.experiment1;
 
+import data.rows.DataRow;
 import model.Lla;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
@@ -29,7 +30,7 @@ public class RawDataRow extends DataRow {
     }
 
     public void setValues(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
-        this.timestamp = timestamp;
+        this.setTimestamp(timestamp);
         this.lla = Geometer.ecefToLla(position.getX(), position.getY(), position.getZ());
         this.movementAngle = calculateMovementAzimuthAngle(position, velocity);
     }
@@ -69,12 +70,12 @@ public class RawDataRow extends DataRow {
     }
 
     public String getValuesAsCsvString() {
-        return timestamp + ", " + lla.getLatitude() + ", " + lla.getLongitude() + ", " + lla.getAltitude() + ", "
+        return this.getTimestamp() + ", " + lla.getLatitude() + ", " + lla.getLongitude() + ", " + lla.getAltitude() + ", "
                 + movementAngle;
     }
 
     @Override
     public String toString() {
-        return "Timestamp: " + timestamp + ", Position:" + lla + ", Movement angle:" + movementAngle ;
+        return getDataSetName() + " {Timestamp: " + this.getTimestamp() + ", Position:" + lla + ", Movement angle:" + movementAngle + "}" ;
     }
 }

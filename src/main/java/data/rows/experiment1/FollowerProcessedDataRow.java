@@ -1,5 +1,6 @@
-package data.rows;
+package data.rows.experiment1;
 
+import data.rows.DataRow;
 import util.Geometer;
 import util.exceptions.IllegalArgumentCombinationException;
 
@@ -15,19 +16,13 @@ public class FollowerProcessedDataRow extends DataRow {
     public FollowerProcessedDataRow() {
     }
 
-    public FollowerProcessedDataRow(List<String> csvElements) {
-        this.timestamp = Double.valueOf(csvElements.get(0));
-        this.distanceToTarget = Double.valueOf(csvElements.get(1));
-        this.targetMovementAngleRelativeToFollowerPosition = Double.valueOf(csvElements.get(2));
-    }
-
     @Override
     public void setValues(List<String> csvElements) {
 
     }
 
     public void setValues(double timestamp, RawDataRow rawDataRow1, RawDataRow rawDataRow) {
-        this.timestamp = timestamp;
+        this.setTimestamp(timestamp);
         this.distanceToTarget = Geometer.distance(rawDataRow1.getLla(), rawDataRow.getLla());
         this.targetMovementAngleRelativeToFollowerPosition = calculateMovementAngleRelativeToMyPosition(rawDataRow1, rawDataRow);
     }
@@ -67,11 +62,11 @@ public class FollowerProcessedDataRow extends DataRow {
     }
 
     public String getValuesAsCsvString() {
-        return timestamp + ", " + distanceToTarget + ", " + targetMovementAngleRelativeToFollowerPosition;
+        return this.getTimestamp() + ", " + distanceToTarget + ", " + targetMovementAngleRelativeToFollowerPosition;
     }
 
     @Override
     public String toString() {
-        return "Timestamp: " + timestamp + ", " + "Distance to target: " + distanceToTarget + ", " + "Target movement angle relative to follower position: " + targetMovementAngleRelativeToFollowerPosition;
+        return getDataSetName() + " {Timestamp: " + this.getTimestamp() + ", " + "Distance to target: " + distanceToTarget + ", " + "Target movement angle relative to follower position: " + targetMovementAngleRelativeToFollowerPosition + "}";
     }
 }

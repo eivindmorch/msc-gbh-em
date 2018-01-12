@@ -1,18 +1,16 @@
-import com.badlogic.gdx.ai.btree.LeafTask;
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import model.btree.Blackboard;
 import model.btree.GenBehaviorTree;
-import model.btree.task.unit.followerunit.IsApproaching;
-import model.btree.task.unit.followerunit.IsCloseEnough;
-import model.btree.task.unit.followerunit.Move;
+import model.btree.task.unit.experiment1.followerunit.IsApproaching;
+import model.btree.task.unit.experiment1.followerunit.IsCloseEnough;
+import model.btree.task.unit.experiment1.followerunit.Move;
 import model.btree.task.unit.Wait;
 import simulation.Rti;
 import simulation.SimController;
 import simulation.federate.Federate;
 import unit.ControlledUnit;
-import unit.FollowerUnit;
+import unit.experiment1.FollowerUnit;
 import unit.Unit;
 import util.Grapher;
 
@@ -50,7 +48,7 @@ public class Main {
         // Tests
         sleepSeconds(10);
         SimController.getInstance().loadScenario(
-                "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-contrained-earth.scnx"
+                "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-constrained-run-to-complete.scnx"
         );
 
         sleepSeconds(10);

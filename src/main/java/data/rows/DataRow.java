@@ -4,7 +4,7 @@ import java.util.List;
 
 public abstract class DataRow {
 
-    double timestamp;
+    private double timestamp;
 
     public void setTimestamp(double timestamp) {
         this.timestamp = timestamp;
@@ -17,4 +17,8 @@ public abstract class DataRow {
     public abstract String getValuesAsCsvString();
 
     public abstract void setValues(List<String> csvElements);
+
+    public double getTimestamp() {
+        return timestamp;
+    }
 }

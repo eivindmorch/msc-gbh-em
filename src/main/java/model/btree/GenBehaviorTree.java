@@ -4,10 +4,10 @@ import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import model.btree.task.unit.Wait;
-import model.btree.task.unit.followerunit.IsApproaching;
-import model.btree.task.unit.followerunit.IsCloseEnough;
-import model.btree.task.unit.followerunit.Move;
-import model.btree.task.unit.followerunit.TurnToHeading;
+import model.btree.task.unit.experiment1.followerunit.IsApproaching;
+import model.btree.task.unit.experiment1.followerunit.IsCloseEnough;
+import model.btree.task.unit.experiment1.followerunit.Move;
+import model.btree.task.unit.experiment1.followerunit.TurnToHeading;
 import unit.Unit;
 
 public class GenBehaviorTree<T extends Unit> extends com.badlogic.gdx.ai.btree.BehaviorTree<Blackboard<T>> {

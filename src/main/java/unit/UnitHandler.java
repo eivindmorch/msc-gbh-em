@@ -4,6 +4,8 @@ import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unit.experiment1.Experiment1Unit;
+import unit.experiment1.FollowerUnit;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,13 +27,13 @@ public abstract class UnitHandler {
 
         // TODO Move method to experiment-dependent package
         Unit unit;
-        if (isTarget(marking)) {
-            unit = new Unit(marking, handle);
+        if (isWanderer(marking)) {
+            unit = new Experiment1Unit(marking, handle);
         } else if (isFollower(marking)) {
             String targetName = getTargetNameFromFollowerMarking(marking);
-            Unit targetUnit = markingUnitMap.get(targetName);
+            Experiment1Unit targetUnit = (Experiment1Unit)markingUnitMap.get(targetName);
             if (targetUnit != null) {
-                unit = new FollowerUnit(handle, marking, targetUnit);
+                unit = new FollowerUnit(marking, handle, targetUnit);
             } else {
                 // Schedules Follower for initialisation when Target is initialised
                 targetFollowerMap.computeIfAbsent(targetName, k -> new ArrayList<>());
@@ -84,7 +86,8 @@ public abstract class UnitHandler {
     }
 
     // TODO Move method to experiment-dependent package
-    private static boolean isTarget(String marking) {
+    // TODO Change 'T' to 'W'
+    private static boolean isWanderer(String marking) {
         return marking.startsWith("T");
     }
 

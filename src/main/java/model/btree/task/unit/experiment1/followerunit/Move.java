@@ -1,19 +1,19 @@
-package model.btree.task.unit.followerunit;
+package model.btree.task.unit.experiment1.followerunit;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.Lla;
 import model.btree.Blackboard;
-import model.btree.task.Named;
+import model.btree.task.NamedTask;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
-import unit.FollowerUnit;
-import unit.Unit;
+import unit.experiment1.Experiment1Unit;
+import unit.experiment1.FollowerUnit;
 import util.Geometer;
 import util.exceptions.IllegalArgumentCombinationException;
 
 
-public class Move extends LeafTask<Blackboard<FollowerUnit>> implements Named {
+public class Move extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private final String name = "Move";
 
@@ -49,9 +49,9 @@ public class Move extends LeafTask<Blackboard<FollowerUnit>> implements Named {
 
     private double calculateMovementAngle() throws IllegalArgumentCombinationException {
         FollowerUnit unit = getObject().getUnit();
-        Unit otherUnit = getObject().getUnit().getTarget();
+        Experiment1Unit target = getObject().getUnit().getTarget();
 
-        return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), otherUnit.getRawDataRow().getLla()));
+        return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), target.getRawDataRow().getLla()));
     }
 
     @Override

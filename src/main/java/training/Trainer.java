@@ -1,7 +1,7 @@
 package training;
 
 import data.ExampleDataSet;
-import data.rows.FollowerEvaluationDataRow;
+import data.rows.experiment1.FollowerEvaluationDataRow;
 import model.btree.GenBehaviorTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import simulation.SimController;
 import simulation.federate.Federate;
 import training.algorithms.Algorithm;
 import unit.ControlledUnit;
-import unit.FollowerUnit;
+import unit.experiment1.FollowerUnit;
 import util.SystemMode;
 import util.SystemStatus;
 
@@ -25,6 +25,7 @@ public class Trainer {
 
     private Algorithm algorithm;
     private boolean running;
+    // TODO Move to experiment-dependent package
     private ExampleDataSet<FollowerEvaluationDataRow> test;// TODO Where should comparing be done?
 
     public Trainer() {

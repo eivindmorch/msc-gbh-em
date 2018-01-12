@@ -1,4 +1,4 @@
-package model.btree.task;
+package model.btree.task.unit.experiment1;
 
 import com.badlogic.gdx.ai.btree.Task;
 import model.btree.Blackboard;

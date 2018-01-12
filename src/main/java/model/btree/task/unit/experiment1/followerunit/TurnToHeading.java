@@ -1,17 +1,17 @@
-package model.btree.task.unit.followerunit;
+package model.btree.task.unit.experiment1.followerunit;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import model.btree.Blackboard;
-import model.btree.task.Named;
+import model.btree.task.NamedTask;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
-import unit.FollowerUnit;
-import unit.Unit;
+import unit.experiment1.Experiment1Unit;
+import unit.experiment1.FollowerUnit;
 import util.Geometer;
 import util.LlbmlUtil;
 import util.exceptions.IllegalArgumentCombinationException;
 
-public class TurnToHeading extends LeafTask<Blackboard<FollowerUnit>> implements Named {
+public class TurnToHeading extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private final String name = "Turn to heading";
 
@@ -43,9 +43,9 @@ public class TurnToHeading extends LeafTask<Blackboard<FollowerUnit>> implements
 
     private double calculateHeadingAngle() throws IllegalArgumentCombinationException {
         FollowerUnit unit = getObject().getUnit();
-        Unit otherUnit = getObject().getUnit().getTarget();
+        Experiment1Unit target = getObject().getUnit().getTarget();
 
-        return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), otherUnit.getRawDataRow().getLla()));
+        return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), target.getRawDataRow().getLla()));
     }
 
     @Override

@@ -1,5 +1,6 @@
-package data.rows;
+package data.rows.experiment1;
 
+import data.rows.DataRow;
 import util.Geometer;
 
 import java.util.List;
@@ -15,12 +16,12 @@ public class FollowerEvaluationDataRow extends DataRow {
 
     @Override
     public void setValues(List<String> csvElements) {
-        this.timestamp = Double.valueOf(csvElements.get(0));
+        this.setTimestamp(Double.valueOf(csvElements.get(0)));
         this.distanceToTarget = Double.valueOf(csvElements.get(1));
     }
 
     public void setValues(double timestamp, RawDataRow rawDataRow1, RawDataRow rawDataRow) {
-        this.timestamp = timestamp;
+        this.setTimestamp(timestamp);
         this.distanceToTarget = Geometer.distance(rawDataRow1.getLla(), rawDataRow.getLla());
     }
 
@@ -36,11 +37,11 @@ public class FollowerEvaluationDataRow extends DataRow {
 
     @Override
     public String getValuesAsCsvString() {
-        return timestamp + ", " + distanceToTarget;
+        return this.getTimestamp() + ", " + distanceToTarget;
     }
 
     @Override
     public String toString() {
-        return "Timestamp: " + timestamp + ", " + "Distance to target: " + distanceToTarget;
+        return getDataSetName() + " {Timestamp: " + this.getTimestamp() + ", " + "Distance to target: " + distanceToTarget + "}";
     }
 }

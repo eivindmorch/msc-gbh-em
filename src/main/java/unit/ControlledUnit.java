@@ -13,7 +13,7 @@ public class ControlledUnit<T extends Unit> {
     private final Logger logger = LoggerFactory.getLogger(ControlledUnit.class);
 
     T unit;
-    private GenBehaviorTree btree;
+    private GenBehaviorTree<T> btree;
 
     ControlledUnit(T unit) {
         this.unit = unit;

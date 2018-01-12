@@ -10,7 +10,7 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import model.btree.task.Named;
+import model.btree.task.NamedTask;
 
 import javax.swing.*;
 import java.awt.*;
@@ -97,7 +97,7 @@ public class Grapher extends JFrame{
         } else if (task instanceof Sequence) {
             return "->";
         } else {
-            Named namedTask = (Named) task;
+            NamedTask namedTask = (NamedTask) task;
             return namedTask.getName();
         }
     }
