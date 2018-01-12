@@ -61,12 +61,12 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="simulation.SimEngine" level="debug" additivity="false">
+        <Logger name="core.simulation.SimEngine" level="debug" additivity="false">
             <AppenderRef ref="SimEngine"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="simulation.SimGui" level="debug" additivity="false">
+        <Logger name="core.simulation.SimGui" level="debug" additivity="false">
             <AppenderRef ref="SimGui"/>
             <AppenderRef ref="Console"/>
         </Logger>
