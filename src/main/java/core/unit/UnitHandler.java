@@ -1,111 +1,66 @@
 package core.unit;
 
-import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import experiments.experiment1.unit.Experiment1Unit;
-import experiments.experiment1.unit.FollowerUnit;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public abstract class UnitHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UnitHandler.class);
 
-
-    private static HashMap<String, List<PhysicalEntityObject>> targetFollowerMap = new HashMap<>();
-    private static HashMap<String, Unit> markingUnitMap = new HashMap<>();
+    public static HashMap<String, Unit> unitIdentifierToUnitMap = new HashMap<>();
     private static ArrayList<ControlledUnit> controlledUnits = new ArrayList<>();
 
+    private static AddUnitMethod addUnitMethod;
+
+    // Unit marking options
+    public static char GOAL_SEPARATOR = '-';
+    public static char OPTIONS_START = '[';
+    public static char OPTIONS_END = ']';
+    public static char CONTROLLED = 'c';
+
+
+    public static void setAddUnitMethod(AddUnitMethod addUnitMethod) {
+        UnitHandler.addUnitMethod = addUnitMethod;
+    }
+
     public static void addUnit(PhysicalEntityObject physicalEntity) {
-        String marking = physicalEntity.getMarking().getMarking();
-        ObjectInstanceHandle handle = physicalEntity.getObjectInstanceHandle();
-
-        // TODO Move method to experiment-dependent package
-        Unit unit;
-        if (isWanderer(marking)) {
-            unit = new Experiment1Unit(marking, handle);
-        } else if (isFollower(marking)) {
-            String targetName = getTargetNameFromFollowerMarking(marking);
-            Experiment1Unit targetUnit = (Experiment1Unit)markingUnitMap.get(targetName);
-            if (targetUnit != null) {
-                unit = new FollowerUnit(marking, handle, targetUnit);
-            } else {
-                // Schedules Follower for initialisation when Target is initialised
-                targetFollowerMap.computeIfAbsent(targetName, k -> new ArrayList<>());
-                targetFollowerMap.get(targetName).add(physicalEntity);
-                logger.info("FollowerUnit " + marking + " was scheduled for later initialisation.");
-                return;
-            }
+        if (addUnitMethod == null) {
+            logger.warn("No addUnitMethod has been registered");
         } else {
-            logger.warn("Unit " + marking + " was NOT added due to no related role.");
-            return;
-        }
-
-        // TODO Keep here
-        String unitName = getUnitName(marking);
-        if (markingUnitMap.get(unitName) == null) {
-            markingUnitMap.put(unitName, unit);
-            logger.info("Unit added -- Marking: " + marking + ", Handle: " + handle);
-            UnitLogger.register(unit);
-
-            // Initiates all scheduled Followers with this units as Target
-            if (targetFollowerMap.get(unitName) != null) {
-                targetFollowerMap.get(unitName).forEach(UnitHandler::addUnit);
-            }
-
-            // TODO Replace with "c" in marking
-            // TODO Fix checking of units type
-            if (unit instanceof FollowerUnit) {
-                UnitHandler.addControlledUnit(new ControlledUnit<>((FollowerUnit) unit));
-            }
+            addUnitMethod.addUnit(physicalEntity);
         }
     }
 
-    private static void addControlledUnit(ControlledUnit controlledUnit) {
+    public static boolean putUnit(Unit unit) {
+        if (unitIdentifierToUnitMap.get(unit.getIdentifier()) == null) {
+            unitIdentifierToUnitMap.put(unit.getIdentifier(), unit);
+            logger.info("Unit added -- Marking: " + unit.getMarking() + ", Handle: " + unit.getHandle());
+            UnitLogger.register(unit);
+            return true;
+        }
+        return false;
+    }
+
+    public static void addControlledUnit(ControlledUnit controlledUnit) {
         logger.info("Controlled units added -- Marking: " + controlledUnit.unit.getMarking());
         controlledUnits.add(controlledUnit);
     }
 
     public static Collection<Unit> getUnits() {
-        return markingUnitMap.values();
+        return unitIdentifierToUnitMap.values();
     }
 
     public static void updateUnits(double timestamp) {
-        for (Unit unit : markingUnitMap.values()) {
+        for (Unit unit : unitIdentifierToUnitMap.values()) {
             unit.updateData(timestamp);
         }
     }
 
-    // TODO Move method to experiment-dependent package
-    private static boolean isFollower(String marking) {
-        return marking.startsWith("F");
-    }
-
-    // TODO Move method to experiment-dependent package
-    // TODO Change 'T' to 'W'
-    private static boolean isWanderer(String marking) {
-        return marking.startsWith("T");
-    }
-
-    private static String getUnitName(String marking) {
-        if (isFollower(marking)) {
-            return marking.substring(0, marking.indexOf('-'));
-        }
-        return marking;
-    }
-
-    // TODO Move method to experiment-dependent package
-    private static String getTargetNameFromFollowerMarking(String marking) {
-        return marking.substring(marking.indexOf('-') + 1, marking.length());
-    }
-
     public static int getNumOfUnits() {
-        return markingUnitMap.size();
+        return unitIdentifierToUnitMap.size();
     }
 
     public static void tickAllControlledUnits() {
@@ -114,9 +69,44 @@ public abstract class UnitHandler {
         }
     }
 
+    public static String getUnitIdentifier(String marking) {
+        int indexOfDash = marking.indexOf(GOAL_SEPARATOR);
+        int indexOfOptionsStart = marking.indexOf(OPTIONS_START);
+        if (indexOfDash >= 0) {
+            return marking.substring(0, marking.indexOf(GOAL_SEPARATOR));
+        } else if (indexOfOptionsStart >= 0) {
+            return marking.substring(0, marking.indexOf(OPTIONS_START));
+        }
+        return marking;
+    }
+
+    public static boolean shouldBeControlledUnit(Unit unit) {
+        List<String> args = getUnitOptionArguments(unit.getMarking());
+        return (args.contains(Character.toString(CONTROLLED)));
+    }
+
+    public static List<String> getUnitOptionArguments(String unitMarking) {
+        int startIndex = unitMarking.indexOf(OPTIONS_START);
+        int endIndex = unitMarking.indexOf(OPTIONS_END);
+        if (startIndex >= 0 && endIndex > startIndex) {
+            return Arrays.asList(unitMarking.substring(startIndex + 1, endIndex).split(","));
+        }
+        return new ArrayList<>();
+    }
+
     public static void reset() {
-        targetFollowerMap = new HashMap<>();
-        markingUnitMap = new HashMap<>();
+        logger.info("Resetting unit storage.");
+        unitIdentifierToUnitMap = new HashMap<>();
         controlledUnits = new ArrayList<>();
+        if (addUnitMethod == null) {
+            logger.warn("No addUnitMethod has been registered");
+        } else {
+            addUnitMethod.reset();
+        }
+    }
+
+    public interface AddUnitMethod {
+        void addUnit(PhysicalEntityObject physicalEntity);
+        void reset();
     }
 }

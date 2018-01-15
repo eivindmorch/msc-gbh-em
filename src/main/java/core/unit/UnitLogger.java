@@ -29,6 +29,7 @@ public abstract class UnitLogger {
     }
 
     public static void reset() {
+        logger.info("Resetting UnitDataWriters.");
         for (UnitDataWriter unitDataWriter : unitDataWriters) {
             unitDataWriter.closeWriters();
         }
@@ -45,7 +46,6 @@ public abstract class UnitLogger {
 
             dataWriters = new ArrayList<>();
             for (DataRow dataRow : unit.getDataRows()) {
-                // TODO Check if terminology is correct
                 dataWriters.add(new Writer(
                         getDataFileIntraResourcesFolderPath() + unit.getMarking(),
                         dataRow.getDataSetName() + ".csv"

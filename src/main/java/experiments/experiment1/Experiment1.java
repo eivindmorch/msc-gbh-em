@@ -1,34 +1,54 @@
-package core;
+package experiments.experiment1;
 
-import com.badlogic.gdx.ai.btree.branch.Selector;
-import com.badlogic.gdx.ai.btree.branch.Sequence;
-import core.model.btree.Blackboard;
 import core.model.btree.GenBehaviorTree;
-import experiments.experiment1.model.btree.task.unit.followerunit.IsApproaching;
-import experiments.experiment1.model.btree.task.unit.followerunit.IsCloseEnough;
-import experiments.experiment1.model.btree.task.unit.followerunit.Move;
 import core.model.btree.task.unit.Wait;
 import core.simulation.Rti;
 import core.simulation.SimController;
 import core.simulation.federate.Federate;
 import core.unit.ControlledUnit;
-import experiments.experiment1.unit.FollowerUnit;
 import core.unit.Unit;
-import core.util.Grapher;
+import core.unit.UnitHandler;
+import core.unit.UnitTypeInfo;
+import experiments.experiment1.model.btree.task.unit.followerunit.IsApproaching;
+import experiments.experiment1.model.btree.task.unit.followerunit.IsCloseEnough;
+import experiments.experiment1.model.btree.task.unit.followerunit.Move;
+import experiments.experiment1.model.btree.task.unit.followerunit.TurnToHeading;
+import experiments.experiment1.unit.AddUnitMethod;
+import experiments.experiment1.unit.Experiment1Unit;
+import experiments.experiment1.unit.FollowerUnit;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static core.util.SystemUtil.sleepSeconds;
 
-public class Main {
+public class Experiment1 {
 
     public static void main(String[] args) {
-        new Main();
+        new Experiment1();
     }
 
-    public Main() {
+    private Experiment1() {
+
+        UnitTypeInfo.add(
+                "Follower", "F", FollowerUnit.class,
+                Arrays.asList(
+                        Move.class,
+                        Wait.class,
+                        IsApproaching.class,
+                        IsCloseEnough.class,
+                        TurnToHeading.class
+                )
+        );
+        UnitTypeInfo.add(
+                "Wanderer", "W", Experiment1Unit.class, new ArrayList<>()
+        );
+
+        UnitHandler.setAddUnitMethod(new AddUnitMethod());
         run();
     }
 
-    public void run() {
+    private void run() {
         // Setup
         Rti.getInstance().start();
 
@@ -77,7 +97,7 @@ public class Main {
 
         sleepSeconds(10);
         SimController.getInstance().loadScenario(
-                "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-contrained-earth.scnx"
+                "C:/MAK/vrforces4.5/userData/scenarios/it3903/follow_time-constrained-earth.scnx"
         );
         sleepSeconds(10);
         SimController.getInstance().play();
@@ -87,20 +107,4 @@ public class Main {
 //        sleepSeconds(20);
 //        rti.destroy();
     }
-
-    private void behaviorTreeTest() {
-        Selector<Blackboard<FollowerUnit>> selector1 = new Selector<>(new IsApproaching(), new IsCloseEnough());
-        Sequence<Blackboard<? extends Unit>> sequence1 = new Sequence(selector1, new Wait());
-        Sequence<Blackboard<? extends Unit>> sequence2 = new Sequence(sequence1, new Move());
-        GenBehaviorTree btree = new GenBehaviorTree(sequence2, new Blackboard<FollowerUnit>(null));
-        Grapher grapher = new Grapher("Original");
-        grapher.graph(btree);
-
-        Grapher grapher1 = new Grapher("Clone");
-        grapher1.graph(btree.clone());
-
-        Grapher grapher2 = new Grapher("Clone with insertion");
-        grapher2.graph(btree.cloneAndInsertChild(sequence1, new Move(), 2));
-    }
-
 }

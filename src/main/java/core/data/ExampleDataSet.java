@@ -5,13 +5,12 @@ import core.util.Reader;
 
 import java.util.ArrayList;
 
+import static core.settings.SystemSettings.intraResourcesExamplesFolderPath;
+
 public class ExampleDataSet<T extends DataRow> {
 
     private String scenarioName;
     private ArrayList<T> dataRows;
-
-    //TODO move
-    private String intraResourcesExamplesFolderPath = "data/examples/";
 
     public ExampleDataSet(Class<T> dataRowClass, String exampleName) {
         Reader reader = new Reader(intraResourcesExamplesFolderPath + exampleName);

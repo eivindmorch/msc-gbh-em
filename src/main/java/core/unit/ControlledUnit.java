@@ -14,7 +14,7 @@ public class ControlledUnit<T extends Unit> {
     T unit;
     private GenBehaviorTree<T> btree;
 
-    ControlledUnit(T unit) {
+    public ControlledUnit(T unit) {
         this.unit = unit;
         this.btree = ControlledUnit.controlledUnitBtreeMap.get(unit.getClass()).clone();
         this.btree.setObject(new Blackboard<>(unit));

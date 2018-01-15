@@ -18,6 +18,7 @@ public class GenBehaviorTree<T extends Unit> extends com.badlogic.gdx.ai.btree.B
     }
 
     public static GenBehaviorTree generateRandomTree() {
+        // TODO
         return generateTestTree();
     }
 

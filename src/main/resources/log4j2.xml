@@ -46,17 +46,17 @@
             <AppenderRef ref="HlaLib"/>
         </Logger>
 
-        <Logger name="training" level="debug" additivity="false">
+        <Logger name="core.training" level="debug" additivity="false">
             <AppenderRef ref="Training"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="unit" level="debug" additivity="false">
+        <Logger name="core.unit" level="debug" additivity="false">
             <AppenderRef ref="Unit"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="simulation" level="debug" additivity="false">
+        <Logger name="core.simulation" level="debug" additivity="false">
             <AppenderRef ref="SimController"/>
             <AppenderRef ref="Console"/>
         </Logger>

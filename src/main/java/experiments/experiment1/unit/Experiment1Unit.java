@@ -11,8 +11,8 @@ public class Experiment1Unit extends Unit {
 
     private RawDataRow rawDataRow;
 
-    public Experiment1Unit(String marking, ObjectInstanceHandle handle) {
-        super(marking, handle);
+    public Experiment1Unit(String marking, String identifier, ObjectInstanceHandle handle) {
+        super(marking, identifier, handle);
 
         this.rawDataRow = new RawDataRow();
         this.dataRows.add(rawDataRow);

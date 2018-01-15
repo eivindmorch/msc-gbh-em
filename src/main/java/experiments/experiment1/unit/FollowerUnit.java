@@ -15,8 +15,8 @@ public class FollowerUnit extends Experiment1Unit {
     private FollowerEvaluationDataRow followerEvaluationDataRow;
     private Experiment1Unit target;
 
-    public FollowerUnit(String marking, ObjectInstanceHandle handle, Experiment1Unit target) {
-        super(marking, handle);
+    public FollowerUnit(String marking, String identifier, ObjectInstanceHandle handle, Experiment1Unit target) {
+        super(marking, identifier, handle);
         this.target = target;
 
         this.followerProcessedDataRow = new FollowerProcessedDataRow();

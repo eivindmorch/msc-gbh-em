@@ -1,6 +1,7 @@
 package core.training;
 
 import core.data.ExampleDataSet;
+import experiments.experiment1.Experiment1UnitInfo;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 import core.model.btree.GenBehaviorTree;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import core.util.SystemStatus;
 
 import static core.util.SystemUtil.sleepSeconds;
 
-
+// TODO Interface for UnitInfo to use when initiating Trainer
 public class Trainer {
 
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);

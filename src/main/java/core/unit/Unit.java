@@ -10,12 +10,14 @@ import java.util.List;
 public abstract class Unit {
 
     private String marking;
+    private String identifier; //Internal
     private final ObjectInstanceHandle handle;
 
     public List<DataRow> dataRows; // Used for writing dataRows to file
 
-    public Unit(String marking, ObjectInstanceHandle handle) {
+    public Unit(String marking, String identifier, ObjectInstanceHandle handle) {
         this.marking = marking;
+        this.identifier = identifier;
         this.handle = handle;
         this.dataRows = new ArrayList<>();
     }
@@ -24,6 +26,10 @@ public abstract class Unit {
 
     public String getMarking() {
         return marking;
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 
     public ObjectInstanceHandle getHandle() {
