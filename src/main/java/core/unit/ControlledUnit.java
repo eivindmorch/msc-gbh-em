@@ -7,14 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
-public class ControlledUnit<T extends Unit> {
+public class ControlledUnit<U extends Unit> {
 
     private final Logger logger = LoggerFactory.getLogger(ControlledUnit.class);
 
-    T unit;
-    private GenBehaviorTree<T> btree;
+    U unit;
+    private GenBehaviorTree<U> btree;
 
-    public ControlledUnit(T unit) {
+    public ControlledUnit(U unit) {
         this.unit = unit;
         this.btree = ControlledUnit.controlledUnitBtreeMap.get(unit.getClass()).clone();
         this.btree.setObject(new Blackboard<>(unit));
@@ -22,7 +22,7 @@ public class ControlledUnit<T extends Unit> {
 
     void sendUnitCommands() {
         if (btree == null) {
-            logger.error("BehaviorTree is null!");
+            logger.error("BehaviorTree is null for unit: " + unit);
             return;
         }
         btree.step();

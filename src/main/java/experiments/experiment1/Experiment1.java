@@ -1,24 +1,14 @@
 package experiments.experiment1;
 
-import core.model.btree.GenBehaviorTree;
-import core.model.btree.task.unit.Wait;
 import core.simulation.Rti;
 import core.simulation.SimController;
 import core.simulation.federate.Federate;
-import core.unit.ControlledUnit;
-import core.unit.Unit;
+import core.training.Trainer;
 import core.unit.UnitHandler;
-import core.unit.UnitTypeInfo;
-import experiments.experiment1.model.btree.task.unit.followerunit.IsApproaching;
-import experiments.experiment1.model.btree.task.unit.followerunit.IsCloseEnough;
-import experiments.experiment1.model.btree.task.unit.followerunit.Move;
-import experiments.experiment1.model.btree.task.unit.followerunit.TurnToHeading;
+import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 import experiments.experiment1.unit.AddUnitMethod;
-import experiments.experiment1.unit.Experiment1Unit;
+import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import static core.util.SystemUtil.sleepSeconds;
 
@@ -29,24 +19,11 @@ public class Experiment1 {
     }
 
     private Experiment1() {
-
-        UnitTypeInfo.add(
-                "Follower", "F", FollowerUnit.class,
-                Arrays.asList(
-                        Move.class,
-                        Wait.class,
-                        IsApproaching.class,
-                        IsCloseEnough.class,
-                        TurnToHeading.class
-                )
-        );
-        UnitTypeInfo.add(
-                "Wanderer", "W", Experiment1Unit.class, new ArrayList<>()
-        );
-
+        Experiment1UnitInfo.init();
         UnitHandler.setAddUnitMethod(new AddUnitMethod());
         run();
     }
+
 
     private void run() {
         // Setup
@@ -54,8 +31,6 @@ public class Experiment1 {
 
         sleepSeconds(5);
         Federate.getInstance().start();
-
-        ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, GenBehaviorTree.generateTestTree());
 
         Federate.getInstance().addTickListener(SimController.getInstance());
         Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
@@ -66,7 +41,16 @@ public class Experiment1 {
         sleepSeconds(10);
         SimController.getInstance().startSimGui();
 
+        sleepSeconds(5);
+        Trainer trainer = new Trainer<>(FollowerUnit.class, FollowerEvaluationDataRow.class);
+        trainer.start();
 
+
+//        sleepSeconds(20);
+//        rti.destroy();
+    }
+
+    private void testCgfControlInteractions() {
         // Tests
         sleepSeconds(10);
         SimController.getInstance().loadScenario(
@@ -101,10 +85,5 @@ public class Experiment1 {
         );
         sleepSeconds(10);
         SimController.getInstance().play();
-
-
-
-//        sleepSeconds(20);
-//        rti.destroy();
     }
 }

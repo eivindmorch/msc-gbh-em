@@ -7,19 +7,24 @@ import java.util.ArrayList;
 
 import static core.settings.SystemSettings.intraResourcesExamplesFolderPath;
 
-public class ExampleDataSet<T extends DataRow> {
+public class ExampleDataSet<D extends DataRow> {
 
-    private String scenarioName;
-    private ArrayList<T> dataRows;
+    private String scenarioPath;
+    private ArrayList<D> dataRows;
+    private int numOfTicks;
 
-    public ExampleDataSet(Class<T> dataRowClass, String exampleName) {
+    public ExampleDataSet(Class<D> dataRowClass, String exampleName) {
+        dataRows = new ArrayList<>();
+
         Reader reader = new Reader(intraResourcesExamplesFolderPath + exampleName);
         reader.readLine(); // Ignore start time
-        scenarioName = reader.readLine().split(": ")[1]; // Scenario name
+
+        scenarioPath = reader.readLine().split(": ")[1]; // Scenario name
+
         String line;
         while ((line = reader.readLine()) != null) {
             try {
-                T dataRow = dataRowClass.newInstance();
+                D dataRow = dataRowClass.newInstance();
                 dataRow.setValues(Reader.stringToCsvList(line));
                 dataRows.add(dataRow);
             } catch (InstantiationException | IllegalAccessException e) {
@@ -27,14 +32,18 @@ public class ExampleDataSet<T extends DataRow> {
                 break;
             }
         }
+        this.numOfTicks = dataRows.size();
     }
 
-    public String getScenarioName() {
-        return scenarioName;
+    public String getScenarioPath() {
+        return scenarioPath;
     }
 
-    public ArrayList<T> getDataRows() {
+    public ArrayList<D> getDataRows() {
         return dataRows;
     }
 
+    public int getNumOfTicks() {
+        return numOfTicks;
+    }
 }

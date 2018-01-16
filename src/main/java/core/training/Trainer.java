@@ -1,85 +1,86 @@
 package core.training;
 
 import core.data.ExampleDataSet;
-import experiments.experiment1.Experiment1UnitInfo;
-import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
-import core.model.btree.GenBehaviorTree;
+import core.data.rows.DataRow;
+import core.unit.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import core.settings.TrainingSettings;
-import core.simulation.Rti;
 import core.simulation.SimController;
-import core.simulation.federate.Federate;
 import core.training.algorithms.Algorithm;
 import core.unit.ControlledUnit;
-import experiments.experiment1.unit.FollowerUnit;
 import core.util.SystemMode;
 import core.util.SystemStatus;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static core.util.SystemUtil.sleepSeconds;
 
-// TODO Interface for UnitInfo to use when initiating Trainer
-public class Trainer {
+
+// U for unit to be trained, D for data to be used for evaluation
+public class Trainer<U extends Unit, D extends DataRow> {
 
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
     private Algorithm algorithm;
     private boolean running;
-    // TODO Move to experiment-dependent package
-    private ExampleDataSet<FollowerEvaluationDataRow> test;// TODO Where should comparing be done?
+    private List<ExampleDataSet<D>> exampleDataSets;
 
-    public Trainer() {
+    private Class<U> unitToTrainClass;
+    private Class<D> evaluationDataRowClass;
+
+    public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass) {
         SystemStatus.systemMode = SystemMode.TRAINING;
+
         try {
             algorithm = TrainingSettings.algorithm.newInstance();
+            algorithm.setTrainer(this);
+            algorithm.setPopulation(new Population());
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
+            return;
         }
-        algorithm.setTrainer(this);
-        algorithm.setPopulation(new Population());
 
-        Rti.getInstance().start();
+//        this.exampleDataSets = new ArrayList<>(exampleDataSets);
+        this.unitToTrainClass = unitToTrainClass;
+        this.evaluationDataRowClass = evaluationDataRowClass;
 
-        sleepSeconds(5);
-        Federate.getInstance().start();
-
-        ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, GenBehaviorTree.generateTestTree());
-
-        Federate.getInstance().addTickListener(SimController.getInstance());
-        Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
-
-//        simController.startSimEngine();
+        exampleDataSets = loadExampleDataSets();
     }
 
-    public void run() {
-        SimController.getInstance().rewind();
+    public void start() {
+        running = true;
         algorithm.setup();
         while (running) {
-            for (int i = 0; i < TrainingSettings.epochs; i++) {
-
+            for (int epoch = 0; epoch < TrainingSettings.epochs; epoch++) {
+                for (int exampleDataSetIndex = 0; exampleDataSetIndex < exampleDataSets.size(); exampleDataSetIndex++) {
+                    ExampleDataSet<D> exampleDataSet = exampleDataSets.get(exampleDataSetIndex);
+                    SimController.getInstance().loadScenario(exampleDataSet.getScenarioPath());
+                    algorithm.step(epoch, exampleDataSetIndex, exampleDataSet);
+                }
             }
         }
         // ParetoPlotter.plot();
     }
 
-    private void loadExamples() {
+    private ArrayList<ExampleDataSet<D>> loadExampleDataSets() {
+        ArrayList<ExampleDataSet<D>> exampleDataSets = new ArrayList<>();
         for (String exampleName : TrainingSettings.examples) {
-
+            exampleDataSets.add(new ExampleDataSet<>(evaluationDataRowClass, exampleName));
         }
+        return exampleDataSets;
     }
 
     public void simulatePopulation(Population population) {
         for (int i = 0; i < population.getSize(); i++) {
-            // TODO
-//            setControlledUnitBtreeMap(population.get(i));
+            ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, population.get(i).getBtree());
             SimController.getInstance().play();
+            sleepSeconds(10);
+            SimController.getInstance().pause();
             SimController.getInstance().rewind();
         }
-    }
-
-    public static void main(String[] args) {
-        Trainer trainer = new Trainer();
     }
 
 }

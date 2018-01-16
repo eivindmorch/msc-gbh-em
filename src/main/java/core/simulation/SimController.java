@@ -2,7 +2,6 @@ package core.simulation;
 
 
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import core.simulation.federate.Federate;
@@ -56,9 +55,9 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     public void rewind() {
         logger.info("Rewinding scenario.");
+        Federate.getInstance().sendCgfPauseInteraction();
         UnitHandler.reset();
         UnitLogger.reset();
-        Federate.getInstance().sendCgfPauseInteraction();
         // TODO Delay here? Ask Rikke/Martin
         Federate.getInstance().sendCgfRewindInteraction();
     }
@@ -68,7 +67,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         UnitHandler.reset();
         UnitLogger.reset();
         Federate.getInstance().sendCgfLoadScenarioInteraction(scenarioPath);
-        SystemStatus.currentScenario = FilenameUtils.getBaseName(scenarioPath);
+        SystemStatus.currentScenario = scenarioPath;
     }
 
     public void startSimEngine() {

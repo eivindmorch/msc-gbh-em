@@ -1,4 +1,4 @@
-package experiments.experiment1;
+package experiments.experiment1.unit;
 
 import core.model.btree.task.unit.Wait;
 import core.unit.Unit;
@@ -7,14 +7,15 @@ import experiments.experiment1.model.btree.task.unit.followerunit.IsApproaching;
 import experiments.experiment1.model.btree.task.unit.followerunit.IsCloseEnough;
 import experiments.experiment1.model.btree.task.unit.followerunit.Move;
 import experiments.experiment1.model.btree.task.unit.followerunit.TurnToHeading;
+import experiments.experiment1.unit.Experiment1Unit;
 import experiments.experiment1.unit.FollowerUnit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Experiment1UnitInfo {
+public abstract class Experiment1UnitInfo {
 
-    static {
+    public static void init() {
         UnitTypeInfo.add(
                 "Follower", "F", FollowerUnit.class,
                 Arrays.asList(
@@ -26,10 +27,8 @@ public class Experiment1UnitInfo {
                 )
         );
         UnitTypeInfo.add(
-                "Wanderer", "W", Unit.class, new ArrayList<>()
+                "Wanderer", "W", Experiment1Unit.class, new ArrayList<>()
         );
-        System.out.println(UnitTypeInfo.getUnitInfoFromSymbol("F"));
-        System.out.println(UnitTypeInfo.getUnitInfoFromSymbol("W"));
     }
 
 }

@@ -10,6 +10,10 @@ public class Population {
 
     private ArrayList<EvaluatedGenBehaviorTree> population;
 
+    public Population() {
+        population = new ArrayList<>();
+    }
+
     public void generateRandomPopulation(int size) {
         for (int i = 0; i < size; i++) {
             population.add(new EvaluatedGenBehaviorTree(GenBehaviorTree.generateRandomTree()));

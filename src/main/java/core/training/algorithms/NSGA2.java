@@ -14,7 +14,7 @@ public class NSGA2 extends Algorithm {
     }
 
     @Override
-    public void epoch() {
+    public void step() {
 
     }
 

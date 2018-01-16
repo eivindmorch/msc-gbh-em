@@ -8,5 +8,6 @@ public abstract class SystemSettings {
     public static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
     public static final String resourcesFilePath = System.getProperty("user.dir") + "/src/main/resources/";
     public static final String intraResourcesExamplesFolderPath = "data/examples/";
+    public static final String intraResourcesTrainingFolderPath = "data/training/";
 
 }

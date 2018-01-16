@@ -1,6 +1,7 @@
 package core.unit;
 
 import core.data.rows.DataRow;
+import core.util.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import core.util.SystemMode;
@@ -47,7 +48,11 @@ public abstract class UnitLogger {
             dataWriters = new ArrayList<>();
             for (DataRow dataRow : unit.getDataRows()) {
                 dataWriters.add(new Writer(
-                        getDataFileIntraResourcesFolderPath() + unit.getMarking(),
+                        SystemUtil.getDataFileIntraResourcesFolderPath(
+                                SystemStatus.currentTrainingEpoch,
+                                SystemStatus.currentTrainingScenario,
+                                SystemStatus.currentTrainingChromosome
+                        ) + unit.getMarking(),
                         dataRow.getDataSetName() + ".csv"
                 ));
             }
@@ -55,25 +60,11 @@ public abstract class UnitLogger {
             writeHeadersToFile();
         }
 
-        // TODO Move to util method
-        private String getDataFileIntraResourcesFolderPath() {
-            StringBuilder stringBuilder = new StringBuilder("data/");
-            stringBuilder.append(SystemStatus.systemMode.name().toLowerCase()).append("/");
-            stringBuilder.append(SystemStatus.startTime).append("/");
-            if (SystemStatus.systemMode == SystemMode.TRAINING) {
-                stringBuilder
-                        .append("epoch").append(SystemStatus.currentTrainingEpoch).append("/")
-                        .append("scenario").append(SystemStatus.currentTrainingScenario).append("/")
-                        .append("chromosome").append(SystemStatus.currentTrainingChromosome).append("/");
-            }
-            return stringBuilder.toString();
-        }
-
         void writeMetaDataToFile() {
             for (int i = 0; i < dataWriters.size(); i++) {
                 Writer dataWriter = dataWriters.get(i);
                 dataWriter.writeLine("# System start time: " + SystemStatus.startTime);
-                dataWriter.writeLine("# Scenario: " + SystemStatus.currentScenario);
+                dataWriter.writeLine("# Scenario path: " + SystemStatus.currentScenario);
             }
         }
 
