@@ -4,7 +4,6 @@ import core.data.rows.DataRow;
 import core.util.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import core.util.SystemMode;
 import core.util.SystemStatus;
 import core.util.Writer;
 
@@ -50,7 +49,7 @@ public abstract class UnitLogger {
                 dataWriters.add(new Writer(
                         SystemUtil.getDataFileIntraResourcesFolderPath(
                                 SystemStatus.currentTrainingEpoch,
-                                SystemStatus.currentTrainingScenario,
+                                SystemStatus.currentTrainingExampleDataSetIndex,
                                 SystemStatus.currentTrainingChromosome
                         ) + unit.getMarking(),
                         dataRow.getDataSetName() + ".csv"
@@ -65,6 +64,7 @@ public abstract class UnitLogger {
                 Writer dataWriter = dataWriters.get(i);
                 dataWriter.writeLine("# System start time: " + SystemStatus.startTime);
                 dataWriter.writeLine("# Scenario path: " + SystemStatus.currentScenario);
+                dataWriter.writeLine("# Unit marking: " + unit.getMarking());
             }
         }
 

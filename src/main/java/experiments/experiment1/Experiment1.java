@@ -4,9 +4,10 @@ import core.simulation.Rti;
 import core.simulation.SimController;
 import core.simulation.federate.Federate;
 import core.training.Trainer;
+import core.training.algorithms.SimpleSingleObjectiveGA;
 import core.unit.UnitHandler;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
-import experiments.experiment1.unit.AddUnitMethod;
+import experiments.experiment1.unit.Experiment1AddUnitMethod;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
 
@@ -20,7 +21,7 @@ public class Experiment1 {
 
     private Experiment1() {
         Experiment1UnitInfo.init();
-        UnitHandler.setAddUnitMethod(new AddUnitMethod());
+        UnitHandler.setAddUnitMethod(new Experiment1AddUnitMethod());
         run();
     }
 
@@ -42,7 +43,8 @@ public class Experiment1 {
         SimController.getInstance().startSimGui();
 
         sleepSeconds(5);
-        Trainer trainer = new Trainer<>(FollowerUnit.class, FollowerEvaluationDataRow.class);
+        Trainer<FollowerUnit, FollowerEvaluationDataRow> trainer = new Trainer<>(FollowerUnit.class, FollowerEvaluationDataRow.class);
+        trainer.setAlgorithm(new SimpleSingleObjectiveGA<>(FollowerEvaluationDataRow.class));
         trainer.start();
 
 

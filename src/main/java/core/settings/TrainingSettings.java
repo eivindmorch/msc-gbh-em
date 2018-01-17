@@ -1,7 +1,6 @@
 package core.settings;
 
 import core.training.algorithms.Algorithm;
-import core.training.algorithms.NSGA2;
 import core.training.algorithms.SimpleSingleObjectiveGA;
 
 public abstract class TrainingSettings {

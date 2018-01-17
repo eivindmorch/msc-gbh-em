@@ -10,7 +10,7 @@ public abstract class SystemStatus {
     public static SystemMode systemMode = SystemMode.UNSPECIFIED; // Overwritten by main classes
 
     public static int currentTrainingEpoch = 0;
-    public static int currentTrainingScenario = 0;
+    public static int currentTrainingExampleDataSetIndex = 0;
     public static int currentTrainingChromosome = 0;
 
 }

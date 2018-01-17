@@ -4,9 +4,13 @@ import core.model.btree.EvaluatedGenBehaviorTree;
 import core.model.btree.GenBehaviorTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 public class Population {
+
+    Random random = new Random();
 
     private ArrayList<EvaluatedGenBehaviorTree> population;
 
@@ -28,18 +32,26 @@ public class Population {
         population.add(btree);
     }
 
-    public EvaluatedGenBehaviorTree crossover(int index1, int index2) {
-        // TODO
-        return cloneElement(index1);
+    public EvaluatedGenBehaviorTree crossover(int parent1Index, int parent2Index) {
+        return crossover(get(parent1Index), get(parent2Index));
     }
 
-    public EvaluatedGenBehaviorTree mutate(int index) {
+    public EvaluatedGenBehaviorTree crossover(EvaluatedGenBehaviorTree parent1, EvaluatedGenBehaviorTree parent2) {
         // TODO
-        return cloneElement(index);
+        return parent1;
+    }
+
+    public EvaluatedGenBehaviorTree mutate(int btreeIndex) {
+        return mutate(get(btreeIndex));
+    }
+
+    public EvaluatedGenBehaviorTree mutate(EvaluatedGenBehaviorTree btree) {
+        // TODO
+        return btree.clone();
     }
 
     public EvaluatedGenBehaviorTree cloneElement(int index) {
-        return population.get(index).clone();
+        return get(index).clone();
     }
 
     public void sort(Comparator<EvaluatedGenBehaviorTree> comparator) {
@@ -56,6 +68,14 @@ public class Population {
 
     public EvaluatedGenBehaviorTree get(int i) {
         return population.get(i);
+    }
+
+    public EvaluatedGenBehaviorTree selectionTournament(int numOfContenders, Comparator<EvaluatedGenBehaviorTree> comparator) {
+        ArrayList<EvaluatedGenBehaviorTree> listOfContenders = new ArrayList<>(numOfContenders);
+        for (int i = 0; i < numOfContenders; i++) {
+            listOfContenders.add(get(random.nextInt(getSize())));
+        }
+        return Collections.min(listOfContenders, comparator);
     }
 
 

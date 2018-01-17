@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class AddUnitMethod implements UnitHandler.AddUnitMethod{
+public class Experiment1AddUnitMethod implements UnitHandler.AddUnitMethod{
 
     private static final Logger logger = LoggerFactory.getLogger(UnitHandler.class);
 
@@ -73,8 +73,11 @@ public class AddUnitMethod implements UnitHandler.AddUnitMethod{
     }
 
     private String getTargetIdentifierFromFollowerMarking(String marking) {
-        return marking.substring(marking.indexOf(UnitHandler.GOAL_SEPARATOR) + 1, marking.indexOf(UnitHandler.OPTIONS_START));
+        String strippedMarking = UnitHandler.stripMarkingOfOptions(UnitHandler.stripMarkingOfComments(marking));
+        int separatorIndex = strippedMarking.indexOf(UnitHandler.GOAL_SEPARATOR) + 1;
+        return strippedMarking.substring(separatorIndex);
     }
+
 
     @Override
     public void reset() {

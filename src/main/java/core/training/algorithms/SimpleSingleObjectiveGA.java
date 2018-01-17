@@ -1,28 +1,25 @@
 package core.training.algorithms;
 
 
-import core.data.ExampleDataSet;
+import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.model.btree.EvaluatedGenBehaviorTree;
 import core.settings.algorithms.SimpleSingleObjectiveGASettings;
-import core.simulation.SimController;
 import core.training.Population;
-import core.training.Trainer;
-import core.util.SystemStatus;
+import core.util.Reader;
 import core.util.SystemUtil;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 
-public class SimpleSingleObjectiveGA extends Algorithm {
+public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
 
     OneDimensionalComparator oneDimensionalComparator;
     Random random;
 
-    public SimpleSingleObjectiveGA(){};
-
-    public SimpleSingleObjectiveGA(Trainer trainer) {
-        super(trainer);
+    public SimpleSingleObjectiveGA(Class<D> evaluationDataRowClass) {
+        super(evaluationDataRowClass);
     }
 
     @Override
@@ -34,18 +31,41 @@ public class SimpleSingleObjectiveGA extends Algorithm {
     }
 
     @Override
-    public void step(int epoch, int exampleNumber, ExampleDataSet<? extends DataRow> exampleDataSet) {
+    public void step(int epoch, int exampleNumber, DataSet<D> exampleDataSet) {
         // SIMULATION
             trainer.simulatePopulation(population);
-
 
         // EVALUATION
 
         // DONE Obtain example file
         // Obtain files for simulated population
-        for (int chromosome = 0; chromosome < population.getSize(); chromosome++) {
-            String intraResourcesScenarioLogsPath = SystemUtil.getDataFileIntraResourcesFolderPath(epoch, exampleNumber, chromosome);
+        for (int chromosomeIndex = 0; chromosomeIndex < population.getSize(); chromosomeIndex++) {
+            String intraResourcesScenarioLogsPath = SystemUtil.getDataFileIntraResourcesFolderPath(epoch, exampleNumber, chromosomeIndex);
+            Reader reader = new Reader(
+                    intraResourcesScenarioLogsPath
+                    + exampleDataSet.getUnitMarking()
+                    + "/" + exampleDataSet.getDataSetName()
+                    + ".csv"
+            );
 
+            reader.readLine(); // Ignore timestamp metadata
+            reader.readLine(); // Ignore scenario metadata
+            reader.readLine(); // Ignore unit marking
+            reader.readLine(); // Ignore header
+
+            String line;
+            for (int i = 0; i < exampleDataSet.getNumOfTicks() && (line = reader.readLine()) != null; i++) {
+                D exampleEvaluationDataRow = exampleDataSet.getDataRows().get(i);
+                try {
+                    D chromosomeEvaluationDataRow = evaluationDataRowClass.newInstance();
+                    chromosomeEvaluationDataRow.setValues(Reader.stringToCsvList(line));
+                    ArrayList<Double> fitnessList = evaluate(exampleEvaluationDataRow, chromosomeEvaluationDataRow);
+                    population.get(chromosomeIndex).setFitness(fitnessList);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
         }
 
             // Evaluate each chromosome by running functions in FitnessFunctions and store in fitness list in the chromosomes
@@ -61,23 +81,26 @@ public class SimpleSingleObjectiveGA extends Algorithm {
             // TODO Replace random with binary tournament
             // Crossover or mutation
             while (newPopulation.getSize() > SimpleSingleObjectiveGASettings.populationSize) {
-                int randIndex1 = random.nextInt(population.getSize());
-                int randIndex2 = random.nextInt(population.getSize());
-                int parent1index = Math.min(randIndex1, randIndex2);
+                EvaluatedGenBehaviorTree parent1 = population.selectionTournament(2, oneDimensionalComparator);
 
                 if (random.nextDouble() < SimpleSingleObjectiveGASettings.crossoverRate) {
-                    int randIndex3 = random.nextInt(population.getSize());
-                    int randIndex4 = random.nextInt(population.getSize());
-                    int parent2index = Math.min(randIndex3, randIndex4);
-                    newPopulation.add(population.crossover(parent1index, parent2index));
+                    EvaluatedGenBehaviorTree parent2 = population.selectionTournament(2, oneDimensionalComparator);
+                    newPopulation.add(population.crossover(parent1, parent2));
                 } else if (random.nextDouble() < SimpleSingleObjectiveGASettings.mutationRate) {
-                    newPopulation.add(population.mutate(parent1index));
+                    newPopulation.add(population.mutate(parent1));
                 } else {
-                    newPopulation.add(population.cloneElement(parent1index));
+                    newPopulation.add(parent1.clone());
                 }
             }
-
         population = newPopulation;
+    }
+
+    private ArrayList<Double> evaluate(D exampleEvaluationDataRow, D chromosomeEvaluationDataRow) {
+//        System.out.println();
+//        System.out.println(exampleEvaluationDataRow.toString());
+//        System.out.println(chromosomeEvaluationDataRow.toString());
+        // TODO
+        return new ArrayList<>();
     }
 
 

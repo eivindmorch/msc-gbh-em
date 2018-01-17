@@ -17,8 +17,13 @@ public abstract class UnitHandler {
 
     // Unit marking options
     public static char GOAL_SEPARATOR = '-';
+
     public static char OPTIONS_START = '[';
     public static char OPTIONS_END = ']';
+
+    public static char COMMENTS_START = '(';
+    public static char COMMENTS_END = ')';
+
     public static char CONTROLLED = 'c';
 
 
@@ -70,14 +75,12 @@ public abstract class UnitHandler {
     }
 
     public static String getUnitIdentifier(String marking) {
-        int indexOfDash = marking.indexOf(GOAL_SEPARATOR);
-        int indexOfOptionsStart = marking.indexOf(OPTIONS_START);
+        String strippedMarking = stripMarkingOfOptions(stripMarkingOfComments(marking));
+        int indexOfDash = strippedMarking.indexOf(GOAL_SEPARATOR);
         if (indexOfDash >= 0) {
-            return marking.substring(0, marking.indexOf(GOAL_SEPARATOR));
-        } else if (indexOfOptionsStart >= 0) {
-            return marking.substring(0, marking.indexOf(OPTIONS_START));
+            return strippedMarking.substring(0, strippedMarking.indexOf(GOAL_SEPARATOR));
         }
-        return marking;
+        return strippedMarking;
     }
 
     public static boolean shouldBeControlledUnit(Unit unit) {
@@ -94,6 +97,14 @@ public abstract class UnitHandler {
         return new ArrayList<>();
     }
 
+    public static String stripMarkingOfComments(String marking) {
+        return marking.replaceAll("\\" + COMMENTS_START + ".*" + "\\" + COMMENTS_END, "");
+    }
+
+    public static String stripMarkingOfOptions(String marking) {
+        return marking.replaceAll("\\" + OPTIONS_START + ".*" + OPTIONS_END, "");
+    }
+
     public static void reset() {
         logger.info("Resetting unit storage.");
         unitIdentifierToUnitMap = new HashMap<>();
@@ -104,6 +115,7 @@ public abstract class UnitHandler {
             addUnitMethod.reset();
         }
     }
+
 
     public interface AddUnitMethod {
         void addUnit(PhysicalEntityObject physicalEntity);
