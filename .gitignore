@@ -56,7 +56,8 @@ fabric.properties
 hs_err_pid*
 
 # Data files #
-/src/main/resources/data
+/src/main/resources/data/*
+!/src/main/resources/data/examples
 
 # Maven #
 /target
