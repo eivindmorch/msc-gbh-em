@@ -21,6 +21,9 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     private SimEngine simEngine;
     private SimGui simGui;
 
+    private int ticksToPlay;
+    private SimulationEndedListener simulationEndedListener;
+
     private SimController() {}
 
     public static SimController getInstance() {
@@ -35,7 +38,16 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         UnitHandler.updateUnits(timestamp);
         UnitLogger.logAllRegisteredUnits();
         UnitHandler.tickAllControlledUnits();
-//        SystemUtil.sleepMilliseconds(SimSettings.simulationTickDelayInMilliseconds);
+
+        // If ticksToPlay == 0, then run infinite number of ticks
+        if (ticksToPlay > 0) {
+            System.out.println(ticksToPlay);
+            ticksToPlay -= 1;
+            if (ticksToPlay == 0) {
+                pause();
+                simulationEndedListener.onSimulationEnd();
+            }
+        }
     }
 
     @Override
@@ -48,6 +60,17 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         Federate.getInstance().sendCgfPlayInteraction();
     }
 
+    /**
+     * Runs a specified number of ticks before pausing the simulation and notifying the listener.
+     * @param numOfTicks Number of ticks to run.
+     * @param simulationEndedListener
+     */
+    public void play(int numOfTicks, SimulationEndedListener simulationEndedListener) {
+        ticksToPlay = numOfTicks;
+        this.simulationEndedListener = simulationEndedListener;
+        play();
+    }
+
     public void pause() {
         logger.info("Pausing scenario.");
         Federate.getInstance().sendCgfPauseInteraction();
@@ -58,7 +81,6 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         Federate.getInstance().sendCgfPauseInteraction();
         UnitHandler.reset();
         UnitLogger.reset();
-        // TODO Delay here? Ask Rikke/Martin
         Federate.getInstance().sendCgfRewindInteraction();
     }
 

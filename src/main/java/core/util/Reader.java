@@ -7,16 +7,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static core.settings.SystemSettings.resourcesFilePath;
+import static core.settings.SystemSettings.RESOURCES_FILE_PATH;
 
 
 public class Reader {
 
     private BufferedReader bufferedReader;
 
-    public Reader(String intraResourcesPath) {
+    public Reader(String intraResourcesFilePath) {
         try {
-            File dataFile = new File((resourcesFilePath + intraResourcesPath));
+            File dataFile = new File((RESOURCES_FILE_PATH + intraResourcesFilePath));
             bufferedReader = new BufferedReader(new FileReader(dataFile));
         } catch (IOException e) {
             e.printStackTrace();

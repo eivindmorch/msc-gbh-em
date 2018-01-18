@@ -7,7 +7,7 @@ import java.util.List;
 
 public class FollowerEvaluationDataRow extends DataRow {
 
-    private String dataSetName = "FollowerEvaluationData";
+    public static String dataSetName = "FollowerEvaluationData";
 
     private double distanceToTarget;
 
@@ -27,12 +27,16 @@ public class FollowerEvaluationDataRow extends DataRow {
 
     @Override
     public String getDataSetName() {
-        return this.dataSetName;
+        return FollowerEvaluationDataRow.dataSetName;
     }
 
     @Override
     public String getHeader() {
         return "timestamp, distance to target";
+    }
+
+    public double getDistanceToTarget() {
+        return distanceToTarget;
     }
 
     @Override

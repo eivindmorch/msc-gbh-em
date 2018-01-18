@@ -68,7 +68,6 @@
 
         <Logger name="core.simulation.SimGui" level="debug" additivity="false">
             <AppenderRef ref="SimGui"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
     </Loggers>

@@ -51,7 +51,7 @@ public abstract class UnitLogger {
                                 SystemStatus.currentTrainingEpoch,
                                 SystemStatus.currentTrainingExampleDataSetIndex,
                                 SystemStatus.currentTrainingChromosome
-                        ) + unit.getMarking(),
+                        ) + unit.getMarking() + "/",
                         dataRow.getDataSetName() + ".csv"
                 ));
             }

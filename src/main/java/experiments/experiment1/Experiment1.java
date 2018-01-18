@@ -4,6 +4,7 @@ import core.simulation.Rti;
 import core.simulation.SimController;
 import core.simulation.federate.Federate;
 import core.training.Trainer;
+import core.training.algorithms.Algorithm;
 import core.training.algorithms.SimpleSingleObjectiveGA;
 import core.unit.UnitHandler;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
@@ -43,8 +44,11 @@ public class Experiment1 {
         SimController.getInstance().startSimGui();
 
         sleepSeconds(5);
+        Algorithm<FollowerEvaluationDataRow> algorithm = new SimpleSingleObjectiveGA<>(FollowerEvaluationDataRow.class);
+        algorithm.setFitnessEvaluator(new Experiment1FitnessEvaluator());
+
         Trainer<FollowerUnit, FollowerEvaluationDataRow> trainer = new Trainer<>(FollowerUnit.class, FollowerEvaluationDataRow.class);
-        trainer.setAlgorithm(new SimpleSingleObjectiveGA<>(FollowerEvaluationDataRow.class));
+        trainer.setAlgorithm(algorithm);
         trainer.start();
 
 

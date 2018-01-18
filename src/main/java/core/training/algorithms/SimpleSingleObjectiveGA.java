@@ -5,9 +5,11 @@ import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.model.btree.EvaluatedGenBehaviorTree;
 import core.settings.algorithms.SimpleSingleObjectiveGASettings;
+import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.util.Reader;
 import core.util.SystemUtil;
+import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,6 +19,7 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
 
     OneDimensionalComparator oneDimensionalComparator;
     Random random;
+    private FitnessEvaluator fitnessEaluator;
 
     public SimpleSingleObjectiveGA(Class<D> evaluationDataRowClass) {
         super(evaluationDataRowClass);
@@ -33,7 +36,7 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
     @Override
     public void step(int epoch, int exampleNumber, DataSet<D> exampleDataSet) {
         // SIMULATION
-            trainer.simulatePopulation(population);
+            trainer.simulatePopulation(population, exampleDataSet.getNumOfTicks());
 
         // EVALUATION
 
@@ -41,31 +44,15 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
         // Obtain files for simulated population
         for (int chromosomeIndex = 0; chromosomeIndex < population.getSize(); chromosomeIndex++) {
             String intraResourcesScenarioLogsPath = SystemUtil.getDataFileIntraResourcesFolderPath(epoch, exampleNumber, chromosomeIndex);
-            Reader reader = new Reader(
+            DataSet<D> chromosomeDataSet = new DataSet<>(
+                    evaluationDataRowClass,
                     intraResourcesScenarioLogsPath
-                    + exampleDataSet.getUnitMarking()
-                    + "/" + exampleDataSet.getDataSetName()
-                    + ".csv"
+                        + exampleDataSet.getUnitMarking()
+                        + "/" + exampleDataSet.getDataSetName()
+                        + ".csv"
             );
-
-            reader.readLine(); // Ignore timestamp metadata
-            reader.readLine(); // Ignore scenario metadata
-            reader.readLine(); // Ignore unit marking
-            reader.readLine(); // Ignore header
-
-            String line;
-            for (int i = 0; i < exampleDataSet.getNumOfTicks() && (line = reader.readLine()) != null; i++) {
-                D exampleEvaluationDataRow = exampleDataSet.getDataRows().get(i);
-                try {
-                    D chromosomeEvaluationDataRow = evaluationDataRowClass.newInstance();
-                    chromosomeEvaluationDataRow.setValues(Reader.stringToCsvList(line));
-                    ArrayList<Double> fitnessList = evaluate(exampleEvaluationDataRow, chromosomeEvaluationDataRow);
-                    population.get(chromosomeIndex).setFitness(fitnessList);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            }
+            ArrayList<Double> chromosomeFitness = evaluate(exampleDataSet, chromosomeDataSet);
+            population.get(chromosomeIndex).setFitness(chromosomeFitness);
         }
 
             // Evaluate each chromosome by running functions in FitnessFunctions and store in fitness list in the chromosomes
@@ -78,9 +65,8 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
             for (int i = 0; i < SimpleSingleObjectiveGASettings.elitismPercentage * population.getSize(); i++) {
                 newPopulation.add(population.get(i));
             }
-            // TODO Replace random with binary tournament
             // Crossover or mutation
-            while (newPopulation.getSize() > SimpleSingleObjectiveGASettings.populationSize) {
+            while (newPopulation.getSize() < SimpleSingleObjectiveGASettings.populationSize) {
                 EvaluatedGenBehaviorTree parent1 = population.selectionTournament(2, oneDimensionalComparator);
 
                 if (random.nextDouble() < SimpleSingleObjectiveGASettings.crossoverRate) {
@@ -93,14 +79,22 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
                 }
             }
         population = newPopulation;
+        System.out.println(population);
     }
 
-    private ArrayList<Double> evaluate(D exampleEvaluationDataRow, D chromosomeEvaluationDataRow) {
-//        System.out.println();
-//        System.out.println(exampleEvaluationDataRow.toString());
-//        System.out.println(chromosomeEvaluationDataRow.toString());
-        // TODO
-        return new ArrayList<>();
+    private ArrayList<Double> evaluate(DataSet<D> exampleDataSet, DataSet<D> chromosomeDataSet) {
+        try {
+            return fitnessEaluator.evaluate(exampleDataSet, chromosomeDataSet);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+            return null;
+        }
+    }
+
+    @Override
+    public void setFitnessEvaluator(FitnessEvaluator fitnessEvaluator) {
+        this.fitnessEaluator = fitnessEvaluator;
     }
 
 

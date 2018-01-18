@@ -2,6 +2,7 @@ package core.training.algorithms;
 
 import core.data.DataSet;
 import core.data.rows.DataRow;
+import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.Trainer;
 
@@ -24,6 +25,8 @@ public abstract class Algorithm<D extends DataRow> {
     public abstract void setup();
 
     public abstract void step(int epoch, int exampleNumber, DataSet<D> exampleDataSet);
+
+    public abstract void setFitnessEvaluator(FitnessEvaluator fitnessEvaluator);
 
     public abstract void cleanup();
 

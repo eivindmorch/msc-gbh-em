@@ -5,8 +5,6 @@ import core.util.Reader;
 
 import java.util.ArrayList;
 
-import static core.settings.SystemSettings.intraResourcesExamplesFolderPath;
-
 public class DataSet<D extends DataRow> {
 
     private String scenarioPath;
@@ -14,10 +12,10 @@ public class DataSet<D extends DataRow> {
     private String unitMarking;
     private int numOfTicks;
 
-    public DataSet(Class<D> dataRowClass, String exampleName) {
+    public DataSet(Class<D> dataRowClass, String intraResourcesFilePath) {
         dataRows = new ArrayList<>();
 
-        Reader reader = new Reader(intraResourcesExamplesFolderPath + exampleName);
+        Reader reader = new Reader(intraResourcesFilePath);
         reader.readLine(); // Ignore start time
 
         scenarioPath = reader.readLine().split(": ")[1];

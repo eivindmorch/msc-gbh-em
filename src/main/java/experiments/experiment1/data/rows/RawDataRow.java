@@ -12,7 +12,7 @@ import java.util.List;
 
 public class RawDataRow extends DataRow {
 
-    private String dataSetName = "RawData";
+    public static String dataSetName = "RawData";
 
     private Lla lla;
     private Double movementAngle;
@@ -61,7 +61,7 @@ public class RawDataRow extends DataRow {
 
     @Override
     public String getDataSetName() {
-        return this.dataSetName;
+        return RawDataRow.dataSetName;
     }
 
     @Override

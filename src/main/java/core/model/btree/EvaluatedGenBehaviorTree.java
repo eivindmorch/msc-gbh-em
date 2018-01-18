@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class EvaluatedGenBehaviorTree {
 
     private GenBehaviorTree btree;
+    // TODO Change fitness to map?
     private ArrayList<Double> fitness;
 
     public EvaluatedGenBehaviorTree(GenBehaviorTree btree) {
@@ -32,5 +33,10 @@ public class EvaluatedGenBehaviorTree {
         EvaluatedGenBehaviorTree newEvalBtree = new EvaluatedGenBehaviorTree(btree.clone());
         newEvalBtree.setFitness(fitness);
         return newEvalBtree;
+    }
+
+    @Override
+    public String toString() {
+        return "EvaluatedGenBehaviorTree@" + hashCode() + "{ Fitness" + fitness.toString() + ", Btree: " + btree;
     }
 }

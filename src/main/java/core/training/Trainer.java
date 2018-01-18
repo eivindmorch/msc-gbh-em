@@ -2,6 +2,7 @@ package core.training;
 
 import core.data.DataSet;
 import core.data.rows.DataRow;
+import core.simulation.SimulationEndedListener;
 import core.unit.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,20 +16,22 @@ import core.util.SystemStatus;
 import java.util.ArrayList;
 import java.util.List;
 
+import static core.settings.SystemSettings.INTRA_RESOURCES_EXAMPLES_FOLDER_PATH;
 import static core.util.SystemUtil.sleepSeconds;
 
 
 // U for unit to be trained, D for data to be used for evaluation
-public class Trainer<U extends Unit, D extends DataRow> {
+public class Trainer<U extends Unit, D extends DataRow> implements SimulationEndedListener{
 
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
     private Algorithm<D> algorithm;
-    private boolean running;
     private List<DataSet<D>> exampleDataSets;
 
     private Class<U> unitToTrainClass;
     private Class<D> evaluationDataRowClass;
+
+    private volatile boolean simulationRunning;
 
     public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass) {
         SystemStatus.systemMode = SystemMode.TRAINING;
@@ -40,17 +43,16 @@ public class Trainer<U extends Unit, D extends DataRow> {
     }
 
     public void start() {
-        running = true;
         algorithm.setup();
-        while (running) {
-            for (int epoch = 0; epoch < TrainingSettings.epochs; epoch++) {
-                SystemStatus.currentTrainingEpoch = epoch;
-                for (int exampleDataSetIndex = 0; exampleDataSetIndex < exampleDataSets.size(); exampleDataSetIndex++) {
-                    SystemStatus.currentTrainingExampleDataSetIndex = exampleDataSetIndex;
-                    DataSet<D> exampleDataSet = exampleDataSets.get(exampleDataSetIndex);
-                    SimController.getInstance().loadScenario(exampleDataSet.getScenarioPath());
-                    algorithm.step(epoch, exampleDataSetIndex, exampleDataSet);
-                }
+        for (int epoch = 0; epoch < TrainingSettings.epochs; epoch++) {
+            SystemStatus.currentTrainingEpoch = epoch;
+            for (int exampleDataSetIndex = 0; exampleDataSetIndex < exampleDataSets.size(); exampleDataSetIndex++) {
+                SystemStatus.currentTrainingExampleDataSetIndex = exampleDataSetIndex;
+                DataSet<D> exampleDataSet = exampleDataSets.get(exampleDataSetIndex);
+                SimController.getInstance().loadScenario(exampleDataSet.getScenarioPath());
+                // TODO
+                sleepSeconds(10);
+                algorithm.step(epoch, exampleDataSetIndex, exampleDataSet);
             }
         }
         // ParetoPlotter.plot();
@@ -59,7 +61,7 @@ public class Trainer<U extends Unit, D extends DataRow> {
     private ArrayList<DataSet<D>> loadExampleDataSets() {
         ArrayList<DataSet<D>> exampleDataSets = new ArrayList<>();
         for (String exampleName : TrainingSettings.examples) {
-            exampleDataSets.add(new DataSet<>(evaluationDataRowClass, exampleName));
+            exampleDataSets.add(new DataSet<>(evaluationDataRowClass, INTRA_RESOURCES_EXAMPLES_FOLDER_PATH + exampleName));
         }
         return exampleDataSets;
     }
@@ -69,16 +71,29 @@ public class Trainer<U extends Unit, D extends DataRow> {
         this.algorithm.setTrainer(this);
     }
 
-    public void simulatePopulation(Population population) {
+    /**
+     * Simulates the population by simulating each chromosome for the specified number of ticks.
+     * @param population
+     * @param numOfTicks Number of ticks to simulate each chromosome.
+     */
+    public void simulatePopulation(Population population, int numOfTicks) {
         for (int i = 0; i < population.getSize(); i++) {
+            SimController.getInstance().rewind();
             SystemStatus.currentTrainingChromosome = i;
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, population.get(i).getBtree());
-            SimController.getInstance().play();
-            sleepSeconds(10);
-            SimController.getInstance().pause();
-            // TODO Enable
-//            SimController.getInstance().rewind();
+            runSimulationForNTicks(numOfTicks);
         }
     }
 
+    private void runSimulationForNTicks(int ticks){
+        simulationRunning = true;
+        SimController.getInstance().play(ticks, this);
+        while(simulationRunning) {
+        }
+    }
+
+    @Override
+    public void onSimulationEnd() {
+        simulationRunning = false;
+    }
 }

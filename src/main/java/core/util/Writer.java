@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static core.settings.SystemSettings.resourcesFilePath;
+import static core.settings.SystemSettings.RESOURCES_FILE_PATH;
 
 
 public class Writer {
@@ -14,10 +14,10 @@ public class Writer {
 
     public Writer(String intraResourcesFolderPath, String fileName) {
         try {
-            String absoluteFolderPath = resourcesFilePath + intraResourcesFolderPath;
+            String absoluteFolderPath = RESOURCES_FILE_PATH + intraResourcesFolderPath;
             new File(absoluteFolderPath).mkdirs();
 
-            bufferedWriter = new BufferedWriter(new FileWriter((absoluteFolderPath + "/" + fileName)));
+            bufferedWriter = new BufferedWriter(new FileWriter((absoluteFolderPath + fileName)));
         } catch (IOException e) {
             e.printStackTrace();
         }

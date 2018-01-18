@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FollowerProcessedDataRow extends DataRow {
 
-    private String dataSetName = "FollowerProcessedData";
+    public static String dataSetName = "FollowerProcessedData";
 
     private double distanceToTarget;
     private Double targetMovementAngleRelativeToFollowerPosition;
@@ -53,7 +53,7 @@ public class FollowerProcessedDataRow extends DataRow {
 
     @Override
     public String getDataSetName() {
-        return this.dataSetName;
+        return FollowerProcessedDataRow.dataSetName;
     }
 
     @Override

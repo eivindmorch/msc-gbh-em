@@ -5,7 +5,7 @@ import java.util.Date;
 
 public abstract class SystemStatus {
 
-    public static String startTime = SystemSettings.dateFormat.format(new Date());
+    public static String startTime = SystemSettings.DATE_FORMAT.format(new Date());
     public static String currentScenario;
     public static SystemMode systemMode = SystemMode.UNSPECIFIED; // Overwritten by main classes
 

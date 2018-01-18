@@ -6,5 +6,5 @@ public class SimpleSingleObjectiveGASettings {
     public static final double mutationRate = 0.2;
     public static final double crossoverRate = 0.8;
 
-    public static final int populationSize = 1;
+    public static final int populationSize = 5;
 }

@@ -78,5 +78,13 @@ public class Population {
         return Collections.min(listOfContenders, comparator);
     }
 
-
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Population@" + hashCode() + " {");
+        for (EvaluatedGenBehaviorTree evaluatedGenBehaviorTree: population) {
+            sb.append("\n\t").append(evaluatedGenBehaviorTree);
+        }
+        sb.append("\n}");
+        return sb.toString();
+    }
 }
