@@ -1,5 +1,6 @@
 package core.unit;
 
+import com.badlogic.gdx.ai.btree.BranchTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.sun.istack.internal.NotNull;
 import core.model.btree.Blackboard;
@@ -14,26 +15,26 @@ public class UnitTypeInfo {
     private String name;
     private String symbol;
     private Class<? extends Unit> unitClass;
-    private List<? extends Class<? extends Task<? extends Blackboard>>> availableTasks;
-
-    private static HashMap<String, UnitTypeInfo> symbolToUnitInfoMap = new HashMap<>();
-
-    public static UnitTypeInfo getUnitInfoFromSymbol(String symbol) {
-        return symbolToUnitInfoMap.get(symbol);
-    }
+    private List<Class<? extends Task<? extends Blackboard>>> availableLeafTasks;
+    private List<Class<? extends BranchTask>> availableCompositeTasks;
 
     public static void add(String name, String symbol, Class<? extends Unit> unitClass,
-                           @NotNull List<? extends Class<? extends Task<? extends Blackboard>>> availableTasks) {
-        UnitTypeInfo unitTypeInfo = new UnitTypeInfo(name, symbol, unitClass, availableTasks);
+                           List<Class<? extends Task<? extends Blackboard>>> availableLeafTasks,
+                           List<Class<? extends BranchTask>> availableCompositeTasks) {
+
+        UnitTypeInfo unitTypeInfo = new UnitTypeInfo(name, symbol, unitClass, availableLeafTasks, availableCompositeTasks);
         UnitTypeInfo.symbolToUnitInfoMap.put(symbol, unitTypeInfo);
+        UnitTypeInfo.unitClassToUnitInfoMap.put(unitClass, unitTypeInfo);
     }
 
     private UnitTypeInfo(String name, String symbol, Class<? extends Unit> unitClass,
-                         @NotNull List<? extends Class<? extends Task<? extends Blackboard>>> availableTasks) {
+                         List<Class<? extends Task<? extends Blackboard>>> availableLeafTasks,
+                         List<Class<? extends BranchTask>> availableCompositeTasks) {
         this.name = name;
         this.symbol = symbol;
         this.unitClass = unitClass;
-        this.availableTasks = availableTasks;
+        this.availableLeafTasks = availableLeafTasks;
+        this.availableCompositeTasks = availableCompositeTasks;
     }
 
     public String getName() {
@@ -48,7 +49,24 @@ public class UnitTypeInfo {
         return unitClass;
     }
 
-    public List<? extends Class<? extends Task<? extends Blackboard>>> getAvailableTasks() {
-        return availableTasks;
+    public List<Class<? extends Task<? extends Blackboard>>> getAvailableLeafTasks() {
+        return availableLeafTasks;
+    }
+
+    public List<Class<? extends BranchTask>> getAvailableCompositeTasks() {
+        return availableCompositeTasks;
+    }
+
+
+    // STATIC
+    private static HashMap<String, UnitTypeInfo> symbolToUnitInfoMap = new HashMap<>();
+    private static HashMap<Class<? extends Unit>, UnitTypeInfo> unitClassToUnitInfoMap = new HashMap<>();
+
+    public static UnitTypeInfo getUnitInfoFromSymbol(String symbol) {
+        return symbolToUnitInfoMap.get(symbol);
+    }
+
+    public static UnitTypeInfo getUnitInfoFromUnitClass(Class<? extends Unit> unitClass) {
+        return unitClassToUnitInfoMap.get(unitClass);
     }
 }

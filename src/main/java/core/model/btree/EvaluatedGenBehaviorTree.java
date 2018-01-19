@@ -37,6 +37,6 @@ public class EvaluatedGenBehaviorTree {
 
     @Override
     public String toString() {
-        return "EvaluatedGenBehaviorTree@" + hashCode() + "{ Fitness" + fitness.toString() + ", Btree: " + btree;
+        return "EvaluatedGenBehaviorTree@" + hashCode() + " {Fitness: " + fitness + ", " + "Btree: " + btree + "}";
     }
 }

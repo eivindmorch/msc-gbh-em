@@ -9,6 +9,7 @@ public abstract class SystemStatus {
     public static String currentScenario;
     public static SystemMode systemMode = SystemMode.UNSPECIFIED; // Overwritten by main classes
 
+    // TODO Not compatible with multiple trainers (for writing)
     public static int currentTrainingEpoch = 0;
     public static int currentTrainingExampleDataSetIndex = 0;
     public static int currentTrainingChromosome = 0;

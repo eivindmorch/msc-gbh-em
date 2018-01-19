@@ -11,10 +11,12 @@ public abstract class Algorithm<D extends DataRow> {
 
     Trainer trainer;
     Population population;
+    FitnessEvaluator fitnessEvaluator;
     public Class<D> evaluationDataRowClass;
 
-    public Algorithm(Class<D> evaluationDataRowClass) {
+    public Algorithm(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator) {
         this.population = new Population();
+        this.fitnessEvaluator = fitnessEvaluator;
         this.evaluationDataRowClass = evaluationDataRowClass;
     }
 
@@ -25,8 +27,6 @@ public abstract class Algorithm<D extends DataRow> {
     public abstract void setup();
 
     public abstract void step(int epoch, int exampleNumber, DataSet<D> exampleDataSet);
-
-    public abstract void setFitnessEvaluator(FitnessEvaluator fitnessEvaluator);
 
     public abstract void cleanup();
 

@@ -6,7 +6,6 @@ import core.simulation.SimulationEndedListener;
 import core.unit.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import core.settings.TrainingSettings;
 import core.simulation.SimController;
 import core.training.algorithms.Algorithm;
 import core.unit.ControlledUnit;
@@ -33,18 +32,22 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
 
     private volatile boolean simulationRunning;
 
-    public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass) {
+    public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass, Algorithm<D> algorithm, String[] exampleFileNames) {
         SystemStatus.systemMode = SystemMode.TRAINING;
 
         this.unitToTrainClass = unitToTrainClass;
         this.evaluationDataRowClass = evaluationDataRowClass;
 
-        exampleDataSets = loadExampleDataSets();
+        this.algorithm = algorithm;
+        this.algorithm.setTrainer(this);
+        this.algorithm.setup();
+
+        exampleDataSets = loadExampleDataSets(exampleFileNames);
     }
 
-    public void start() {
-        algorithm.setup();
-        for (int epoch = 0; epoch < TrainingSettings.epochs; epoch++) {
+    public void train(int epochs) {
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            // TODO Not working when calling train twice (overwrites)
             SystemStatus.currentTrainingEpoch = epoch;
             for (int exampleDataSetIndex = 0; exampleDataSetIndex < exampleDataSets.size(); exampleDataSetIndex++) {
                 SystemStatus.currentTrainingExampleDataSetIndex = exampleDataSetIndex;
@@ -58,21 +61,16 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
         // ParetoPlotter.plot();
     }
 
-    private ArrayList<DataSet<D>> loadExampleDataSets() {
+    private ArrayList<DataSet<D>> loadExampleDataSets(String[] exampleFileNames) {
         ArrayList<DataSet<D>> exampleDataSets = new ArrayList<>();
-        for (String exampleName : TrainingSettings.examples) {
+        for (String exampleName : exampleFileNames) {
             exampleDataSets.add(new DataSet<>(evaluationDataRowClass, INTRA_RESOURCES_EXAMPLES_FOLDER_PATH + exampleName));
         }
         return exampleDataSets;
     }
 
-    public void setAlgorithm(Algorithm<D> algorithm) {
-        this.algorithm = algorithm;
-        this.algorithm.setTrainer(this);
-    }
-
     /**
-     * Simulates the population by simulating each chromosome for the specified number of ticks.
+     * Simulates the population by simulating each individual chromosome for the specified number of ticks.
      * @param population
      * @param numOfTicks Number of ticks to simulate each chromosome.
      */
@@ -90,6 +88,10 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
         SimController.getInstance().play(ticks, this);
         while(simulationRunning) {
         }
+    }
+
+    public Class<U> getUnitToTrainClass() {
+        return unitToTrainClass;
     }
 
     @Override

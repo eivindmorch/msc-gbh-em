@@ -2,7 +2,9 @@ package core.training;
 
 import core.model.btree.EvaluatedGenBehaviorTree;
 import core.model.btree.GenBehaviorTree;
+import core.unit.Unit;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,9 +20,13 @@ public class Population {
         population = new ArrayList<>();
     }
 
-    public void generateRandomPopulation(int size) {
+    public void generateRandomPopulation(int size, Class<? extends Unit> unitClass) {
         for (int i = 0; i < size; i++) {
-            population.add(new EvaluatedGenBehaviorTree(GenBehaviorTree.generateRandomTree()));
+            try {
+                population.add(new EvaluatedGenBehaviorTree(GenBehaviorTree.generateRandomTree(unitClass)));
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -47,7 +53,7 @@ public class Population {
 
     public EvaluatedGenBehaviorTree mutate(EvaluatedGenBehaviorTree btree) {
         // TODO
-        return btree.clone();
+        return btree;
     }
 
     public EvaluatedGenBehaviorTree cloneElement(int index) {

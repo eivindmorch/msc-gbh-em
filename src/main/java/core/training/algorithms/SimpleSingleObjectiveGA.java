@@ -10,6 +10,7 @@ import core.training.Population;
 import core.util.Reader;
 import core.util.SystemUtil;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
+import experiments.experiment1.unit.FollowerUnit;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,12 +18,11 @@ import java.util.Random;
 
 public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
 
-    OneDimensionalComparator oneDimensionalComparator;
-    Random random;
-    private FitnessEvaluator fitnessEaluator;
+    private OneDimensionalComparator oneDimensionalComparator;
+    private Random random;
 
-    public SimpleSingleObjectiveGA(Class<D> evaluationDataRowClass) {
-        super(evaluationDataRowClass);
+    public SimpleSingleObjectiveGA(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator) {
+        super(evaluationDataRowClass, fitnessEvaluator);
     }
 
     @Override
@@ -30,7 +30,8 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
         oneDimensionalComparator = new OneDimensionalComparator();
         random = new Random();
         population = new Population();
-        population.generateRandomPopulation(SimpleSingleObjectiveGASettings.populationSize);
+        population.generateRandomPopulation(SimpleSingleObjectiveGASettings.populationSize, trainer.getUnitToTrainClass());
+        System.out.println(population);
     }
 
     @Override
@@ -58,33 +59,38 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
             // Evaluate each chromosome by running functions in FitnessFunctions and store in fitness list in the chromosomes
 
         // SELECTION
+            // TODO Handle cloning here or in population? CONSISTENCY
             population.sort(oneDimensionalComparator);
             Population newPopulation = new Population();
 
             // Elitism
             for (int i = 0; i < SimpleSingleObjectiveGASettings.elitismPercentage * population.getSize(); i++) {
-                newPopulation.add(population.get(i));
+                newPopulation.add(population.get(i).clone());
             }
+
             // Crossover or mutation
             while (newPopulation.getSize() < SimpleSingleObjectiveGASettings.populationSize) {
                 EvaluatedGenBehaviorTree parent1 = population.selectionTournament(2, oneDimensionalComparator);
 
+                // TODO Separate in methods
                 if (random.nextDouble() < SimpleSingleObjectiveGASettings.crossoverRate) {
                     EvaluatedGenBehaviorTree parent2 = population.selectionTournament(2, oneDimensionalComparator);
-                    newPopulation.add(population.crossover(parent1, parent2));
+                    newPopulation.add(population.crossover(parent1.clone(), parent2.clone()));
                 } else if (random.nextDouble() < SimpleSingleObjectiveGASettings.mutationRate) {
-                    newPopulation.add(population.mutate(parent1));
+                    newPopulation.add(population.mutate(parent1.clone()));
                 } else {
                     newPopulation.add(parent1.clone());
                 }
             }
+        System.out.println("OLD " + population);
         population = newPopulation;
-        System.out.println(population);
+        population.sort(oneDimensionalComparator);
+        System.out.println("NEW " + population);
     }
 
     private ArrayList<Double> evaluate(DataSet<D> exampleDataSet, DataSet<D> chromosomeDataSet) {
         try {
-            return fitnessEaluator.evaluate(exampleDataSet, chromosomeDataSet);
+            return fitnessEvaluator.evaluate(exampleDataSet, chromosomeDataSet);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -93,23 +99,18 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
     }
 
     @Override
-    public void setFitnessEvaluator(FitnessEvaluator fitnessEvaluator) {
-        this.fitnessEaluator = fitnessEvaluator;
-    }
-
-
-    @Override
     public void cleanup() {
 
     }
 
+    // TODO Move to EvaluatedGenBehaviorTree?
     private class OneDimensionalComparator implements Comparator<EvaluatedGenBehaviorTree> {
         @Override
         public int compare(EvaluatedGenBehaviorTree o1, EvaluatedGenBehaviorTree o2) {
             if (o1.getFitness().get(0) < o2.getFitness().get(0)) {
-                return 1;
-            } else if (o1.getFitness().get(0) > o2.getFitness().get(0)) {
                 return -1;
+            } else if (o1.getFitness().get(0) > o2.getFitness().get(0)) {
+                return 1;
             }
             return 0;
         }
