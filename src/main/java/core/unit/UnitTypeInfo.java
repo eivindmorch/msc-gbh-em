@@ -15,11 +15,11 @@ public class UnitTypeInfo {
     private String name;
     private String symbol;
     private Class<? extends Unit> unitClass;
-    private List<Class<? extends Task<? extends Blackboard>>> availableLeafTasks;
+    private List<Class<? extends Task>> availableLeafTasks;
     private List<Class<? extends BranchTask>> availableCompositeTasks;
 
     public static void add(String name, String symbol, Class<? extends Unit> unitClass,
-                           List<Class<? extends Task<? extends Blackboard>>> availableLeafTasks,
+                           List<Class<? extends Task>> availableLeafTasks,
                            List<Class<? extends BranchTask>> availableCompositeTasks) {
 
         UnitTypeInfo unitTypeInfo = new UnitTypeInfo(name, symbol, unitClass, availableLeafTasks, availableCompositeTasks);
@@ -28,7 +28,7 @@ public class UnitTypeInfo {
     }
 
     private UnitTypeInfo(String name, String symbol, Class<? extends Unit> unitClass,
-                         List<Class<? extends Task<? extends Blackboard>>> availableLeafTasks,
+                         List<Class<? extends Task>> availableLeafTasks,
                          List<Class<? extends BranchTask>> availableCompositeTasks) {
         this.name = name;
         this.symbol = symbol;
@@ -49,7 +49,7 @@ public class UnitTypeInfo {
         return unitClass;
     }
 
-    public List<Class<? extends Task<? extends Blackboard>>> getAvailableLeafTasks() {
+    public List<Class<? extends Task>> getAvailableLeafTasks() {
         return availableLeafTasks;
     }
 

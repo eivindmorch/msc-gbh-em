@@ -14,16 +14,16 @@ public class Population {
 
     Random random = new Random();
 
-    private ArrayList<EvaluatedGenBehaviorTree> population;
+    private ArrayList<EvaluatedGenBehaviorTree> chromosomes;
 
     public Population() {
-        population = new ArrayList<>();
+        chromosomes = new ArrayList<>();
     }
 
     public void generateRandomPopulation(int size, Class<? extends Unit> unitClass) {
         for (int i = 0; i < size; i++) {
             try {
-                population.add(new EvaluatedGenBehaviorTree(GenBehaviorTree.generateRandomTree(unitClass)));
+                chromosomes.add(new EvaluatedGenBehaviorTree(GenBehaviorTree.generateRandomTree(unitClass)));
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -35,45 +35,23 @@ public class Population {
     }
 
     public void add(EvaluatedGenBehaviorTree btree) {
-        population.add(btree);
-    }
-
-    public EvaluatedGenBehaviorTree crossover(int parent1Index, int parent2Index) {
-        return crossover(get(parent1Index), get(parent2Index));
-    }
-
-    public EvaluatedGenBehaviorTree crossover(EvaluatedGenBehaviorTree parent1, EvaluatedGenBehaviorTree parent2) {
-        // TODO
-        return parent1;
-    }
-
-    public EvaluatedGenBehaviorTree mutate(int btreeIndex) {
-        return mutate(get(btreeIndex));
-    }
-
-    public EvaluatedGenBehaviorTree mutate(EvaluatedGenBehaviorTree btree) {
-        // TODO
-        return btree;
-    }
-
-    public EvaluatedGenBehaviorTree cloneElement(int index) {
-        return get(index).clone();
+        chromosomes.add(btree);
     }
 
     public void sort(Comparator<EvaluatedGenBehaviorTree> comparator) {
-        population.sort(comparator);
+        chromosomes.sort(comparator);
     }
 
     public int getSize() {
-        return population.size();
+        return chromosomes.size();
     }
 
-    public ArrayList<EvaluatedGenBehaviorTree> getPopulation() {
-        return population;
+    public ArrayList<EvaluatedGenBehaviorTree> getChromosomes() {
+        return chromosomes;
     }
 
     public EvaluatedGenBehaviorTree get(int i) {
-        return population.get(i);
+        return chromosomes.get(i);
     }
 
     public EvaluatedGenBehaviorTree selectionTournament(int numOfContenders, Comparator<EvaluatedGenBehaviorTree> comparator) {
@@ -87,7 +65,7 @@ public class Population {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Population@" + hashCode() + " {");
-        for (EvaluatedGenBehaviorTree evaluatedGenBehaviorTree: population) {
+        for (EvaluatedGenBehaviorTree evaluatedGenBehaviorTree: chromosomes) {
             sb.append("\n\t").append(evaluatedGenBehaviorTree);
         }
         sb.append("\n}");

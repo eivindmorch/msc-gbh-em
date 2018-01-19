@@ -15,7 +15,7 @@ public class Blackboard<U extends Unit> {
     }
 
     @Override
-    public Blackboard clone() {
+    public Blackboard<U> clone() {
         return new Blackboard<>(this.unit);
     }
 }

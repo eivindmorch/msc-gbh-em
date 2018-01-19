@@ -4,6 +4,7 @@ package core.training.algorithms;
 import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.model.btree.EvaluatedGenBehaviorTree;
+import core.model.btree.GenBehaviorTree;
 import core.settings.algorithms.SimpleSingleObjectiveGASettings;
 import core.training.FitnessEvaluator;
 import core.training.Population;
@@ -75,17 +76,15 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
                 // TODO Separate in methods
                 if (random.nextDouble() < SimpleSingleObjectiveGASettings.crossoverRate) {
                     EvaluatedGenBehaviorTree parent2 = population.selectionTournament(2, oneDimensionalComparator);
-                    newPopulation.add(population.crossover(parent1.clone(), parent2.clone()));
+                    newPopulation.add(GenBehaviorTree.crossover(parent1.getBtree().clone(), parent2.getBtree().clone()));
                 } else if (random.nextDouble() < SimpleSingleObjectiveGASettings.mutationRate) {
-                    newPopulation.add(population.mutate(parent1.clone()));
+                    newPopulation.add(GenBehaviorTree.mutate(parent1.getBtree().clone()));
                 } else {
                     newPopulation.add(parent1.clone());
                 }
             }
         System.out.println("OLD " + population);
         population = newPopulation;
-        population.sort(oneDimensionalComparator);
-        System.out.println("NEW " + population);
     }
 
     private ArrayList<Double> evaluate(DataSet<D> exampleDataSet, DataSet<D> chromosomeDataSet) {
@@ -97,6 +96,7 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
             return null;
         }
     }
+
 
     @Override
     public void cleanup() {

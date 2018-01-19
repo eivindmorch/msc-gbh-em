@@ -10,7 +10,9 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
+import core.model.btree.EvaluatedGenBehaviorTree;
 import core.model.btree.task.NamedTask;
+import core.training.Population;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +23,13 @@ public class Grapher extends JFrame{
     private ArrayList<Object> vertices;
     private mxGraph graph;
     private Object graphParent;
+
+    public static void graphPopulation(Population population) {
+        for (EvaluatedGenBehaviorTree evaluatedGenBehaviorTree : population.getChromosomes()) {
+            Grapher grapher = new Grapher(Integer.toString(evaluatedGenBehaviorTree.hashCode()));
+            grapher.graph(evaluatedGenBehaviorTree.getBtree());
+        }
+    }
 
     public Grapher(String title) {
         super(title);

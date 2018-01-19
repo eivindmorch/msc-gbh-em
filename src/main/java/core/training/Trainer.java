@@ -98,4 +98,8 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
     public void onSimulationEnd() {
         simulationRunning = false;
     }
+
+    public Population getPopulation() {
+        return algorithm.getPopulation();
+    }
 }

@@ -24,6 +24,10 @@ public abstract class Algorithm<D extends DataRow> {
         this.trainer = trainer;
     }
 
+    public Population getPopulation() {
+        return population;
+    }
+
     public abstract void setup();
 
     public abstract void step(int epoch, int exampleNumber, DataSet<D> exampleDataSet);
