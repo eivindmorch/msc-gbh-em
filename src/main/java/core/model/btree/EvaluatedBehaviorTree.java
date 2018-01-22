@@ -1,23 +1,21 @@
 package core.model.btree;
 
+import com.badlogic.gdx.ai.btree.Task;
+
 import java.util.ArrayList;
 
-public class EvaluatedGenBehaviorTree {
+public class EvaluatedBehaviorTree {
 
-    private GenBehaviorTree btree;
+    private Task btree;
     // TODO Change fitness to map?
     private ArrayList<Double> fitness;
 
-    public EvaluatedGenBehaviorTree(GenBehaviorTree btree) {
+    public EvaluatedBehaviorTree(Task btree) {
         this.btree = btree;
     }
 
-    public GenBehaviorTree getBtree() {
+    public Task getBtree() {
         return btree;
-    }
-
-    public void setBtree(GenBehaviorTree btree) {
-        this.btree = btree;
     }
 
     public ArrayList<Double> getFitness() {
@@ -29,14 +27,14 @@ public class EvaluatedGenBehaviorTree {
     }
 
     @Override
-    public EvaluatedGenBehaviorTree clone(){
-        EvaluatedGenBehaviorTree newEvalBtree = new EvaluatedGenBehaviorTree(btree.clone());
+    public EvaluatedBehaviorTree clone(){
+        EvaluatedBehaviorTree newEvalBtree = new EvaluatedBehaviorTree(BehaviorTreeUtil.clone(btree));
         newEvalBtree.setFitness(fitness);
         return newEvalBtree;
     }
 
     @Override
     public String toString() {
-        return "EvaluatedGenBehaviorTree@" + hashCode() + " {Fitness: " + fitness + ", " + "Btree: " + btree + "}";
+        return "EvaluatedBehaviorTree@" + hashCode() + " {Fitness: " + fitness + ", " + "Btree: " + btree + "}";
     }
 }

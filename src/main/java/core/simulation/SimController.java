@@ -41,7 +41,6 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
         // If ticksToPlay == 0, then run infinite number of ticks
         if (ticksToPlay > 0) {
-            System.out.println(ticksToPlay);
             ticksToPlay -= 1;
             if (ticksToPlay == 0) {
                 pause();

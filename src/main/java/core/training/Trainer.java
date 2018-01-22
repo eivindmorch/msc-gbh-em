@@ -1,9 +1,11 @@
 package core.training;
 
+import com.badlogic.gdx.ai.btree.Task;
 import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.simulation.SimulationEndedListener;
 import core.unit.Unit;
+import core.util.Grapher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import core.simulation.SimController;
@@ -78,8 +80,17 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
         for (int i = 0; i < population.getSize(); i++) {
             SimController.getInstance().rewind();
             SystemStatus.currentTrainingChromosome = i;
-            ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, population.get(i).getBtree());
+
+            Task btree = population.get(i).getBtree();
+
+//            Grapher grapher = new Grapher("Chromosome " + i);
+//            grapher.setLocation(0, 0);
+//            grapher.graph(btree);
+
+            ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
             runSimulationForNTicks(numOfTicks);
+//            grapher.setVisible(false);
+//            grapher.dispose();
         }
     }
 

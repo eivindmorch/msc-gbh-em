@@ -1,17 +1,15 @@
 package core.training.algorithms;
 
 
+import com.badlogic.gdx.ai.btree.Task;
 import core.data.DataSet;
 import core.data.rows.DataRow;
-import core.model.btree.EvaluatedGenBehaviorTree;
-import core.model.btree.GenBehaviorTree;
+import core.model.btree.EvaluatedBehaviorTree;
+import core.model.btree.BehaviorTreeUtil;
 import core.settings.algorithms.SimpleSingleObjectiveGASettings;
 import core.training.FitnessEvaluator;
 import core.training.Population;
-import core.util.Reader;
 import core.util.SystemUtil;
-import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
-import experiments.experiment1.unit.FollowerUnit;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -71,14 +69,16 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
 
             // Crossover or mutation
             while (newPopulation.getSize() < SimpleSingleObjectiveGASettings.populationSize) {
-                EvaluatedGenBehaviorTree parent1 = population.selectionTournament(2, oneDimensionalComparator);
+                EvaluatedBehaviorTree parent1 = population.selectionTournament(2, oneDimensionalComparator);
 
                 // TODO Separate in methods
                 if (random.nextDouble() < SimpleSingleObjectiveGASettings.crossoverRate) {
-                    EvaluatedGenBehaviorTree parent2 = population.selectionTournament(2, oneDimensionalComparator);
-                    newPopulation.add(GenBehaviorTree.crossover(parent1.getBtree().clone(), parent2.getBtree().clone()));
+                    EvaluatedBehaviorTree parent2 = population.selectionTournament(2, oneDimensionalComparator);
+                    Task crossoverTask = BehaviorTreeUtil.crossover(parent1.getBtree(), parent2.getBtree());
+                    newPopulation.add(new EvaluatedBehaviorTree(crossoverTask));
                 } else if (random.nextDouble() < SimpleSingleObjectiveGASettings.mutationRate) {
-                    newPopulation.add(GenBehaviorTree.mutate(parent1.getBtree().clone()));
+                    Task mutateTask = BehaviorTreeUtil.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
+                    newPopulation.add(new EvaluatedBehaviorTree(mutateTask));
                 } else {
                     newPopulation.add(parent1.clone());
                 }
@@ -103,10 +103,10 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
 
     }
 
-    // TODO Move to EvaluatedGenBehaviorTree?
-    private class OneDimensionalComparator implements Comparator<EvaluatedGenBehaviorTree> {
+    // TODO Move to EvaluatedBehaviorTree?
+    private class OneDimensionalComparator implements Comparator<EvaluatedBehaviorTree> {
         @Override
-        public int compare(EvaluatedGenBehaviorTree o1, EvaluatedGenBehaviorTree o2) {
+        public int compare(EvaluatedBehaviorTree o1, EvaluatedBehaviorTree o2) {
             if (o1.getFitness().get(0) < o2.getFitness().get(0)) {
                 return -1;
             } else if (o1.getFitness().get(0) > o2.getFitness().get(0)) {

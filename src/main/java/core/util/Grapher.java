@@ -1,6 +1,5 @@
 package core.util;
 
-import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
@@ -10,8 +9,8 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import core.model.btree.EvaluatedGenBehaviorTree;
-import core.model.btree.GenBehaviorTree;
+import core.model.btree.BehaviorTreeUtil;
+import core.model.btree.EvaluatedBehaviorTree;
 import core.model.btree.task.NamedTask;
 import core.training.Population;
 
@@ -26,9 +25,9 @@ public class Grapher extends JFrame{
     private Object graphParent;
 
     public static void graphPopulation(Population population) {
-        for (EvaluatedGenBehaviorTree evaluatedGenBehaviorTree : population.getChromosomes()) {
-            Grapher grapher = new Grapher(Integer.toString(evaluatedGenBehaviorTree.hashCode()));
-            grapher.graph(evaluatedGenBehaviorTree.getBtree());
+        for (EvaluatedBehaviorTree evaluatedBehaviorTree : population.getChromosomes()) {
+            Grapher grapher = new Grapher(Integer.toString(evaluatedBehaviorTree.hashCode()));
+            grapher.graph(evaluatedBehaviorTree.getBtree());
         }
     }
 
@@ -74,15 +73,13 @@ public class Grapher extends JFrame{
         this.setVisible(true);
     }
 
-    public void graph(GenBehaviorTree btree) {
-        graph(btree.getRoot());
-    }
-
     public void graph(Task root) {
+        Task rootClone = BehaviorTreeUtil.clone(root);
+
         graph.getModel().beginUpdate();
         try {
-            Object vertex = addVertex(getTaskName(root));
-            graphSubtree(root, vertex);
+            Object vertex = addVertex(getTaskName(rootClone));
+            graphSubtree(rootClone, vertex);
         } finally {
             graph.getModel().endUpdate();
         }

@@ -2,7 +2,7 @@ package experiments.experiment1;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import core.model.btree.GenBehaviorTree;
+import core.model.btree.BehaviorTreeUtil;
 import core.simulation.Rti;
 import core.simulation.SimController;
 import core.simulation.federate.Federate;
@@ -31,10 +31,15 @@ public class Experiment1 {
     private Experiment1() {
         Experiment1UnitInfo.init();
         UnitHandler.setAddUnitMethod(new Experiment1AddUnitMethod());
+
 //        testCrossover();
-//        run();
 //        testFlip();
-        testClean();
+//        testDelete();
+//        testInsert();
+//        testClean();
+//        testMutate();
+
+        run();
     }
 
 
@@ -72,10 +77,8 @@ public class Experiment1 {
                 exampleFileNames
         );
 
-        trainer.train(3);
+        trainer.train(10);
         Grapher.graphPopulation(trainer.getPopulation());
-
-        LeafTask move = new Move();
 
 //        sleepSeconds(20);
 //        rti.destroy();
@@ -83,15 +86,15 @@ public class Experiment1 {
 
     private void testCrossover() {
         try {
-            GenBehaviorTree btree1 = GenBehaviorTree.generateRandomTree(FollowerUnit.class);
+            Task btree1 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
             Grapher grapher1 = new Grapher("P1 @" + Integer.toString(btree1.hashCode()));
             grapher1.graph(btree1);
 
-            GenBehaviorTree btree2 = GenBehaviorTree.generateRandomTree(FollowerUnit.class);
+            Task btree2 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
             Grapher grapher2 = new Grapher("P2 @" + Integer.toString(btree2.hashCode()));
             grapher2.graph(btree2);
 
-            GenBehaviorTree btree3 = GenBehaviorTree.crossover(btree1, btree2);
+            Task btree3 = BehaviorTreeUtil.crossover(btree1, btree2);
             Grapher grapher3 = new Grapher("Child @" + Integer.toString(btree2.hashCode()));
             grapher3.graph(btree3);
 
@@ -102,12 +105,12 @@ public class Experiment1 {
 
     private void testClean() {
         try {
-            GenBehaviorTree btree1 = GenBehaviorTree.generateRandomTree(FollowerUnit.class);
+            Task btree1 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
             Grapher grapher1 = new Grapher("P1 @" + Integer.toString(btree1.hashCode()));
             grapher1.graph(btree1);
 
             Grapher grapher3 = new Grapher("Child @" + Integer.toString(btree1.hashCode()));
-            grapher3.graph(GenBehaviorTree.cloneAndRemoveEmptyAndSingleChildBranchTasks(btree1.getRoot()));
+            grapher3.graph(BehaviorTreeUtil.removeEmptyAndSingleChildCompositeTasks(btree1));
 
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
@@ -118,11 +121,11 @@ public class Experiment1 {
         try {
             Random random = new Random();
 
-            GenBehaviorTree btree1 = GenBehaviorTree.generateRandomTree(FollowerUnit.class);
+            Task btree1 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
             Grapher grapher1 = new Grapher("P1 @" + Integer.toString(btree1.hashCode()));
             grapher1.graph(btree1);
 
-            Task parent = GenBehaviorTree.getRandomTask(btree1.getRoot(), true);
+            Task parent = BehaviorTreeUtil.getRandomCompositeTask(btree1, 2);
 
 //            Task rnd1 = GenBehaviorTree.getRandomTask(btree1, true);
             Task rnd1 = parent.getChild(random.nextInt(parent.getChildCount()));
@@ -136,13 +139,67 @@ public class Experiment1 {
             Grapher grapher3 = new Grapher("R2 @" + Integer.toString(btree1.hashCode()));
             grapher3.graph(rnd2);
 
-            Task result = GenBehaviorTree.cloneBehaviorTreeAndFlipTwoSubtrees(btree1.getRoot(), rnd1, rnd2);
+            Task result = BehaviorTreeUtil.flipTwoTasks(btree1, rnd1, rnd2);
             Grapher grapher4 = new Grapher("RESULT @" + Integer.toString(btree1.hashCode()));
             grapher4.graph(result);
 
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void testDelete() {
+        try {
+            Task btree1 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+            Grapher grapher1 = new Grapher("P1 @" + Integer.toString(btree1.hashCode()));
+            grapher1.graph(btree1);
+
+            Task randTree = BehaviorTreeUtil.getRandomTask(btree1);
+            Grapher grapher3 = new Grapher("RANDOM TASK @" + Integer.toString(randTree.hashCode()));
+            grapher3.graph(randTree);
+
+            Task treeWithRemoved = BehaviorTreeUtil.removeTask(btree1, randTree);
+            Grapher grapher2 = new Grapher("RESULT @" + Integer.toString(treeWithRemoved.hashCode()));
+            grapher2.graph(treeWithRemoved);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void testInsert() {
+        try {
+            Task btree1 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+            Grapher grapher1 = new Grapher("P1 @" + Integer.toString(btree1.hashCode()));
+            grapher1.graph(btree1);
+
+            Task randTree = BehaviorTreeUtil.getRandomTask(btree1);
+            Grapher grapher3 = new Grapher("RANDOM TASK @" + Integer.toString(randTree.hashCode()));
+            grapher3.graph(randTree);
+
+            Task parentTask = BehaviorTreeUtil.getRandomCompositeTask(btree1, 0);
+            Task treeWithInserted = BehaviorTreeUtil.insertTask(btree1, parentTask, randTree, parentTask.getChildCount());
+            Grapher grapher2 = new Grapher("RESULT @" + Integer.toString(treeWithInserted.hashCode()));
+            grapher2.graph(treeWithInserted);
 
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void testMutate() {
+        for (int i = 0; i < 1000000; i++) {
+            try {
+                Task btree = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+//                Grapher grapher1 = new Grapher("P1 @" + Integer.toString(btree.hashCode()));
+//                grapher1.graph(btree);
+
+                Task mutatedTree = BehaviorTreeUtil.mutate(btree, FollowerUnit.class);
+//                Grapher grapher2 = new Grapher("MUTATED @" + Integer.toString(mutatedTree.hashCode()));
+//                grapher2.graph(mutatedTree);
+
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

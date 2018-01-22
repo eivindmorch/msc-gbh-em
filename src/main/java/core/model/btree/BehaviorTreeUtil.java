@@ -17,19 +17,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
+// TODO Doc all methods
+public abstract class BehaviorTreeUtil {
 
     private static Random random = new Random();
 
-    public GenBehaviorTree(Task task) {
-        super(task);
-    }
-
-    public Task getRoot() {
-        return this.getChild(0);
-    }
-
-    public static GenBehaviorTree generateRandomTree(Class<? extends Unit> unitClass)
+    public static Task generateRandomTree(Class<? extends Unit> unitClass)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         List<Class<? extends Task>> availableLeafTasks =
                 UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableLeafTasks();
@@ -37,15 +30,11 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
         List<Class<? extends BranchTask>> availableCompositeTasks =
                 UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks();
         // TODO Decorators
-        Task subtree = generateRandomSubtree(
-                availableLeafTasks,
-                availableCompositeTasks,
-                1
-        );
-        return new GenBehaviorTree(subtree);
+        Task subtree = generateRandomTree(availableLeafTasks, availableCompositeTasks,1);
+        return subtree;
     }
 
-    public static Task generateRandomSubtree(
+    private static Task generateRandomTree(
             List<Class<? extends Task>> availableLeafTasks,
             List<Class<? extends BranchTask>> availableCompositeTasks,
             double probabilityForComposite)
@@ -57,7 +46,7 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
         while (random.nextDouble() < probabilityForChild) {
             if (random.nextDouble() < probabilityForComposite) {
                 children.add(
-                        generateRandomSubtree(
+                        generateRandomTree(
                             availableLeafTasks,
                             availableCompositeTasks,
                             probabilityForComposite * 0.5
@@ -73,23 +62,12 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
             probabilityForChild *= 0.6;
         }
         Constructor<? extends BranchTask> constructor = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).getConstructor(Array.class);
-        return constructor.newInstance(children);
+        return removeEmptyAndSingleChildCompositeTasks(constructor.newInstance(children));
     }
 
-    public static GenBehaviorTree generateTestTree() {
-        Sequence waitAndTurnToSequence = new Sequence(new Wait(), new TurnToHeading());
-        Selector shouldMoveSelector = new Selector(new IsApproaching(15), new IsCloseEnough(5));
-        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, waitAndTurnToSequence);
-        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new Move());
-        return new GenBehaviorTree(waitOrMoveSelector);
-    }
-
-    @Override
-    public GenBehaviorTree clone() {
-        Task root = this.getChild(0);
-        Task newRoot =
-                cloneBehaviorTreeAndInsertSubtree(root, null, null, 0);
-        return new GenBehaviorTree(newRoot);
+    public static Task clone(Task root) {
+        Task newRoot = insertTask(root, null, null, 0);
+        return newRoot;
     }
 
     /**
@@ -100,9 +78,9 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
      * @param childInsertIndex
      * @return
      */
-    public static Task cloneBehaviorTreeAndInsertSubtree(
+    public static Task insertTask(
                 Task root,
-                BranchTask compositeTaskToInsertChildTo,
+                Task compositeTaskToInsertChildTo,
                 Task rootOfSubtreeToBeInserted,
                 int childInsertIndex
         ) {
@@ -115,7 +93,7 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
                 newRoot.addChild(rootOfSubtreeToBeInserted);
             }
             Task child =
-                    cloneBehaviorTreeAndInsertSubtree(root.getChild(i), compositeTaskToInsertChildTo, rootOfSubtreeToBeInserted, childInsertIndex);
+                    insertTask(root.getChild(i), compositeTaskToInsertChildTo, rootOfSubtreeToBeInserted, childInsertIndex);
             newRoot.addChild(child);
         }
         if (root == compositeTaskToInsertChildTo && root.getChildCount() == childInsertIndex) {
@@ -124,41 +102,29 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
         return newRoot;
     }
 
-    public static Task cloneBehaviorTreeAndDeleteSubtree(Task root, Task taskToDelete) {
+    public static Task removeTask(Task root, Task taskToDelete) {
         Task newRoot = instantiateTaskObject(root);
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = root.getChild(i);
             if (child == taskToDelete) {
                 continue;
             }
-            newRoot.addChild(cloneBehaviorTreeAndDeleteSubtree(child, taskToDelete));
+            newRoot.addChild(removeTask(child, taskToDelete));
         }
         return newRoot;
     }
 
-    public static Task cloneBehaviorTreeAndReplaceSubtree(Task root, Task taskToReplace, Task newTask) {
+    public static Task replaceTask(Task root, Task taskToReplace, Task newTask) {
         Task newRoot = instantiateTaskObject(root);
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = root.getChild(i);
             if (child == taskToReplace) {
                 newRoot.addChild(newTask);
             } else {
-                newRoot.addChild(cloneBehaviorTreeAndReplaceSubtree(root.getChild(i), taskToReplace, newTask));
+                newRoot.addChild(replaceTask(root.getChild(i), taskToReplace, newTask));
             }
         }
         return newRoot;
-    }
-
-    private static Task instantiateTaskObject(Task task) {
-        Task newTask = null;
-        try {
-            //noinspection unchecked
-            System.out.println(task.getClass().getSimpleName());
-            newTask = task.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return newTask;
     }
 
     /**
@@ -168,7 +134,7 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
      * @param subtree2
      * @return
      */
-    public static Task cloneBehaviorTreeAndFlipTwoSubtrees(Task root, Task subtree1, Task subtree2) {
+    public static Task flipTwoTasks(Task root, Task subtree1, Task subtree2) {
         Task newRoot = instantiateTaskObject(root);
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = root.getChild(i);
@@ -177,13 +143,13 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
             } else if (child == subtree2) {
                 newRoot.addChild(subtree1);
             } else {
-                newRoot.addChild(cloneBehaviorTreeAndFlipTwoSubtrees(root.getChild(i), subtree1, subtree2));
+                newRoot.addChild(flipTwoTasks(root.getChild(i), subtree1, subtree2));
             }
         }
         return newRoot;
     }
 
-    public static Task getRandomTask(Task root, boolean onlyCompositeTasks) {
+    public static Task getRandomCompositeTask(Task root, int minimumNumberOfChildren) {
         ArrayList<Task> subtreeRoots = new ArrayList<>();
 
         Stack<Task> stack = new Stack<>();
@@ -193,54 +159,131 @@ public class GenBehaviorTree extends com.badlogic.gdx.ai.btree.BehaviorTree {
             Task currentRoot = stack.pop();
             for (int i = 0; i < currentRoot.getChildCount(); i++) {
                 Task child = currentRoot.getChild(i);
-                if (!onlyCompositeTasks || child.getChildCount() > 0) {
+                if (child instanceof BranchTask) {
                     stack.add(child);
-                    subtreeRoots.add(child);
+                    if (child.getChildCount() >= minimumNumberOfChildren) {
+                        subtreeRoots.add(child);
+                    }
                 }
+            }
+        }
+        if (subtreeRoots.size() > 0) {
+            return subtreeRoots.get(random.nextInt(subtreeRoots.size()));
+        }
+        return null;
+    }
+
+    public static Task getRandomTask(Task root) {
+        ArrayList<Task> subtreeRoots = new ArrayList<>();
+
+        Stack<Task> stack = new Stack<>();
+        stack.add(root);
+
+        while (!stack.empty()) {
+            Task currentRoot = stack.pop();
+            for (int i = 0; i < currentRoot.getChildCount(); i++) {
+                Task child = currentRoot.getChild(i);
+                stack.add(child);
+                subtreeRoots.add(child);
             }
         }
         return subtreeRoots.get(random.nextInt(subtreeRoots.size()));
     }
 
-    public static Task cloneAndRemoveEmptyAndSingleChildBranchTasks(Task root) {
+    public static Task removeEmptyAndSingleChildCompositeTasks(Task root) {
         Task newRoot = instantiateTaskObject(root);
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = root.getChild(i);
             if (child instanceof BranchTask) {
                 if (child.getChildCount() == 1) {
-                    newRoot.addChild(cloneAndRemoveEmptyAndSingleChildBranchTasks(child.getChild(0)));
+                    newRoot.addChild(removeEmptyAndSingleChildCompositeTasks(child.getChild(0)));
                     continue;
                 } else if (child.getChildCount() == 0) {
                     continue;
                 }
             }
-            newRoot.addChild(cloneAndRemoveEmptyAndSingleChildBranchTasks(child));
+            newRoot.addChild(removeEmptyAndSingleChildCompositeTasks(child));
         }
         return newRoot;
     }
 
-    public static GenBehaviorTree crossover(GenBehaviorTree parent1, GenBehaviorTree parent2) {
-        Task parent1RandomSubtreeRoot = GenBehaviorTree.getRandomTask(parent1, false);
-        Task parent2RandomSubtreeRoot = GenBehaviorTree.getRandomTask(parent2, false);
-        Task child = GenBehaviorTree.cloneBehaviorTreeAndReplaceSubtree(
-                parent1.getRoot(), parent1RandomSubtreeRoot, parent2RandomSubtreeRoot);
-        return new GenBehaviorTree(child);
+    private static Task instantiateTaskObject(Task task) {
+        Task newTask = null;
+        try {
+            //noinspection unchecked
+            newTask = task.getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return newTask;
     }
 
-    public static GenBehaviorTree mutate(GenBehaviorTree btree) {
-        // TODO
+    public static Task crossover(Task task1, Task task2) {
+        Task parent1RandomSubtreeRoot = BehaviorTreeUtil.getRandomTask(task1);
+        Task parent2RandomSubtreeRoot = BehaviorTreeUtil.getRandomTask(task2);
+        Task child = BehaviorTreeUtil.replaceTask(task1, parent1RandomSubtreeRoot, parent2RandomSubtreeRoot);
+        return child;
+    }
+
+    /**
+     *
+     * @param root
+     * @param unitClass the class of the unit the behavior tree is to be used for
+     * @return
+     */
+    public static Task mutate(Task root, Class<? extends Unit> unitClass) {
+        Task result;
+
         // Add
-//        if (random.nextDouble() < 0.333) {
-//            Task randomRoot = GenBehaviorTree.getRandomTask(btree.getRoot(), true);
-//
-//            GenBehaviorTree.cloneBehaviorTreeAndInsertSubtree(
-//                    btree.getRoot(),
-//                    randomRoot,
-//                    GenBehaviorTree.gene)
-//        }
+        double randValue = random.nextDouble();
+        if (randValue < 0.333) {
+            System.out.println("ADD");
+            Task randomRoot = BehaviorTreeUtil.getRandomCompositeTask(root, 0);
+            if (randomRoot == null) {
+                result =  BehaviorTreeUtil.clone(root);
+            } else {
+                try {
+                    Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass);
+                    result = BehaviorTreeUtil.insertTask(root, randomRoot, randomTree, random.nextInt(randomRoot.getChildCount() + 1));
+                } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+                    e.printStackTrace();
+                    result = BehaviorTreeUtil.clone(root);
+                }
+            }
+        }
         // Remove
+        else if (randValue < 0.666) {
+            System.out.println("REMOVE");
+            Task randomRoot = BehaviorTreeUtil.getRandomTask(root);
+            result = BehaviorTreeUtil.removeTask(root, randomRoot);
+        }
         // Flip
-        return btree.clone();
+        else {
+            System.out.println("FLIP");
+            Task randomRoot = BehaviorTreeUtil.getRandomCompositeTask(root, 2);
+            if (randomRoot == null) {
+                result =  BehaviorTreeUtil.clone(root);
+            } else {
+                int numberOfChildren = randomRoot.getChildCount();
+                ArrayList<Task> childList = new ArrayList<>(numberOfChildren);
+                for (int i = 0; i < numberOfChildren; i++) {
+                    childList.add(randomRoot.getChild(i));
+                }
+                Task child1 = childList.remove(random.nextInt(childList.size()));
+                Task child2 = childList.remove(random.nextInt(childList.size()));
+
+                result = BehaviorTreeUtil.flipTwoTasks(root, child1, child2);
+            }
+        }
+        return removeEmptyAndSingleChildCompositeTasks(result);
+    }
+
+    public static Task generateTestTree() {
+        Sequence waitAndTurnToSequence = new Sequence(new Wait(), new TurnToHeading());
+        Selector shouldMoveSelector = new Selector(new IsApproaching(15), new IsCloseEnough(5));
+        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, waitAndTurnToSequence);
+        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new Move());
+        return waitOrMoveSelector;
     }
 
 }
