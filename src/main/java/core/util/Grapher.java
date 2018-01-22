@@ -11,6 +11,7 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import core.model.btree.EvaluatedGenBehaviorTree;
+import core.model.btree.GenBehaviorTree;
 import core.model.btree.task.NamedTask;
 import core.training.Population;
 
@@ -73,10 +74,13 @@ public class Grapher extends JFrame{
         this.setVisible(true);
     }
 
-    public void graph(BehaviorTree btree) {
+    public void graph(GenBehaviorTree btree) {
+        graph(btree.getRoot());
+    }
+
+    public void graph(Task root) {
         graph.getModel().beginUpdate();
         try {
-            Task root = btree.getChild(0);
             Object vertex = addVertex(getTaskName(root));
             graphSubtree(root, vertex);
         } finally {
