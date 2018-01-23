@@ -28,15 +28,17 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
     public void setup() {
         oneDimensionalComparator = new OneDimensionalComparator();
         random = new Random();
-        population = new Population();
-        population.generateRandomPopulation(SimpleSingleObjectiveGASettings.populationSize, trainer.getUnitToTrainClass());
+        population = Population.generateRandomPopulation(
+                SimpleSingleObjectiveGASettings.populationSize,
+                trainer.getUnitToTrainClass()
+        );
         System.out.println(population);
     }
 
     @Override
     public void step(int epoch, int exampleNumber, DataSet<D> exampleDataSet) {
         // SIMULATION
-            trainer.simulatePopulation(population, exampleDataSet.getNumOfTicks());
+            trainer.simulatePopulation(population, exampleDataSet.getNumOfTicks(), exampleDataSet.getScenarioPath());
 
         // EVALUATION
 

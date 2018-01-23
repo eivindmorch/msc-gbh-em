@@ -32,7 +32,10 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
     private Class<U> unitToTrainClass;
     private Class<D> evaluationDataRowClass;
 
+    private int currentEpoch = 0;
+
     private volatile boolean simulationRunning;
+    private final Object SIMULATION_ENDED_LOCK = new Object();
 
     public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass, Algorithm<D> algorithm, String[] exampleFileNames) {
         SystemStatus.systemMode = SystemMode.TRAINING;
@@ -48,16 +51,16 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
     }
 
     public void train(int epochs) {
-        for (int epoch = 0; epoch < epochs; epoch++) {
+        for (;currentEpoch < currentEpoch + epochs; currentEpoch++) {
+            logger.info("EPOCH " + currentEpoch);
             // TODO Not working when calling train twice (overwrites)
-            SystemStatus.currentTrainingEpoch = epoch;
+            SystemStatus.currentTrainingEpoch = currentEpoch;
             for (int exampleDataSetIndex = 0; exampleDataSetIndex < exampleDataSets.size(); exampleDataSetIndex++) {
                 SystemStatus.currentTrainingExampleDataSetIndex = exampleDataSetIndex;
                 DataSet<D> exampleDataSet = exampleDataSets.get(exampleDataSetIndex);
-                SimController.getInstance().loadScenario(exampleDataSet.getScenarioPath());
-                // TODO
-                sleepSeconds(10);
-                algorithm.step(epoch, exampleDataSetIndex, exampleDataSet);
+
+                logger.info("Example number " + exampleDataSetIndex + ": " + exampleDataSet);
+                algorithm.step(currentEpoch, exampleDataSetIndex, exampleDataSet);
             }
         }
         // ParetoPlotter.plot();
@@ -76,28 +79,42 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
      * @param population
      * @param numOfTicks Number of ticks to simulate each chromosome.
      */
-    public void simulatePopulation(Population population, int numOfTicks) {
+    public void simulatePopulation(Population population, int numOfTicks, String scenarioPath) {
+        logger.info("Simulating population.");
         for (int i = 0; i < population.getSize(); i++) {
-            SimController.getInstance().rewind();
+            logger.info("Simulating chromosome " + i + ": " + population.get(i));
             SystemStatus.currentTrainingChromosome = i;
 
             Task btree = population.get(i).getBtree();
-
-//            Grapher grapher = new Grapher("Chromosome " + i);
-//            grapher.setLocation(0, 0);
-//            grapher.graph(btree);
-
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
+
+            Grapher.graph(btree);
+
+            if (!scenarioPath.equals(SystemStatus.currentScenario)) {
+                // TODO Let UnitLogger write before writers are reset
+//                sleepSeconds(5);
+                SimController.getInstance().loadScenario(scenarioPath);
+                sleepSeconds(5);
+            } else {
+                SimController.getInstance().rewind();
+            }
             runSimulationForNTicks(numOfTicks);
-//            grapher.setVisible(false);
-//            grapher.dispose();
+
+            Grapher.closeGraph(btree);
         }
     }
 
     private void runSimulationForNTicks(int ticks){
         simulationRunning = true;
         SimController.getInstance().play(ticks, this);
-        while(simulationRunning) {
+        synchronized (SIMULATION_ENDED_LOCK) {
+            while(simulationRunning) {
+                try {
+                    SIMULATION_ENDED_LOCK.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -108,6 +125,9 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
     @Override
     public void onSimulationEnd() {
         simulationRunning = false;
+        synchronized (SIMULATION_ENDED_LOCK) {
+            SIMULATION_ENDED_LOCK.notifyAll();
+        }
     }
 
     public Population getPopulation() {

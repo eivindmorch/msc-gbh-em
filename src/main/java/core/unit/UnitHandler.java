@@ -1,5 +1,6 @@
 package core.unit;
 
+import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +11,10 @@ public abstract class UnitHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UnitHandler.class);
 
-    public static HashMap<String, Unit> unitIdentifierToUnitMap = new HashMap<>();
-    private static ArrayList<ControlledUnit> controlledUnits = new ArrayList<>();
+    public static HashMap<ObjectInstanceHandle, Unit> units = new HashMap<>();
+    public static HashMap<String, ObjectInstanceHandle> unitIdentifierToHandleMap = new HashMap<>();
+
+    private static HashMap<ObjectInstanceHandle, ControlledUnit> controlledUnits = new HashMap<>();
 
     private static AddUnitMethod addUnitMethod;
 
@@ -39,9 +42,20 @@ public abstract class UnitHandler {
         }
     }
 
+    public static void removeUnit(ObjectInstanceHandle objectInstanceHandle) {
+        Unit unit = units.remove(objectInstanceHandle);
+        unitIdentifierToHandleMap.remove(unit.getIdentifier());
+        UnitLogger.remove(unit);
+        controlledUnits.remove(objectInstanceHandle);
+        logger.debug("Unit removed -- Handle: " + objectInstanceHandle);
+    }
+
     public static boolean putUnit(Unit unit) {
-        if (unitIdentifierToUnitMap.get(unit.getIdentifier()) == null) {
-            unitIdentifierToUnitMap.put(unit.getIdentifier(), unit);
+        if (units.get(unit.getHandle()) == null) {
+            units.put(unit.getHandle(), unit);
+
+            unitIdentifierToHandleMap.put(unit.getIdentifier(), unit.getHandle());
+
             logger.info("Unit added -- Marking: " + unit.getMarking() + ", Handle: " + unit.getHandle());
             UnitLogger.register(unit);
             return true;
@@ -50,26 +64,35 @@ public abstract class UnitHandler {
     }
 
     public static void addControlledUnit(ControlledUnit controlledUnit) {
-        logger.info("Controlled units added -- Marking: " + controlledUnit.unit.getMarking());
-        controlledUnits.add(controlledUnit);
+        logger.info("Controlled units added -- Marking: " + controlledUnit.getUnit().getMarking());
+        controlledUnits.put(controlledUnit.getUnit().getHandle(), controlledUnit);
+    }
+
+    public static Unit getUnit(ObjectInstanceHandle handle) {
+        return units.get(handle);
+    }
+
+    public static Unit getUnit(String identifier) {
+        ObjectInstanceHandle handle =  unitIdentifierToHandleMap.get(identifier);
+        return getUnit(handle);
     }
 
     public static Collection<Unit> getUnits() {
-        return unitIdentifierToUnitMap.values();
+        return units.values();
     }
 
     public static void updateUnits(double timestamp) {
-        for (Unit unit : unitIdentifierToUnitMap.values()) {
+        for (Unit unit : units.values()) {
             unit.updateData(timestamp);
         }
     }
 
     public static int getNumOfUnits() {
-        return unitIdentifierToUnitMap.size();
+        return units.size();
     }
 
     public static void tickAllControlledUnits() {
-        for (ControlledUnit controlledUnit : controlledUnits) {
+        for (ControlledUnit controlledUnit : controlledUnits.values()) {
             controlledUnit.sendUnitCommands();
         }
     }
@@ -107,8 +130,9 @@ public abstract class UnitHandler {
 
     public static void reset() {
         logger.info("Resetting unit storage.");
-        unitIdentifierToUnitMap = new HashMap<>();
-        controlledUnits = new ArrayList<>();
+        units = new HashMap<>();
+        unitIdentifierToHandleMap = new HashMap<>();
+        controlledUnits = new HashMap<>();
         if (addUnitMethod == null) {
             logger.warn("No addUnitMethod has been registered");
         } else {

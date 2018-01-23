@@ -2,6 +2,7 @@ package core.unit;
 
 import core.data.rows.DataRow;
 import hla.rti1516e.ObjectInstanceHandle;
+import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +45,13 @@ public abstract class Unit {
     public String toString() {
         StringBuilder sb = new StringBuilder("Unit: " + marking);
         for (DataRow dataRow : dataRows) {
-            sb.append("\n");
             sb.append("\t").append(dataRow.toString());
         }
         return sb.toString();
+    }
+
+    public PhysicalEntityObject getPhysicalEntityObject() {
+        PhysicalEntityObject physicalEntityObject = PhysicalEntityObject.getAllPhysicalEntitys().get(this.getHandle());
+        return physicalEntityObject;
     }
 }

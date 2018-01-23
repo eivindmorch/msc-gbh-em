@@ -1,5 +1,6 @@
 package core.simulation.federate;
 
+import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.RTIexception;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
@@ -20,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
+import static core.util.SystemUtil.sleepSeconds;
+
 
 public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
@@ -35,6 +38,9 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
     private ArrayList<TickListener> tickListeners;
     private ArrayList<PhysicalEntityUpdatedListener> physicalEntityUpdatedListeners;
+
+    private volatile boolean holdTimeAdvancement = true;
+    private final Object TIME_ADVANCE_LOCK = new Object();
 
     private Federate() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
@@ -91,23 +97,38 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     }
 
     @Override
-    public void remoteObjectRemoved(HlaObjectRemovedEvent removedEvent) {}
+    public void remoteObjectRemoved(HlaObjectRemovedEvent removedEvent) {
+        ObjectInstanceHandle objectInstanceHandle = removedEvent.getObjectInstanceHandle();
+        physicalEntityUpdatedListeners.forEach(
+                physicalEntityUpdatedListener -> physicalEntityUpdatedListener.physicalEntityRemoved(objectInstanceHandle)
+        );
+    }
 
     @Override
     public void localObjectCreated(HlaObject object) {}
 
     @Override
-    public void localObjectRemoved(HlaObject hlaObject) {}
+    public void localObjectRemoved(HlaObject hlaObject) {
+    }
 
     @Override
     public void run() {
         while (running) {
+            while (holdTimeAdvancement) {
+                synchronized (TIME_ADVANCE_LOCK) {
+                    try {
+                        TIME_ADVANCE_LOCK.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             try {
                 federateManager.requestTimeAdvanceAndBlock(federateManager.getTimestamp());
+                tick(federateManager.getLogicalTime());
             } catch (InterruptedException | RTIexception saveInProgress) {
                 saveInProgress.printStackTrace();
             }
-            tick(federateManager.getLogicalTime());
         }
     }
 
@@ -139,6 +160,8 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         sendCgfControlInteraction(cgfCommand);
     }
 
+    // TODO Ask Martin
+    // Causes the RTI to tick when the engine is paused. Do not use.
     public void sendCgfPauseInteraction() {
         CgfCommand cgfCommand = new CgfCommand();
         cgfCommand.setCommand(CommandType.Pause);
@@ -172,6 +195,19 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
         logger.info("Sending CgfControlInteraction with command " + cgfCommand.getCommand().name() + ".");
         cgfControlInteraction.sendInteraction();
+    }
+
+    public void holdTimeAdvancement() {
+        logger.info("Holding time advancement.");
+        holdTimeAdvancement = true;
+    }
+
+    public void enableTimeAdvancement() {
+        logger.info("Enabling time advancement.");
+        holdTimeAdvancement = false;
+        synchronized (TIME_ADVANCE_LOCK) {
+            TIME_ADVANCE_LOCK.notifyAll();
+        }
     }
 
 }

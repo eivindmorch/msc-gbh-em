@@ -20,14 +20,16 @@ public class Population {
         chromosomes = new ArrayList<>();
     }
 
-    public void generateRandomPopulation(int size, Class<? extends Unit> unitClass) {
+    public static Population generateRandomPopulation(int size, Class<? extends Unit> unitClass) {
+        Population population = new Population();
         for (int i = 0; i < size; i++) {
             try {
-                chromosomes.add(new EvaluatedBehaviorTree(BehaviorTreeUtil.generateRandomTree(unitClass)));
+                population.add(new EvaluatedBehaviorTree(BehaviorTreeUtil.generateRandomTree(unitClass)));
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
+        return population;
     }
 
     public void add(EvaluatedBehaviorTree btree) {

@@ -13,15 +13,17 @@ public class ControlledUnit<U extends Unit> {
 
     private final Logger logger = LoggerFactory.getLogger(ControlledUnit.class);
 
-    U unit;
+    private U unit;
     private BehaviorTree<Blackboard<U>> btree;
 
     public ControlledUnit(U unit) {
         this.unit = unit;
         Blackboard<U> blackboard = new Blackboard<>(unit);
-        this.btree = new BehaviorTree<>(ControlledUnit.controlledUnitBtreeMap.get(unit.getClass()), blackboard);
-        System.out.println(btree);
-        this.btree.setObject(new Blackboard<>(unit));
+        this.btree = new BehaviorTree<>(ControlledUnit.getControlledUnitBtree(unit), blackboard);
+    }
+
+    public U getUnit() {
+        return this.unit;
     }
 
     void sendUnitCommands() {
@@ -33,9 +35,15 @@ public class ControlledUnit<U extends Unit> {
     }
 
     private static HashMap<Class<? extends Unit>, Task> controlledUnitBtreeMap = new HashMap<>();
+
     public static void setControlledUnitBtreeMap(Class<? extends Unit> unitClass, Task rootTask) {
         HashMap<Class<? extends Unit>, Task> controlledUnitBtreeMap = new HashMap<>();
         controlledUnitBtreeMap.put(unitClass, rootTask);
         ControlledUnit.controlledUnitBtreeMap = controlledUnitBtreeMap;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <U extends Unit> Task<Blackboard<U>> getControlledUnitBtree(U unit) {
+        return ControlledUnit.controlledUnitBtreeMap.get(unit.getClass());
     }
 }

@@ -24,7 +24,8 @@ public class Experiment1Unit extends Unit {
     }
 
     private void updateRawData(double timestamp) {
-        PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(getHandle());
+        PhysicalEntityObject physicalEntity = super.getPhysicalEntityObject();
+
         WorldLocationStruct location = physicalEntity.getSpatial().getDeadReckonedLocation();
         VelocityVectorStruct velocity = physicalEntity.getSpatial().getDeadReckonedVelocity();
         rawDataRow.setValues(timestamp, location, velocity);

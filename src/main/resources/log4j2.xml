@@ -6,31 +6,31 @@
     <Appenders>
 
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}&#9;@%L&#9;- %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}@%L - %msg%n}"/>
         </Console>
 
         <File name="HlaLib" fileName="logs/hlalib/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
         <File name="Training" filename="logs/training/training-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
         <File name="Unit" fileName="logs/unit/unit-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
-        <File name="SimController" fileName="logs/simulation/simcontroller/simcontroller-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
+        <File name="Simulation" fileName="logs/simulation/simulation/simulation-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
         <File name="SimEngine" fileName="logs/simulation/simengine/simengine-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
         <File name="SimGui" fileName="logs/simulation/simgui/simgui-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()&#9;@%L&#9;- %msg%n}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
     </Appenders>
@@ -56,14 +56,18 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="core.simulation" level="debug" additivity="false">
-            <AppenderRef ref="SimController"/>
+        <Logger name="core.simulation.federate.Federate" level="debug" additivity="false">
+            <AppenderRef ref="Simulation"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="core.simulation.SimController" level="debug" additivity="false">
+            <AppenderRef ref="Simulation"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
         <Logger name="core.simulation.SimEngine" level="debug" additivity="false">
             <AppenderRef ref="SimEngine"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
         <Logger name="core.simulation.SimGui" level="debug" additivity="false">

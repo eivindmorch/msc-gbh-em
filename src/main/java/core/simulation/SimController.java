@@ -1,6 +1,7 @@
 package core.simulation;
 
 
+import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,10 @@ import core.simulation.federate.TickListener;
 import core.unit.UnitHandler;
 import core.unit.UnitLogger;
 import core.util.SystemStatus;
+
+import java.util.concurrent.TimeUnit;
+
+import static core.util.SystemUtil.sleepSeconds;
 
 
 public class SimController implements TickListener, PhysicalEntityUpdatedListener {
@@ -23,6 +28,9 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     private int ticksToPlay;
     private SimulationEndedListener simulationEndedListener;
+
+    private int totalTicks;
+    long startTime;
 
     private SimController() {}
 
@@ -41,7 +49,15 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
         // If ticksToPlay == 0, then run infinite number of ticks
         if (ticksToPlay > 0) {
-            ticksToPlay -= 1;
+
+            totalTicks++;
+            if (totalTicks % 100 == 0) {
+                logger.debug("Ticks: " + totalTicks +
+                        " | Average time per tick: " + ((System.currentTimeMillis() - startTime) / 100) + "ms");
+                startTime = System.currentTimeMillis();
+            }
+
+            ticksToPlay--;
             if (ticksToPlay == 0) {
                 pause();
                 simulationEndedListener.onSimulationEnd();
@@ -54,8 +70,16 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         UnitHandler.addUnit(physicalEntity);
     }
 
+    @Override
+    public void physicalEntityRemoved(ObjectInstanceHandle objectInstanceHandle) {
+        UnitHandler.removeUnit(objectInstanceHandle);
+    }
+
     public void play() {
+        totalTicks = 0;
         logger.info("Playing scenario.");
+        startTime = System.currentTimeMillis();
+        Federate.getInstance().enableTimeAdvancement();
         Federate.getInstance().sendCgfPlayInteraction();
     }
 
@@ -72,19 +96,20 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     public void pause() {
         logger.info("Pausing scenario.");
-        Federate.getInstance().sendCgfPauseInteraction();
+        Federate.getInstance().holdTimeAdvancement();
     }
 
     public void rewind() {
         logger.info("Rewinding scenario.");
-        Federate.getInstance().sendCgfPauseInteraction();
+        Federate.getInstance().holdTimeAdvancement();
+        Federate.getInstance().sendCgfRewindInteraction();
         UnitHandler.reset();
         UnitLogger.reset();
-        Federate.getInstance().sendCgfRewindInteraction();
     }
 
     public void loadScenario(String scenarioPath) {
         logger.info("Loading scenario " + scenarioPath + ".");
+        Federate.getInstance().holdTimeAdvancement();
         UnitHandler.reset();
         UnitLogger.reset();
         Federate.getInstance().sendCgfLoadScenarioInteraction(scenarioPath);

@@ -35,7 +35,7 @@ public class FollowerUnit extends Experiment1Unit {
     }
 
     private void updateRawData(double timestamp) {
-        PhysicalEntityObject physicalEntity = PhysicalEntityObject.getAllPhysicalEntitys().get(getHandle());
+        PhysicalEntityObject physicalEntity = super.getPhysicalEntityObject();
         WorldLocationStruct location = physicalEntity.getSpatial().getDeadReckonedLocation();
         VelocityVectorStruct velocity = physicalEntity.getSpatial().getDeadReckonedVelocity();
         getRawDataRow().setValues(timestamp, location, velocity);

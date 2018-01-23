@@ -30,7 +30,7 @@ public class Experiment1AddUnitMethod implements UnitHandler.AddUnitMethod{
             unit = new Experiment1Unit(unitMarking, unitIdentifier, unitHandle);
         } else if (isFollower(unitMarking)) {
             String targetIdentifier = getTargetIdentifierFromFollowerMarking(unitMarking);
-            Experiment1Unit targetUnit = (Experiment1Unit)UnitHandler.unitIdentifierToUnitMap.get(targetIdentifier);
+            Experiment1Unit targetUnit = (Experiment1Unit)UnitHandler.getUnit(targetIdentifier);
             if (targetUnit != null) {
                 unit = new FollowerUnit(unitMarking, unitIdentifier, unitHandle, targetUnit);
             } else {

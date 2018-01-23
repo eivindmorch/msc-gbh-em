@@ -60,4 +60,9 @@ public class DataSet<D extends DataRow> {
     public int getNumOfTicks() {
         return numOfTicks;
     }
+
+    @Override
+    public String toString() {
+        return "Example@" + hashCode() + " {Scenario: " + scenarioPath + ", Unit: " + unitMarking + ", Ticks: " + numOfTicks + "}";
+    }
 }

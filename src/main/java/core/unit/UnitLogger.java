@@ -2,12 +2,14 @@ package core.unit;
 
 import core.data.rows.DataRow;
 import core.util.SystemUtil;
+import hla.rti1516e.ObjectInstanceHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import core.util.SystemStatus;
 import core.util.Writer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -15,25 +17,30 @@ public abstract class UnitLogger {
 
     private static final Logger logger = LoggerFactory.getLogger(UnitLogger.class);
 
-    private static volatile List<UnitDataWriter> unitDataWriters = new ArrayList<>();
+    private static volatile HashMap<ObjectInstanceHandle, UnitDataWriter> unitDataWriters = new HashMap<>();
 
     static void register(Unit unit) {
-        unitDataWriters.add(new UnitDataWriter(unit));
+        unitDataWriters.put(unit.getHandle(), new UnitDataWriter(unit));
         logger.info("Unit registered for logging -- Marking: " + unit.getMarking());
     }
 
+    static void remove(Unit unit) {
+        unitDataWriters.remove(unit.getHandle()).closeWriters();
+        logger.info("Unit removed from logging -- Marking: " + unit.getMarking());
+    }
+
     public static void logAllRegisteredUnits() {
-        for (UnitDataWriter unitDataWriter : unitDataWriters) {
+        for (UnitDataWriter unitDataWriter : unitDataWriters.values()) {
             unitDataWriter.writeDataToFile();
         }
     }
 
     public static void reset() {
         logger.info("Resetting UnitDataWriters.");
-        for (UnitDataWriter unitDataWriter : unitDataWriters) {
+        for (UnitDataWriter unitDataWriter : unitDataWriters.values()) {
             unitDataWriter.closeWriters();
         }
-        unitDataWriters = new ArrayList<>();
+        unitDataWriters = new HashMap<>();
     }
 
     private static class UnitDataWriter {
