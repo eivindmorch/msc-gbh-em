@@ -1,6 +1,9 @@
 package core.model.btree;
 
+import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.BranchTask;
+import com.badlogic.gdx.ai.btree.Decorator;
+import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
@@ -34,6 +37,17 @@ public abstract class BehaviorTreeUtil {
         return subtree;
     }
 
+    /**
+     * Generates a random behavior tree.
+     * @param availableLeafTasks pool of {@link LeafTask} that can be used in the tree
+     * @param availableCompositeTasks pool of composite tasks ({@link BranchTask}) that can be used in the tree
+     * @param probabilityForComposite probability between 0 and 1 of the roots child being a composite tasks ({@link BranchTask})
+     * @return the root {@link Task} of the generated behavior tree
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     */
     private static Task generateRandomTree(
             List<Class<? extends Task>> availableLeafTasks,
             List<Class<? extends BranchTask>> availableCompositeTasks,
@@ -66,23 +80,23 @@ public abstract class BehaviorTreeUtil {
     }
 
     public static Task clone(Task root) {
-        Task newRoot = insertTask(root, null, null, 0);
+        Task newRoot = insertTask(root, null, 0, null);
         return newRoot;
     }
 
     /**
-     * This method does NOT clone the Blackboard object.
-     * @param root
-     * @param compositeTaskToInsertChildTo The
-     * @param rootOfSubtreeToBeInserted
-     * @param childInsertIndex
-     * @return
+     * Inserts a behavior tree to an already existing behavior tree.
+     * @param root the root {@link Task} of the complete behavior tree that is to be edited
+     * @param compositeTaskToInsertChildTo the composite task ({@link BranchTask}) that the task should be added as a child to
+     * @param childInsertIndex the index of where in the child list of @{@code compositeTaskToInsertChildTo} the task should be inserted
+     * @param rootOfSubtreeToBeInserted the root {@link Task} of the behavior tree that is to be inserted
+     * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task insertTask(
                 Task root,
                 Task compositeTaskToInsertChildTo,
-                Task rootOfSubtreeToBeInserted,
-                int childInsertIndex
+                int childInsertIndex,
+                Task rootOfSubtreeToBeInserted
         ) {
         Task newRoot = instantiateTaskObject(root);
         if (childInsertIndex < 0 || (root == compositeTaskToInsertChildTo && childInsertIndex > root.getChildCount())) {
@@ -93,7 +107,7 @@ public abstract class BehaviorTreeUtil {
                 newRoot.addChild(rootOfSubtreeToBeInserted);
             }
             Task child =
-                    insertTask(root.getChild(i), compositeTaskToInsertChildTo, rootOfSubtreeToBeInserted, childInsertIndex);
+                    insertTask(root.getChild(i), compositeTaskToInsertChildTo, childInsertIndex, rootOfSubtreeToBeInserted);
             newRoot.addChild(child);
         }
         if (root == compositeTaskToInsertChildTo && root.getChildCount() == childInsertIndex) {
@@ -102,18 +116,31 @@ public abstract class BehaviorTreeUtil {
         return newRoot;
     }
 
-    public static Task removeTask(Task root, Task taskToDelete) {
+    /**
+     * Removes a subtree from an already existing behavior tree.
+     * @param root the root {@link Task} of the complete behavior tree that is to be edited
+     * @param taskToRemove the root {@link Task} of the behavior tree to be removed. Can not be the same as {@code root}.
+     * @return the root {@link Task} of the resulting behavior tree
+     */
+    public static Task removeTask(Task root, Task taskToRemove) {
         Task newRoot = instantiateTaskObject(root);
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = root.getChild(i);
-            if (child == taskToDelete) {
+            if (child == taskToRemove) {
                 continue;
             }
-            newRoot.addChild(removeTask(child, taskToDelete));
+            newRoot.addChild(removeTask(child, taskToRemove));
         }
         return newRoot;
     }
 
+    /**
+     * Replaces a subtree in an already existing behavior tree.
+     * @param root the root {@link Task} of the complete behavior tree that is to be edited
+     * @param taskToReplace the root {@link Task} of the behavior tree to be replaced. Can not be the same as {@code root}.
+     * @param newTask the root {@link Task} of the behavior tree that is to replace {@code taskToReplace}
+     * @return the root {@link Task} of the resulting behavior tree
+     */
     public static Task replaceTask(Task root, Task taskToReplace, Task newTask) {
         Task newRoot = instantiateTaskObject(root);
         for (int i = 0; i < root.getChildCount(); i++) {
@@ -128,11 +155,12 @@ public abstract class BehaviorTreeUtil {
     }
 
     /**
-     * Flips the positions of two subtrees. Do NOT insert two tasks that are subtree og parent of the other.
-     * @param root
-     * @param subtree1
-     * @param subtree2
-     * @return
+     * Flips the positions of two subtrees in an already existing behavior tree. Do NOT insert two subtrees where one
+     * is a the descendant of the other.
+     * @param root the root {@link Task} of the complete behavior tree that is to be edited
+     * @param subtree1 the root {@link Task} of the first subtree to flip
+     * @param subtree2 the root {@link Task} of the second subtree to flip
+     * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task flipTwoTasks(Task root, Task subtree1, Task subtree2) {
         Task newRoot = instantiateTaskObject(root);
@@ -149,6 +177,13 @@ public abstract class BehaviorTreeUtil {
         return newRoot;
     }
 
+    /**
+     * Selects a random composite task ({@link BranchTask}) with a specified minimum number of children from an already
+     * existing behavior tree, excluding the root {@link Task}.
+     * @param root the root {@link Task} of the behavior tree that is to be searched
+     * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link BranchTask}) can have
+     * @return the randomly selected composite task ({@link BranchTask}). {@code Null} if none was found.
+     */
     public static Task getRandomCompositeTask(Task root, int minimumNumberOfChildren) {
         ArrayList<Task> subtreeRoots = new ArrayList<>();
 
@@ -173,6 +208,11 @@ public abstract class BehaviorTreeUtil {
         return null;
     }
 
+    /**
+     * Selects a random {@link Task} from an already existing behavior tree, excluding the root {@link Task}.
+     * @param root the root {@link Task} of the behavior tree that is to be searched
+     * @return the randomly selected {@link Task}
+     */
     public static Task getRandomTask(Task root) {
         ArrayList<Task> subtreeRoots = new ArrayList<>();
 
@@ -190,6 +230,13 @@ public abstract class BehaviorTreeUtil {
         return subtreeRoots.get(random.nextInt(subtreeRoots.size()));
     }
 
+    /**
+     * Removes all composite tasks ({@link BranchTask}) with less than two children (no functional value), excluding
+     * the root {@link Task}.
+     * If you want to change the behavior of a single {@link Task}, you should use a {@link Decorator}.
+     * @param root the root {@link Task} of the behavior tree that is to be cleaned
+     * @return the root {@link Task} of the resulting behavior tree
+     */
     public static Task removeEmptyAndSingleChildCompositeTasks(Task root) {
         Task newRoot = instantiateTaskObject(root);
         for (int i = 0; i < root.getChildCount(); i++) {
@@ -244,7 +291,7 @@ public abstract class BehaviorTreeUtil {
             } else {
                 try {
                     Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass);
-                    result = BehaviorTreeUtil.insertTask(root, randomRoot, randomTree, random.nextInt(randomRoot.getChildCount() + 1));
+                    result = BehaviorTreeUtil.insertTask(root, randomRoot, random.nextInt(randomRoot.getChildCount() + 1), randomTree);
                 } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
                     e.printStackTrace();
                     result = BehaviorTreeUtil.clone(root);

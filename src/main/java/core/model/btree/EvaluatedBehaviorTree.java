@@ -4,6 +4,9 @@ import com.badlogic.gdx.ai.btree.Task;
 
 import java.util.ArrayList;
 
+/**
+ * Wrapper for behavior tree and fitness
+ */
 public class EvaluatedBehaviorTree {
 
     private Task btree;

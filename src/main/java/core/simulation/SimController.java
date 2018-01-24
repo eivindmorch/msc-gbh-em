@@ -85,7 +85,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     /**
      * Runs a specified number of ticks before pausing the simulation and notifying the listener.
-     * @param numOfTicks Number of ticks to run.
+     * @param numOfTicks the number of ticks to run
      * @param simulationEndedListener
      */
     public void play(int numOfTicks, SimulationEndedListener simulationEndedListener) {

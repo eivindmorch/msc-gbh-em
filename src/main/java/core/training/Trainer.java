@@ -21,7 +21,11 @@ import static core.settings.SystemSettings.INTRA_RESOURCES_EXAMPLES_FOLDER_PATH;
 import static core.util.SystemUtil.sleepSeconds;
 
 
-// U for unit to be trained, D for data to be used for evaluation
+/**
+ *
+ * @param <U> unit to be trained. Has to extend {@link Unit}.
+ * @param <D> data type to be used for evaluation. Has to extend {@link DataRow}.
+ */
 public class Trainer<U extends Unit, D extends DataRow> implements SimulationEndedListener{
 
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
@@ -76,8 +80,8 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
 
     /**
      * Simulates the population by simulating each individual chromosome for the specified number of ticks.
-     * @param population
-     * @param numOfTicks Number of ticks to simulate each chromosome.
+     * @param population instance of {@link Population} to be simulated
+     * @param numOfTicks number of ticks to simulate each chromosome
      */
     public void simulatePopulation(Population population, int numOfTicks, String scenarioPath) {
         logger.info("Simulating population.");
