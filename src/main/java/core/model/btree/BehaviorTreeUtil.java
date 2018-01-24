@@ -1,6 +1,5 @@
 package core.model.btree;
 
-import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.BranchTask;
 import com.badlogic.gdx.ai.btree.Decorator;
 import com.badlogic.gdx.ai.btree.LeafTask;
@@ -10,10 +9,7 @@ import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.utils.Array;
 import core.model.btree.task.unit.Wait;
 import core.unit.UnitTypeInfo;
-import experiments.experiment1.model.btree.task.unit.followerunit.IsApproaching;
-import experiments.experiment1.model.btree.task.unit.followerunit.IsCloseEnough;
-import experiments.experiment1.model.btree.task.unit.followerunit.Move;
-import experiments.experiment1.model.btree.task.unit.followerunit.TurnToHeading;
+import experiments.experiment1.model.btree.task.unit.followerunit.*;
 import core.unit.Unit;
 
 import java.lang.reflect.Constructor;
@@ -233,7 +229,7 @@ public abstract class BehaviorTreeUtil {
     /**
      * Removes all composite tasks ({@link BranchTask}) with less than two children (no functional value), excluding
      * the root {@link Task}.
-     * If you want to change the behavior of a single {@link Task}, you should use a {@link Decorator}.
+     * If you want to change the behavior of a single {@link Task}, you should use a {@link Decorator}
      * @param root the root {@link Task} of the behavior tree that is to be cleaned
      * @return the root {@link Task} of the resulting behavior tree
      */
@@ -325,11 +321,15 @@ public abstract class BehaviorTreeUtil {
         return removeEmptyAndSingleChildCompositeTasks(result);
     }
 
+    // TODO Mutate:
+    // Change type of composite task
+    // Change type of leaf task
+
     public static Task generateTestTree() {
         Sequence waitAndTurnToSequence = new Sequence(new Wait(), new TurnToHeading());
-        Selector shouldMoveSelector = new Selector(new IsApproaching(15), new IsCloseEnough(5));
+        Selector shouldMoveSelector = new Selector(new IsApproaching(), new IsCloseEnough());
         Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, waitAndTurnToSequence);
-        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new Move());
+        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new MoveToTarget());
         return waitOrMoveSelector;
     }
 

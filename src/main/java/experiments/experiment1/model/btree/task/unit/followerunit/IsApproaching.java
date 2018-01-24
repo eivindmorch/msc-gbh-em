@@ -9,15 +9,7 @@ import experiments.experiment1.unit.FollowerUnit;
 public class IsApproaching extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private final String name = "Is approaching?";
-    private double degreeLimit;
-
-    public IsApproaching() {
-        this.degreeLimit = 45;
-    }
-
-    public IsApproaching(double degreeLimit) {
-        this.degreeLimit = degreeLimit;
-    }
+    private double degreeLimit = 45;
 
     @Override
     public Status execute() {

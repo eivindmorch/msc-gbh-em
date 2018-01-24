@@ -1,5 +1,6 @@
 package core.simulation.federate;
 
+import core.settings.SimSettings;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.RTIexception;
 import no.ffi.hlalib.HlaLib;
@@ -21,8 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
-import static core.util.SystemUtil.sleepSeconds;
-
+import static core.util.SystemUtil.sleepMilliseconds;
 
 public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
@@ -128,6 +128,9 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
                 tick(federateManager.getLogicalTime());
             } catch (InterruptedException | RTIexception saveInProgress) {
                 saveInProgress.printStackTrace();
+            }
+            if (SimSettings.simulationTickDelayInMilliseconds > 0) {
+                sleepMilliseconds(SimSettings.simulationTickDelayInMilliseconds);
             }
         }
     }

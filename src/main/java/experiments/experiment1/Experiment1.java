@@ -158,12 +158,10 @@ public class Experiment1 {
 ////            Task rnd1 = GenBehaviorTree.getRandomTask(btree1, true);
 //            Task rnd1 = parent.getChild(random.nextInt(parent.getChildCount()));
 //            Grapher grapher2 = new Grapher("R1 @" + Integer.toString(btree1.hashCode()));
-//            System.out.println(rnd1);
 //            grapher2.graph(rnd1);
 //
 ////            Task rnd2 = GenBehaviorTree.getRandomTask(btree1, true);
 //            Task rnd2 = parent.getChild(random.nextInt(parent.getChildCount()));
-//            System.out.println(rnd2);
 //            Grapher grapher3 = new Grapher("R2 @" + Integer.toString(btree1.hashCode()));
 //            grapher3.graph(rnd2);
 //

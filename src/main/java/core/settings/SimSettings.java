@@ -42,7 +42,7 @@ public class SimSettings {
 
 
     // -- OPERATION -----------------------------------------------------------------
-        public static final int simulationTickDelayInMilliseconds = 20;
+        public static final int simulationTickDelayInMilliseconds = 500;
     // ------------------------------------------------------------------------------
 
 }
