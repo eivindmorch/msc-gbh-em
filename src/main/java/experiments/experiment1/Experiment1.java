@@ -2,15 +2,17 @@ package experiments.experiment1;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.BehaviorTreeUtil;
+import core.training.Chromosome;
 import core.simulation.Rti;
 import core.simulation.SimController;
 import core.simulation.federate.Federate;
 import core.training.Population;
 import core.training.Trainer;
 import core.training.algorithms.Algorithm;
-import core.training.algorithms.SimpleSingleObjectiveGA;
+import core.training.algorithms.SimpleSingleObjectiveGA.SimpleSingleObjectiveGA;
 import core.unit.UnitHandler;
 import core.util.Grapher;
+import core.util.exceptions.NoSuchTasksFoundException;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 import experiments.experiment1.unit.Experiment1AddUnitMethod;
 import experiments.experiment1.unit.Experiment1UnitInfo;
@@ -37,6 +39,7 @@ public class Experiment1 {
 //        testClean();
 //        testMutate();
 //        testGraphs();
+//        testRandomiseTask();
 
         run();
     }
@@ -53,19 +56,17 @@ public class Experiment1 {
 
         SimController.getInstance().startSimEngine();
         SimController.getInstance().startSimGui();
-
-        sleepSeconds(5);
+        sleepSeconds(10);
 
 
         // TODO Population size as argument?
-        Algorithm<FollowerEvaluationDataRow> algorithm = new SimpleSingleObjectiveGA<>(
+        Algorithm<FollowerEvaluationDataRow, Chromosome> algorithm = new SimpleSingleObjectiveGA<>(
                 FollowerEvaluationDataRow.class,
                 new Experiment1FitnessEvaluator()
         );
 
         String[] exampleFileNames = new String[]{
-                "experiment1/0.csv",
-                "experiment1/1.csv"
+                "experiment1/brooklyn-without-R1.csv"
         };
 
         Trainer trainer = new Trainer<>(
@@ -75,7 +76,7 @@ public class Experiment1 {
                 exampleFileNames
         );
 
-        trainer.train(10);
+        trainer.train(10000);
 
 //        sleepSeconds(20);
 //        rti.destroy();
@@ -96,7 +97,7 @@ public class Experiment1 {
             Grapher.closeGraph(btree1);
 
             sleepSeconds(5);
-            Population population = Population.generateRandomPopulation(10, FollowerUnit.class);
+            Population population = Population.generateRandomPopulation(10, FollowerUnit.class, Chromosome.class);
             Grapher.graph(population);
 
             sleepSeconds(5);
@@ -211,6 +212,24 @@ public class Experiment1 {
 //            e.printStackTrace();
 //        }
 //    }
+
+    private void testRandomiseTask() {
+        try {
+            Class<FollowerUnit> unitClass = FollowerUnit.class;
+
+            Task btree = BehaviorTreeUtil.generateRandomTree(unitClass);
+            Grapher.graph(btree, "Original");
+
+            Task randomTask = BehaviorTreeUtil.getRandomTask(btree, true);
+            Grapher.graph(randomTask, "Random task");
+
+            Task result = BehaviorTreeUtil.randomiseTask(btree, randomTask, unitClass);
+            Grapher.graph(result, "Result");
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTasksFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     private void testMutate() {
         for (int i = 0; i < 1000000; i++) {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
+import core.model.btree.task.TaskTickTracker;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
 import experiments.experiment1.unit.Experiment1Unit;
 import experiments.experiment1.unit.FollowerUnit;
@@ -11,14 +12,18 @@ import core.util.Geometer;
 import core.util.LlbmlUtil;
 import core.util.exceptions.IllegalArgumentCombinationException;
 
-public class TurnToHeading extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class TurnToTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private final String name = "Turn to heading";
 
+    private TaskTickTracker tickTracker = new TaskTickTracker(20);
+
     @Override
     public Status execute() {
-        sendLLBMLTurnToHeadingTask(getObject().getUnit().getMarking());
-        return Status.SUCCEEDED;
+        if (tickTracker.getCurrentTick() == 0) {
+            sendLLBMLTurnToHeadingTask(getObject().getUnit().getMarking());
+        }
+        return tickTracker.tick();
     }
 
     private void sendLLBMLTurnToHeadingTask(String entityMarkingString) {

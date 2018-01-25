@@ -10,7 +10,7 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import core.model.btree.BehaviorTreeUtil;
-import core.model.btree.EvaluatedBehaviorTree;
+import core.training.Chromosome;
 import core.model.btree.task.NamedTask;
 import core.training.Population;
 
@@ -24,7 +24,7 @@ public abstract class Grapher {
     private static HashMap<Task, Graph> taskGraphMap = new HashMap<>();
 
     public static void graph(Task root, String title) {
-        Graph graph = new Graph(root.toString(), root);
+        Graph graph = new Graph(title + " " + root.toString(), root);
         taskGraphMap.put(root, graph);
     }
 
@@ -32,14 +32,14 @@ public abstract class Grapher {
         graph(root, root.toString());
     }
 
-    public static void graph(EvaluatedBehaviorTree evaluatedBehaviorTree) {
-        Task root = evaluatedBehaviorTree.getBtree();
-        graph(root, evaluatedBehaviorTree.toString());
+    public static void graph(Chromosome chromosome) {
+        Task root = chromosome.getBtree();
+        graph(root, chromosome.toString());
     }
 
-    public static void graph(Population population) {
-        for (EvaluatedBehaviorTree evaluatedBehaviorTree : population.getChromosomes()) {
-            Grapher.graph(evaluatedBehaviorTree.getBtree());
+    public static <C extends Chromosome> void graph(Population<C> population) {
+        for (C chromosome : population.getChromosomes()) {
+            Grapher.graph(chromosome.getBtree());
         }
     }
 
@@ -50,9 +50,9 @@ public abstract class Grapher {
         }
     }
 
-    public static void closeGraphs(Population population){
-        for (EvaluatedBehaviorTree evaluatedBehaviorTree : population.getChromosomes()) {
-            Grapher.closeGraph(evaluatedBehaviorTree.getBtree());
+    public static <C extends Chromosome> void closeGraphs(Population<C> population){
+        for (C chromosome : population.getChromosomes()) {
+            Grapher.closeGraph(chromosome.getBtree());
         }
     }
 

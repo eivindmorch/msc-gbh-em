@@ -1,4 +1,4 @@
-package core.settings;
+package core.simulation;
 
 public class SimSettings {
 
@@ -42,7 +42,7 @@ public class SimSettings {
 
 
     // -- OPERATION -----------------------------------------------------------------
-        public static final int simulationTickDelayInMilliseconds = 500;
+        public static final int simulationTickDelayInMilliseconds = 0;
     // ------------------------------------------------------------------------------
 
 }

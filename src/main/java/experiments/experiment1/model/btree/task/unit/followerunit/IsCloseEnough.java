@@ -9,7 +9,7 @@ import experiments.experiment1.unit.FollowerUnit;
 public class IsCloseEnough extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private final String name = "Is close enough?";
-    private double distanceLimit = 10;
+    private double distanceLimit = 50;
 
     @Override
     public Status execute() {

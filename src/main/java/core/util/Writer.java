@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static core.settings.SystemSettings.RESOURCES_FILE_PATH;
+import static core.SystemSettings.RESOURCES_FILE_PATH;
 
 
 public class Writer {

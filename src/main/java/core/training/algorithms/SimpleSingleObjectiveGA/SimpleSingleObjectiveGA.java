@@ -1,21 +1,22 @@
-package core.training.algorithms;
+package core.training.algorithms.SimpleSingleObjectiveGA;
 
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.data.DataSet;
 import core.data.rows.DataRow;
-import core.model.btree.EvaluatedBehaviorTree;
+import core.training.Chromosome;
 import core.model.btree.BehaviorTreeUtil;
-import core.settings.algorithms.SimpleSingleObjectiveGASettings;
 import core.training.FitnessEvaluator;
 import core.training.Population;
+import core.training.algorithms.Algorithm;
+import core.training.algorithms.NSGA2.NSGA2Chromosome;
 import core.util.SystemUtil;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 
-public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
+public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D, Chromosome> {
 
     private OneDimensionalComparator oneDimensionalComparator;
     private Random random;
@@ -30,8 +31,10 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
         random = new Random();
         population = Population.generateRandomPopulation(
                 SimpleSingleObjectiveGASettings.populationSize,
-                trainer.getUnitToTrainClass()
+                trainer.getUnitToTrainClass(),
+                Chromosome.class
         );
+
         System.out.println(population);
     }
 
@@ -60,7 +63,6 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
             // Evaluate each chromosome by running functions in FitnessFunctions and store in fitness list in the chromosomes
 
         // SELECTION
-            // TODO Handle cloning here or in population? CONSISTENCY
             population.sort(oneDimensionalComparator);
             Population newPopulation = new Population();
 
@@ -71,16 +73,16 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
 
             // Crossover or mutation
             while (newPopulation.getSize() < SimpleSingleObjectiveGASettings.populationSize) {
-                EvaluatedBehaviorTree parent1 = population.selectionTournament(2, oneDimensionalComparator);
+                Chromosome parent1 = population.selectionTournament(2, oneDimensionalComparator);
 
                 // TODO Separate in methods
                 if (random.nextDouble() < SimpleSingleObjectiveGASettings.crossoverRate) {
-                    EvaluatedBehaviorTree parent2 = population.selectionTournament(2, oneDimensionalComparator);
+                    Chromosome parent2 = population.selectionTournament(2, oneDimensionalComparator);
                     Task crossoverTask = BehaviorTreeUtil.crossover(parent1.getBtree(), parent2.getBtree());
-                    newPopulation.add(new EvaluatedBehaviorTree(crossoverTask));
+                    newPopulation.add(new Chromosome(crossoverTask));
                 } else if (random.nextDouble() < SimpleSingleObjectiveGASettings.mutationRate) {
                     Task mutateTask = BehaviorTreeUtil.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
-                    newPopulation.add(new EvaluatedBehaviorTree(mutateTask));
+                    newPopulation.add(new Chromosome(mutateTask));
                 } else {
                     newPopulation.add(parent1.clone());
                 }
@@ -105,10 +107,10 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D> {
 
     }
 
-    // TODO Move to EvaluatedBehaviorTree?
-    private class OneDimensionalComparator implements Comparator<EvaluatedBehaviorTree> {
+    // TODO Move to Chromosome?
+    private class OneDimensionalComparator implements Comparator<Chromosome> {
         @Override
-        public int compare(EvaluatedBehaviorTree o1, EvaluatedBehaviorTree o2) {
+        public int compare(Chromosome o1, Chromosome o2) {
             if (o1.getFitness().get(0) < o2.getFitness().get(0)) {
                 return -1;
             } else if (o1.getFitness().get(0) > o2.getFitness().get(0)) {

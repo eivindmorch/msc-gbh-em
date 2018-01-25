@@ -2,7 +2,6 @@ package core.simulation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import core.settings.SimSettings;
 import core.util.ProcessLoggerThread;
 import core.util.SystemUtil;
 
@@ -79,6 +78,7 @@ public class SimEngine implements Runnable {
     // TODO Ask Martin if we can extends CgfControl with Destroy command
     public void destroy() {
         // TODO Does not destroy subprocesses
+        // TODO Find child processes and try to kill those
         logger.info("Destroying simulation engine.");
         latch.countDown();
     }

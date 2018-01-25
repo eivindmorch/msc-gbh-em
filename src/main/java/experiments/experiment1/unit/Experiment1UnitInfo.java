@@ -19,7 +19,7 @@ public abstract class Experiment1UnitInfo {
                         Wait.class,
                         IsApproaching.class,
                         IsCloseEnough.class,
-                        TurnToHeading.class
+                        TurnToTarget.class
                 ),
                 Arrays.asList(
                         Selector.class,

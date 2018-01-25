@@ -1,6 +1,6 @@
 package core.simulation.federate;
 
-import core.settings.SimSettings;
+import core.simulation.SimSettings;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.RTIexception;
 import no.ffi.hlalib.HlaLib;

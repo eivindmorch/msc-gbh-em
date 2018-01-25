@@ -2,7 +2,6 @@ package core.simulation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import core.settings.SimSettings;
 import core.util.ProcessLoggerThread;
 import core.util.SystemUtil;
 

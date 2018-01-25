@@ -1,4 +1,4 @@
-package core.settings;
+package core;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

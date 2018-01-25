@@ -17,7 +17,7 @@ import core.util.SystemStatus;
 import java.util.ArrayList;
 import java.util.List;
 
-import static core.settings.SystemSettings.INTRA_RESOURCES_EXAMPLES_FOLDER_PATH;
+import static core.SystemSettings.INTRA_RESOURCES_EXAMPLES_FOLDER_PATH;
 import static core.util.SystemUtil.sleepSeconds;
 
 
@@ -30,7 +30,7 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
 
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
-    private Algorithm<D> algorithm;
+    private Algorithm<D, ?> algorithm;
     private List<DataSet<D>> exampleDataSets;
 
     private Class<U> unitToTrainClass;
@@ -41,7 +41,7 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
     private volatile boolean simulationRunning;
     private final Object SIMULATION_ENDED_LOCK = new Object();
 
-    public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass, Algorithm<D> algorithm, String[] exampleFileNames) {
+    public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass, Algorithm<D, ?> algorithm, String[] exampleFileNames) {
         SystemStatus.systemMode = SystemMode.TRAINING;
 
         this.unitToTrainClass = unitToTrainClass;

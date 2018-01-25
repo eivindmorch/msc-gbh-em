@@ -43,7 +43,6 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     @Override
     public void tick(double timestamp) {
-        System.out.println(timestamp);
         UnitHandler.updateUnits(timestamp);
         UnitLogger.logAllRegisteredUnits();
         UnitHandler.tickAllControlledUnits();

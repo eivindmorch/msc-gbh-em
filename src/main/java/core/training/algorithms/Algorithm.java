@@ -2,20 +2,21 @@ package core.training.algorithms;
 
 import core.data.DataSet;
 import core.data.rows.DataRow;
+import core.training.Chromosome;
 import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.Trainer;
 
 
-public abstract class Algorithm<D extends DataRow> {
+public abstract class Algorithm<D extends DataRow, C extends Chromosome> {
 
-    Trainer trainer;
-    Population population;
-    FitnessEvaluator fitnessEvaluator;
+    protected Trainer trainer;
+    protected Population<C> population;
+    protected FitnessEvaluator fitnessEvaluator;
     public Class<D> evaluationDataRowClass;
 
     public Algorithm(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator) {
-        this.population = new Population();
+        this.population = new Population<>();
         this.fitnessEvaluator = fitnessEvaluator;
         this.evaluationDataRowClass = evaluationDataRowClass;
     }
@@ -24,7 +25,7 @@ public abstract class Algorithm<D extends DataRow> {
         this.trainer = trainer;
     }
 
-    public Population getPopulation() {
+    public Population<C> getPopulation() {
         return population;
     }
 

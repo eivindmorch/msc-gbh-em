@@ -1,6 +1,6 @@
 package core.util;
 
-import core.settings.SystemSettings;
+import core.SystemSettings;
 import java.util.Date;
 
 public abstract class SystemStatus {

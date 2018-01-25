@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static core.settings.SystemSettings.RESOURCES_FILE_PATH;
+import static core.SystemSettings.RESOURCES_FILE_PATH;
 
 
 public class Reader {

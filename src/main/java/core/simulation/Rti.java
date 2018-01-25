@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
-import static core.settings.SimSettings.rtiDirectory;
+import static core.simulation.SimSettings.rtiDirectory;
 
 public class Rti implements Runnable {
 
