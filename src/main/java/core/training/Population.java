@@ -9,11 +9,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Random;
+import java.util.List;
+
+import static core.util.SystemUtil.random;
 
 public class Population<C extends Chromosome> {
-
-    Random random = new Random();
 
     private ArrayList<C> chromosomes;
 
@@ -42,6 +42,18 @@ public class Population<C extends Chromosome> {
         chromosomes.add(btree);
     }
 
+    public void addAll(List<C> btreeList) {
+        chromosomes.addAll(btreeList);
+    }
+
+    public void addAll(Population<C> population) {
+        addAll(population.getChromosomes());
+    }
+
+    public C remove(int i) {
+        return chromosomes.remove(i);
+    }
+
     public void sort(Comparator<C> comparator) {
         chromosomes.sort(comparator);
     }
@@ -64,6 +76,12 @@ public class Population<C extends Chromosome> {
             listOfContenders.add(get(random.nextInt(getSize())));
         }
         return Collections.min(listOfContenders, comparator);
+    }
+
+    public Population<C> shallowCopy() {
+        Population<C> copy = new Population<>();
+        copy.addAll(chromosomes);
+        return copy;
     }
 
     @Override

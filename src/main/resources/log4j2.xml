@@ -53,17 +53,14 @@
 
         <Logger name="core.unit" level="debug" additivity="false">
             <AppenderRef ref="Unit"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
         <Logger name="core.simulation.federate.Federate" level="debug" additivity="false">
             <AppenderRef ref="Simulation"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
         <Logger name="core.simulation.SimController" level="debug" additivity="false">
             <AppenderRef ref="Simulation"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
         <Logger name="core.simulation.SimEngine" level="debug" additivity="false">

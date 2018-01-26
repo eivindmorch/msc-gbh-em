@@ -16,10 +16,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static core.util.SystemUtil.random;
+
 // TODO Doc all methods
 public abstract class BehaviorTreeUtil {
-
-    private static Random random = new Random();
 
     public static Task generateRandomTree(Class<? extends Unit> unitClass)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -279,18 +279,28 @@ public abstract class BehaviorTreeUtil {
      * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task removeEmptyAndSingleChildCompositeTasks(Task root) {
+        if (root.getChildCount() == 0) {
+            return null;
+        } else if (root.getChildCount() == 1 && root.getChild(0) instanceof BranchTask) {
+            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(0));
+        } else {
+            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root);
+        }
+    }
+
+    private static Task removeEmptyAndSingleChildCompositeTasksRecursiveHelper(Task root) {
         Task newRoot = instantiateTaskObject(root);
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = root.getChild(i);
             if (child instanceof BranchTask) {
                 if (child.getChildCount() == 1) {
-                    newRoot.addChild(removeEmptyAndSingleChildCompositeTasks(child.getChild(0)));
+                    newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child.getChild(0)));
                     continue;
                 } else if (child.getChildCount() == 0) {
                     continue;
                 }
             }
-            newRoot.addChild(removeEmptyAndSingleChildCompositeTasks(child));
+            newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child));
         }
         return newRoot;
     }
@@ -311,7 +321,7 @@ public abstract class BehaviorTreeUtil {
             Task parent1RandomSubtreeRoot = BehaviorTreeUtil.getRandomTask(parent1Root, false);
             Task parent2RandomSubtreeRoot = BehaviorTreeUtil.getRandomTask(parent2Root, true);
             Task child = BehaviorTreeUtil.replaceTask(parent1Root, parent1RandomSubtreeRoot, parent2RandomSubtreeRoot);
-            return child;
+            return removeEmptyAndSingleChildCompositeTasks(child);
         } catch (NoSuchTasksFoundException e) {
             e.printStackTrace();
             return BehaviorTreeUtil.clone(parent1Root);
@@ -348,7 +358,11 @@ public abstract class BehaviorTreeUtil {
             System.out.println("RANDOMISE TASK");
             result = mutateRandomiseTask(root, unitClass);
         }
-        return removeEmptyAndSingleChildCompositeTasks(result);
+        result = removeEmptyAndSingleChildCompositeTasks(result);
+        if (result == null) {
+            return BehaviorTreeUtil.clone(root);
+        }
+        return result;
     }
 
     private static Task mutateAdd(Task root, Class<? extends Unit> unitClass) {
@@ -413,6 +427,13 @@ public abstract class BehaviorTreeUtil {
         return waitOrMoveSelector;
     }
 
+    public static int getSize(Task root) {
+        int size = 1;
 
-
+        for (int i = 0; i < root.getChildCount(); i++) {
+            Task child = root.getChild(i);
+            size += getSize(child);
+        }
+        return size;
+    }
 }

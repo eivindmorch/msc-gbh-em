@@ -14,12 +14,12 @@ import core.util.SystemUtil;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Random;
+
+import static core.util.SystemUtil.random;
 
 public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D, Chromosome> {
 
     private OneDimensionalComparator oneDimensionalComparator;
-    private Random random;
 
     public SimpleSingleObjectiveGA(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator) {
         super(evaluationDataRowClass, fitnessEvaluator);
@@ -28,7 +28,6 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D, Chr
     @Override
     public void setup() {
         oneDimensionalComparator = new OneDimensionalComparator();
-        random = new Random();
         population = Population.generateRandomPopulation(
                 SimpleSingleObjectiveGASettings.populationSize,
                 trainer.getUnitToTrainClass(),
@@ -90,17 +89,6 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D, Chr
         System.out.println("OLD " + population);
         population = newPopulation;
     }
-
-    private ArrayList<Double> evaluate(DataSet<D> exampleDataSet, DataSet<D> chromosomeDataSet) {
-        try {
-            return fitnessEvaluator.evaluate(exampleDataSet, chromosomeDataSet);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-            return null;
-        }
-    }
-
 
     @Override
     public void cleanup() {

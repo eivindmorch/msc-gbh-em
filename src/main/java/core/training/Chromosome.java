@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 public class Chromosome {
 
+    // TODO Rename to behaviorTreeRoot
     private Task btree;
     // TODO Change fitness to map?
     private ArrayList<Double> fitness;
@@ -39,6 +40,6 @@ public class Chromosome {
 
     @Override
     public String toString() {
-        return "Chromosome@" + hashCode() + " {Fitness: " + fitness + ", " + "Btree: " + btree + "}";
+        return "Chromosome@" + hashCode() + " {Fitness: " + fitness + ", " + "Root task: @" + btree.hashCode() + "}";
     }
 }

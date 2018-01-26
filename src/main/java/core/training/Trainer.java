@@ -5,7 +5,6 @@ import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.simulation.SimulationEndedListener;
 import core.unit.Unit;
-import core.util.Grapher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import core.simulation.SimController;
@@ -92,8 +91,6 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
             Task btree = population.get(i).getBtree();
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
 
-            Grapher.graph(btree);
-
             if (!scenarioPath.equals(SystemStatus.currentScenario)) {
                 // TODO Let UnitLogger write before writers are reset
 //                sleepSeconds(5);
@@ -103,8 +100,6 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
                 SimController.getInstance().rewind();
             }
             runSimulationForNTicks(numOfTicks);
-
-            Grapher.closeGraph(btree);
         }
     }
 

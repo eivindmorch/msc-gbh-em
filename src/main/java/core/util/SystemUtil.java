@@ -1,9 +1,12 @@
 package core.util;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public abstract class SystemUtil {
+
+    public static Random random = new Random();
 
     public static void sleepMilliseconds(int milliseconds) {
         try {

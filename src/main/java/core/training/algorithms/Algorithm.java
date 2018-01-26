@@ -7,6 +7,8 @@ import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.Trainer;
 
+import java.util.ArrayList;
+
 
 public abstract class Algorithm<D extends DataRow, C extends Chromosome> {
 
@@ -35,4 +37,13 @@ public abstract class Algorithm<D extends DataRow, C extends Chromosome> {
 
     public abstract void cleanup();
 
+    protected ArrayList<Double> evaluate(DataSet<D> exampleDataSet, DataSet<D> chromosomeDataSet) {
+        try {
+            return fitnessEvaluator.evaluate(exampleDataSet, chromosomeDataSet);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+            return null;
+        }
+    }
 }

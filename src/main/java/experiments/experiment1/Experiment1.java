@@ -9,10 +9,10 @@ import core.simulation.federate.Federate;
 import core.training.Population;
 import core.training.Trainer;
 import core.training.algorithms.Algorithm;
-import core.training.algorithms.SimpleSingleObjectiveGA.SimpleSingleObjectiveGA;
+import core.training.algorithms.NSGA2.NSGA2;
+import core.training.algorithms.NSGA2.NSGA2Chromosome;
 import core.unit.UnitHandler;
-import core.util.Grapher;
-import core.util.exceptions.NoSuchTasksFoundException;
+import core.util.Graphing.Grapher;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 import experiments.experiment1.unit.Experiment1AddUnitMethod;
 import experiments.experiment1.unit.Experiment1UnitInfo;
@@ -60,13 +60,13 @@ public class Experiment1 {
 
 
         // TODO Population size as argument?
-        Algorithm<FollowerEvaluationDataRow, Chromosome> algorithm = new SimpleSingleObjectiveGA<>(
+        Algorithm<FollowerEvaluationDataRow, NSGA2Chromosome> algorithm = new NSGA2<>(
                 FollowerEvaluationDataRow.class,
                 new Experiment1FitnessEvaluator()
         );
 
         String[] exampleFileNames = new String[]{
-                "experiment1/brooklyn-without-R1.csv"
+                "experiment1/brooklyn-simple.csv"
         };
 
         Trainer trainer = new Trainer<>(
@@ -109,7 +109,6 @@ public class Experiment1 {
             sleepSeconds(5);
             Grapher.graph(population);
 
-            run();
 
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
@@ -148,7 +147,6 @@ public class Experiment1 {
 //
 //    private void testFlip() {
 //        try {
-//            Random random = new Random();
 //
 //            Task btree1 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
 //            Grapher grapher1 = new Grapher("P1 @" + Integer.toString(btree1.hashCode()));
@@ -213,23 +211,23 @@ public class Experiment1 {
 //        }
 //    }
 
-    private void testRandomiseTask() {
-        try {
-            Class<FollowerUnit> unitClass = FollowerUnit.class;
-
-            Task btree = BehaviorTreeUtil.generateRandomTree(unitClass);
-            Grapher.graph(btree, "Original");
-
-            Task randomTask = BehaviorTreeUtil.getRandomTask(btree, true);
-            Grapher.graph(randomTask, "Random task");
-
-            Task result = BehaviorTreeUtil.randomiseTask(btree, randomTask, unitClass);
-            Grapher.graph(result, "Result");
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTasksFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
+//    private void testRandomiseTask() {
+//        try {
+//            Class<FollowerUnit> unitClass = FollowerUnit.class;
+//
+//            Task btree = BehaviorTreeUtil.generateRandomTree(unitClass);
+//            Grapher.graph(btree, "Original");
+//
+//            Task randomTask = BehaviorTreeUtil.getRandomTask(btree, true);
+//            Grapher.graph(randomTask, "Random task");
+//
+//            Task result = BehaviorTreeUtil.randomiseTask(btree, randomTask, unitClass);
+//            Grapher.graph(result, "Result");
+//        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTasksFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     private void testMutate() {
         for (int i = 0; i < 1000000; i++) {
