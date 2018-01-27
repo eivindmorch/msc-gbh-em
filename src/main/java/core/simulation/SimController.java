@@ -32,6 +32,8 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     private int totalTicks;
     long startTime;
 
+    private String currentScenario;
+
     private SimController() {}
 
     public static SimController getInstance() {
@@ -109,6 +111,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     public void loadScenario(String scenarioPath) {
         logger.info("Loading scenario " + scenarioPath + ".");
+        currentScenario = scenarioPath;
         Federate.getInstance().holdTimeAdvancement();
         UnitHandler.reset();
         UnitLogger.reset();
@@ -126,5 +129,9 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         logger.info("Starting SimGui.");
         simGui = new SimGui();
         simGui.start();
+    }
+
+    public String getCurrentScenario() {
+        return currentScenario;
     }
 }

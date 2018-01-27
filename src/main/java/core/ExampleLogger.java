@@ -30,7 +30,7 @@ public class ExampleLogger {
     }
 
     public void run() {
-        SimController.getInstance().play();
+        SimController.getInstance().play(1000, null);
     }
 
     public static void main(String[] args) {

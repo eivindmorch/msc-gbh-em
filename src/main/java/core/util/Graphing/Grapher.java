@@ -10,6 +10,8 @@ public abstract class Grapher {
 
     private static HashMap<Task, GraphDisplay> taskGraphMap = new HashMap<>();
     private static HashMap<Population, GraphDisplay> populationGraphMap = new HashMap<>();
+    private static HashMap<org.moeaframework.core.Population, GraphDisplay> population2GraphMap = new HashMap<>();
+
 
     public static void graph(String title, Task root) {
         taskGraphMap.put(root, new GraphDisplay(title, root));
@@ -29,6 +31,10 @@ public abstract class Grapher {
 
     public static <C extends Chromosome> void graph(Population<C> population) {
         graph("Population@" + population.hashCode(), population);
+    }
+
+    public static void graph(org.moeaframework.core.Population population) {
+        population2GraphMap.put(population, new GraphDisplay(population.toString(), population));
     }
 
 
@@ -63,6 +69,10 @@ public abstract class Grapher {
     public static void closeAllGraphs() {
         closeAllSingleGraphs();
         closeAllPopulationGraphs();
+        for (GraphDisplay graphDisplay : population2GraphMap.values()) {
+            graphDisplay.close();
+        }
+        population2GraphMap = new HashMap<>();
     }
 
 
