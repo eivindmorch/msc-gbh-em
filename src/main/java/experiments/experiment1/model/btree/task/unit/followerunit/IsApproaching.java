@@ -4,12 +4,28 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
+import core.model.btree.task.unit.VariableTask;
 import experiments.experiment1.unit.FollowerUnit;
 
-public class IsApproaching extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+import static core.util.SystemUtil.random;
 
-    private final String name = "Is approaching?";
-    private double degreeLimit = 45;
+public class IsApproaching extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, VariableTask {
+
+    private String name;
+    private double degreeLimit;
+
+    public IsApproaching() {
+        this(1 + (random.nextDouble() * 44));
+    }
+
+    public IsApproaching(double degreeLimit) {
+        this.degreeLimit = degreeLimit;
+        this.name = "Is approaching [" + String.format("%.2f", degreeLimit) + "°]";
+    }
+
+    public IsApproaching(IsApproaching isApproachingTask) {
+        this(isApproachingTask.degreeLimit);
+    }
 
     @Override
     public Status execute() {
@@ -33,5 +49,10 @@ public class IsApproaching extends LeafTask<Blackboard<FollowerUnit>> implements
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public Task<Blackboard<FollowerUnit>> cloneTask() {
+        return new IsApproaching(this);
     }
 }

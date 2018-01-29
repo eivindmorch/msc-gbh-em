@@ -6,16 +6,34 @@ import core.model.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
+import core.model.btree.task.unit.VariableTask;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.FollowUnitInteraction;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import experiments.experiment1.unit.FollowerUnit;
 
+import static core.util.SystemUtil.random;
 
-public class MoveToTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
-    private final String name = "Move to target";
+public class MoveToTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, VariableTask {
 
-    private TaskTickTracker tickTracker = new TaskTickTracker(5);
+    private int ticksToRun;
+    private String name;
+
+    private TaskTickTracker tickTracker = new TaskTickTracker(ticksToRun);
+
+    public MoveToTarget() {
+        this(1 + random.nextInt(9));
+    }
+
+    public MoveToTarget(int ticksToRun) {
+        this.ticksToRun = ticksToRun;
+        this.name = "Move to target (" + ticksToRun + ")";
+    }
+
+    public MoveToTarget(MoveToTarget moveToTargetTask) {
+        this(moveToTargetTask.ticksToRun);
+    }
 
     @Override
     public Status execute() {
@@ -50,5 +68,17 @@ public class MoveToTarget extends LeafTask<Blackboard<FollowerUnit>> implements 
     public String getName() {
         return this.name;
     }
+
+    @Override
+    public Task<Blackboard<FollowerUnit>> cloneTask() {
+        return new MoveToTarget(ticksToRun);
+    }
+
+    // TODO Variables = speed, ticks
+
+    // TODO Variable limits
+    // TODO increaseVariable() // with checks for min and max value
+    // TODO decreaseVariable() // -||-
+    // TODO randomiseVariable()
 
 }

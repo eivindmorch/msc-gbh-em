@@ -27,7 +27,7 @@ public class TestVariation implements Variation {
         } else {
             behaviorTree = BehaviorTreeUtil.mutate(parent1TreeRoot, FollowerUnit.class);
         }
-        result[0] = new TestSolution(0, 2, behaviorTree);
+        result[0] = new TestSolution(0, solutions[0].getNumberOfObjectives(), behaviorTree);
         return result;
     }
 }

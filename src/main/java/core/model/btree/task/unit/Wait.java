@@ -7,11 +7,28 @@ import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
-public class Wait extends LeafTask<Blackboard> implements NamedTask {
+import static core.util.SystemUtil.random;
 
-    private final String name = "Wait";
 
-    private TaskTickTracker tickTracker = new TaskTickTracker(1);
+public class Wait extends LeafTask<Blackboard> implements NamedTask, VariableTask {
+
+    private int ticksToRun;
+    private TaskTickTracker tickTracker;
+    private String name;
+
+    public Wait(){
+        this(1 + random.nextInt(9));
+    }
+
+    public Wait(int ticksToRun) {
+        this.ticksToRun = ticksToRun;
+        this.tickTracker = new TaskTickTracker(this.ticksToRun);
+        this.name = "Wait (" + this.ticksToRun + ")";
+    }
+
+    public Wait(Wait waitTask) {
+        this(waitTask.ticksToRun);
+    }
 
 
     @Override
@@ -37,5 +54,15 @@ public class Wait extends LeafTask<Blackboard> implements NamedTask {
     public String getName() {
         return this.name;
     }
+
+    @Override
+    public Task<Blackboard> cloneTask() {
+        return new Wait(this);
+    }
+
+    // TODO Variable limits
+    // TODO increaseVariable() // with checks for min and max value
+    // TODO decreaseVariable() // -||-
+    // TODO randomiseVariable()
 
 }

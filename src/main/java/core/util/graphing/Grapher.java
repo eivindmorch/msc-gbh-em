@@ -1,4 +1,4 @@
-package core.util.Graphing;
+package core.util.graphing;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.training.Chromosome;

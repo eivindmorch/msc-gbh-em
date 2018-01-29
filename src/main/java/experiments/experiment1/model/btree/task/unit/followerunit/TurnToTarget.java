@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
+import core.model.btree.task.unit.VariableTask;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
 import experiments.experiment1.unit.Experiment1Unit;
 import experiments.experiment1.unit.FollowerUnit;
@@ -14,9 +15,9 @@ import core.util.exceptions.IllegalArgumentCombinationException;
 
 public class TurnToTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
-    private final String name = "Turn to heading";
+    private final String name = "Turn to target";
 
-    private TaskTickTracker tickTracker = new TaskTickTracker(20);
+    private TaskTickTracker tickTracker = new TaskTickTracker(1);
 
     @Override
     public Status execute() {
@@ -56,6 +57,11 @@ public class TurnToTarget extends LeafTask<Blackboard<FollowerUnit>> implements 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
         return task;
+    }
+
+    @Override
+    public Task<Blackboard<FollowerUnit>> cloneTask() {
+        return new TurnToTarget();
     }
 
     @Override

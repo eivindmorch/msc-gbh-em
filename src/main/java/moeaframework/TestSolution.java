@@ -48,12 +48,16 @@ public class TestSolution extends Solution {
 
     @Override
     public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < getNumberOfObjectives() - 1; i++) {
+            stringBuilder.append(String.format("   Obj%d: %10.2f", i, getObjective(i)));
+        }
+        stringBuilder.append(String.format("    Size: %2.0f", getObjective(getNumberOfObjectives() - 1)));
+
         return String.format(
-                "%s@%10d  Equality: %10.2f  Size: %2.0f",
-                getClass().getSimpleName(),
-                hashCode(),
-                getObjectives()[0],
-                getObjectives()[1]
+                "%12s%s",
+                "@" + hashCode(),
+                stringBuilder.toString()
         );
     }
 }

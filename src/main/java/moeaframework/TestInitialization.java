@@ -10,9 +10,11 @@ import java.lang.reflect.InvocationTargetException;
 public class TestInitialization implements Initialization {
 
     private int numOfSolutions;
+    private int numOfObjectives;
 
-    public TestInitialization(int numOfSolutions) {
+    public TestInitialization(int numOfSolutions, int numOfObjectives) {
         this.numOfSolutions = numOfSolutions;
+        this.numOfObjectives = numOfObjectives;
     }
 
     @Override
@@ -21,7 +23,7 @@ public class TestInitialization implements Initialization {
 
         for (int i = 0; i < numOfSolutions; i++) {
             try {
-                solutions[i] = new TestSolution(0, 2, BehaviorTreeUtil.generateRandomTree(FollowerUnit.class));
+                solutions[i] = new TestSolution(0, numOfObjectives, BehaviorTreeUtil.generateRandomTree(FollowerUnit.class));
             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
             }

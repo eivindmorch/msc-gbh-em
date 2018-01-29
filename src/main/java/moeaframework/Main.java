@@ -6,13 +6,14 @@ import core.simulation.Rti;
 import core.simulation.SimController;
 import core.simulation.federate.Federate;
 import core.unit.UnitHandler;
-import core.util.Graphing.Grapher;
+import core.util.graphing.Grapher;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 import experiments.experiment1.unit.Experiment1AddUnitMethod;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import org.moeaframework.algorithm.NSGAII;
 import org.moeaframework.core.NondominatedSortingPopulation;
 import org.moeaframework.core.Population;
+import org.moeaframework.core.Solution;
 import org.moeaframework.core.comparator.ObjectiveComparator;
 
 import java.util.ArrayList;
@@ -43,13 +44,14 @@ public abstract class Main {
 
 
         String[] exampleFileNames = new String[]{
-                "experiment1/brooklyn-simple.csv"
+                "experiment1/brooklyn-simple.csv",
+//                "experiment1/brooklyn-without-R1-short.csv"
         };
 
         List<DataSet<FollowerEvaluationDataRow>> exampleDataSets =
                 loadExampleDataSets(exampleFileNames, FollowerEvaluationDataRow.class);
 
-        TestProblem testProblem = new TestProblem(exampleDataSets.get(0));
+        TestProblem testProblem = new TestProblem(exampleDataSets);
 
         NSGAII nsgaii = new NSGAII(
                 testProblem,
@@ -57,19 +59,19 @@ public abstract class Main {
                 null,
                 null,
                 new TestVariation(),
-                new TestInitialization(20)
+                new TestInitialization(20, exampleFileNames.length + 1)
         );
 
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
             System.out.println("\nGENERATION " + i);
             nsgaii.step();
 
-//            if (i % 10 == 0) {
-//                System.out.println("\nRefreshing fitness values");
-//                for (Solution solution : nsgaii.getPopulation()) {
-//                    testProblem.evaluate(solution);
-//                }
-//            }
+            if (i % 5 == 0 && i > 0) {
+                System.out.println("\nRefreshing fitness values");
+                for (Solution solution : nsgaii.getPopulation()) {
+                    testProblem.evaluate(solution);
+                }
+            }
 
             Grapher.closeAllGraphs();
 

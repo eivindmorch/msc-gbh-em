@@ -15,7 +15,8 @@ public abstract class Experiment1UnitInfo {
         UnitTypeInfo.add(
                 "Follower", "F", FollowerUnit.class,
                 Arrays.asList(
-                        MoveToTarget.class,
+//                        MoveToTarget.class,
+                        FollowUnit.class,
                         Wait.class,
                         IsApproaching.class,
                         IsCloseEnough.class,

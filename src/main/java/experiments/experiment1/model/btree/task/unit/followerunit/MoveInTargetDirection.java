@@ -6,6 +6,7 @@ import core.model.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
+import core.model.btree.task.unit.VariableTask;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import experiments.experiment1.unit.Experiment1Unit;
@@ -13,12 +14,17 @@ import experiments.experiment1.unit.FollowerUnit;
 import core.util.Geometer;
 import core.util.exceptions.IllegalArgumentCombinationException;
 
+import static core.util.SystemUtil.random;
 
-public class MoveInTargetDirection extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class MoveInTargetDirection extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, VariableTask {
 
-    private final String name = "Move in target direction";
+    private final int ticksToRun = 1 + random.nextInt(9);
 
-    private TaskTickTracker tickTracker = new TaskTickTracker(20);
+    private final String name = "Move in target direction (" + ticksToRun + ")";
+
+    private TaskTickTracker tickTracker = new TaskTickTracker(ticksToRun);
+
+    // TODO CONSTRUCTORS AND COPYTO
 
     @Override
     public Status execute() {
@@ -68,4 +74,9 @@ public class MoveInTargetDirection extends LeafTask<Blackboard<FollowerUnit>> im
     public String getName() {
         return this.name;
     }
+
+    // TODO Variable limits
+    // TODO increaseVariable() // with checks for min and max value
+    // TODO decreaseVariable() // -||-
+    // TODO randomiseVariable()
 }

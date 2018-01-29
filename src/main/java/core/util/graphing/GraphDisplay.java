@@ -1,8 +1,7 @@
-package core.util.Graphing;
+package core.util.graphing;
 
 import com.badlogic.gdx.ai.btree.Task;
 import com.mxgraph.swing.mxGraphComponent;
-import core.training.Chromosome;
 import core.training.Population;
 import moeaframework.TestSolution;
 import org.moeaframework.core.Solution;

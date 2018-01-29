@@ -15,18 +15,21 @@ import org.moeaframework.core.Solution;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static core.util.SystemUtil.sleepSeconds;
 
 public class TestProblem implements Problem, SimulationEndedListener{
 
-    private DataSet<FollowerEvaluationDataRow> exampleDataSet;
+    private List<DataSet<FollowerEvaluationDataRow>> exampleDataSets;
 
     private volatile boolean simulationRunning;
     private final Object SIMULATION_ENDED_LOCK = new Object();
 
-    public TestProblem(DataSet<FollowerEvaluationDataRow> exampleDataSet) {
-        this.exampleDataSet = exampleDataSet;
+    private ArrayList<TestSolution> evaluateQueue = new ArrayList<>();
+
+    public TestProblem(List<DataSet<FollowerEvaluationDataRow>> exampleDataSets) {
+        this.exampleDataSets = exampleDataSets;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class TestProblem implements Problem, SimulationEndedListener{
 
     @Override
     public int getNumberOfObjectives() {
-        return 2;
+        return exampleDataSets.size() + 1;
     }
 
     @Override
@@ -51,21 +54,78 @@ public class TestProblem implements Problem, SimulationEndedListener{
 
     @Override
     public void evaluate(Solution solution) {
-        // TODO Multiple datasets
-        TestSolution testSolution = (TestSolution) solution;
-        Task btreeRoot = testSolution.getBtreeRoot();
+        evaluateQueue.add((TestSolution) solution);
+        if (evaluateQueue.size() == 20) {
+            evaluateQueue();
+            evaluateQueue = new ArrayList<>();
+        }
+    }
 
-        if (!exampleDataSet.getScenarioPath().equals(SimController.getInstance().getCurrentScenario())) {
-            SimController.getInstance().loadScenario(exampleDataSet.getScenarioPath());
-            sleepSeconds(5);
-        } else {
-            SimController.getInstance().rewind();
+    public void evaluateQueue() {
+
+        for (int i = 0; i < exampleDataSets.size(); i++) {
+
+            for (TestSolution testSolution : evaluateQueue) {
+                System.out.println("Evaluating " + testSolution.getClass().getSimpleName() + "@" + testSolution.hashCode());
+
+                Task btreeRoot = testSolution.getBtreeRoot();
+                ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, btreeRoot);
+
+
+                System.out.println("\t" + exampleDataSets.get(i).getScenarioPath());
+
+                DataSet<FollowerEvaluationDataRow> exampleDataSet = exampleDataSets.get(i);
+
+                if (!exampleDataSet.getScenarioPath().equals(SimController.getInstance().getCurrentScenario())) {
+                    SimController.getInstance().loadScenario(exampleDataSet.getScenarioPath());
+                    sleepSeconds(5);
+                } else {
+                    SimController.getInstance().rewind();
+                }
+
+                runSimulationForNTicks(exampleDataSet.getNumOfTicks());
+                setFitness(testSolution, i, exampleDataSet);
+            }
+        }
+        for (TestSolution testSolution : evaluateQueue) {
+            int size = BehaviorTreeUtil.getSize(testSolution.getBtreeRoot());
+            testSolution.setObjective(exampleDataSets.size(), size);
         }
 
-        ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, btreeRoot);
-        runSimulationForNTicks(exampleDataSet.getNumOfTicks());
-        setFitness(testSolution);
     }
+
+
+//    @Override
+//    public void evaluate(Solution solution) {
+//
+//        // TODO Add to list for evaluate queue, evaluate all at same time after nsgaii.step();
+//
+//        System.out.println("Evaluating " + solution.getClass().getSimpleName() + "@" + solution.hashCode());
+//
+//        TestSolution testSolution = (TestSolution) solution;
+//        Task btreeRoot = testSolution.getBtreeRoot();
+//
+//        ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, btreeRoot);
+//
+//        for (int i = 0; i < exampleDataSets.size(); i++) {
+//
+//            System.out.println("\t" + exampleDataSets.get(i).getScenarioPath());
+//
+//            DataSet<FollowerEvaluationDataRow> exampleDataSet = exampleDataSets.get(i);
+//
+//            if (!exampleDataSet.getScenarioPath().equals(SimController.getInstance().getCurrentScenario())) {
+//                SimController.getInstance().loadScenario(exampleDataSet.getScenarioPath());
+//                sleepSeconds(2);
+//            } else {
+//                SimController.getInstance().rewind();
+//            }
+//
+//            runSimulationForNTicks(exampleDataSet.getNumOfTicks());
+//            setFitness(testSolution, i, exampleDataSet);
+//        }
+//        int size = BehaviorTreeUtil.getSize(testSolution.getBtreeRoot());
+//        testSolution.setObjective(exampleDataSets.size(), size);
+//    }
 
     private void runSimulationForNTicks(int ticks){
         simulationRunning = true;
@@ -89,9 +149,7 @@ public class TestProblem implements Problem, SimulationEndedListener{
         }
     }
 
-    private void setFitness(TestSolution solution) {
-        System.out.print(".");
-
+    private void setFitness(TestSolution solution, int objectiveIndex, DataSet<FollowerEvaluationDataRow> exampleDataSet) {
         String intraResourcesScenarioLogsPath = SystemUtil.getDataFileIntraResourcesFolderPath(0, 0, 0);
         DataSet<FollowerEvaluationDataRow> chromosomeDataSet = new DataSet<>(
                 FollowerEvaluationDataRow.class,
@@ -107,17 +165,14 @@ public class TestProblem implements Problem, SimulationEndedListener{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        solution.setObjective(0, equalityFitnessValues.get(0));
-
-        int size = BehaviorTreeUtil.getSize(solution.getBtreeRoot());
-        solution.setObjective(1, size);
+        solution.setObjective(objectiveIndex, equalityFitnessValues.get(0));
     }
 
 
     @Override
     public Solution newSolution() {
         try {
-            return new TestSolution(0, 2, BehaviorTreeUtil.generateRandomTree(FollowerUnit.class));
+            return new TestSolution(0, exampleDataSets.size() + 1, BehaviorTreeUtil.generateRandomTree(FollowerUnit.class));
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
         }

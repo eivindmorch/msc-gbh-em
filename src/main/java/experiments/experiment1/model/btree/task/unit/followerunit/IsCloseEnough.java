@@ -4,12 +4,29 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
+import core.model.btree.task.unit.VariableTask;
 import experiments.experiment1.unit.FollowerUnit;
 
-public class IsCloseEnough extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+import static core.util.SystemUtil.random;
 
-    private final String name = "Is close enough?";
-    private double distanceLimit = 50;
+// TODO Rename
+public class IsCloseEnough extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, VariableTask {
+
+    private double distanceLimit;
+    private String name;
+
+    public IsCloseEnough() {
+        this(random.nextDouble() * 50);
+    }
+
+    public IsCloseEnough(double distanceLimit) {
+        this.distanceLimit = distanceLimit;
+        this.name = "Is within [" + String.format("%.1f", this.distanceLimit) + "m]";
+    }
+
+    public IsCloseEnough(IsCloseEnough isCloseEnoughTask) {
+        this(isCloseEnoughTask.distanceLimit);
+    }
 
     @Override
     public Status execute() {
@@ -29,4 +46,14 @@ public class IsCloseEnough extends LeafTask<Blackboard<FollowerUnit>> implements
     public String getName() {
         return this.name;
     }
+
+    @Override
+    public Task<Blackboard<FollowerUnit>> cloneTask() {
+        return new IsCloseEnough(this);
+    }
+
+    // TODO Variable limits
+    // TODO increaseVariable() // with checks for min and max value
+    // TODO decreaseVariable() // -||-
+    // TODO randomiseVariable()
 }
