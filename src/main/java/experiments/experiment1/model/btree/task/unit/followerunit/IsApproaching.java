@@ -1,15 +1,14 @@
 package experiments.experiment1.model.btree.task.unit.followerunit;
 
-import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
-import core.model.btree.task.VariableTask;
+import core.model.btree.task.VariableLeafTask;
 import experiments.experiment1.unit.FollowerUnit;
 
 import static core.util.SystemUtil.random;
 
-public class IsApproaching extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, VariableTask {
+public class IsApproaching extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private double degreeLimit;
     private String name;

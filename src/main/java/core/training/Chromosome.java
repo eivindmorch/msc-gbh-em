@@ -40,6 +40,12 @@ public class Chromosome {
 
     @Override
     public String toString() {
-        return "Chromosome@" + hashCode() + " {Fitness: " + fitness + ", " + "Root task: @" + btree.hashCode() + "}";
+        String btreeHashCode;
+        if (btree != null) {
+            btreeHashCode = String.valueOf(btree.hashCode());
+        } else {
+            btreeHashCode = "null";
+        }
+        return "Chromosome@" + hashCode() + " {Fitness: " + fitness + ", " + "Root task: @" + btreeHashCode + "}";
     }
 }

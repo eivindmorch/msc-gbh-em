@@ -14,7 +14,7 @@ import core.util.exceptions.IllegalArgumentCombinationException;
 
 public class TurnToTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
-    private TaskTickTracker tickTracker = new TaskTickTracker(1);
+    private TaskTickTracker tickTracker;
     private final String name = "Turn to target";
 
     @Override
@@ -23,6 +23,12 @@ public class TurnToTarget extends LeafTask<Blackboard<FollowerUnit>> implements 
             sendLLBMLTurnToHeadingTask(getObject().getUnit().getMarking());
         }
         return tickTracker.tick();
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        this.tickTracker = new TaskTickTracker(1);
     }
 
     private void sendLLBMLTurnToHeadingTask(String entityMarkingString) {

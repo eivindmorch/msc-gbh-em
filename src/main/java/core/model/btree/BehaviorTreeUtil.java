@@ -8,6 +8,7 @@ import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.utils.Array;
 import core.unit.UnitTypeInfo;
+import core.util.exceptions.NoAvailableTaskClassException;
 import core.util.exceptions.NoSuchTasksFoundException;
 import experiments.experiment1.model.btree.task.unit.followerunit.*;
 import core.unit.Unit;
@@ -78,8 +79,117 @@ public abstract class BehaviorTreeUtil {
         return removeEmptyAndSingleChildCompositeTasks(constructor.newInstance(children));
     }
 
+    public static Task generateTestTree() {
+        Selector shouldMoveSelector = new Selector(new IsApproaching(), new IsWithin());
+        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, new TurnToTarget());
+        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new MoveToTarget());
+        return waitOrMoveSelector;
+    }
+
+    // TODO Replace with clone
+    private static Task instantiateTaskObject(Task task) {
+        Task newTask = null;
+        try {
+            //noinspection unchecked
+            newTask = task.getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return newTask;
+    }
+
+    public static int getSize(Task root) {
+        int size = 1;
+
+        for (int i = 0; i < root.getChildCount(); i++) {
+            Task child = root.getChild(i);
+            size += getSize(child);
+        }
+        return size;
+    }
+
+    /**
+     * Gets all tasks of the specified type.
+     * @param root the root {@link Task} of the behavior tree that is to be searched
+     * @param includeRoot whether to include the root in the selection process
+     * @param taskTypeToSelect the type of task to be selected
+     * @param <T> the type of {@code taskTypeToSelect}
+     * @return a {@link List} of all tasks of type {@code taskTypeToSelect}
+     */
+    public static <T extends Task> ArrayList<T> getTasks(Task root, boolean includeRoot, Class<T> taskTypeToSelect) {
+        ArrayList<T> subtreeRoots = new ArrayList<>();
+
+        if (includeRoot && taskTypeToSelect.isInstance(root)) {
+            subtreeRoots.add((T) root);
+        }
+
+        Stack<Task> stack = new Stack<>();
+        stack.add(root);
+
+        while (!stack.empty()) {
+            Task currentRoot = stack.pop();
+            for (int i = 0; i < currentRoot.getChildCount(); i++) {
+                Task child = currentRoot.getChild(i);
+                stack.add(child);
+                if (taskTypeToSelect.isInstance(child)) {
+                    subtreeRoots.add((T) child);
+                }
+            }
+        }
+        return subtreeRoots;
+    }
+
+    /**
+     * Selects a random {@link Task} of the specified type from an already existing behavior tree.
+     * @param root the root {@link Task} of the behavior tree that is to be searched
+     * @param includeRoot whether to include the root in the selection process
+     * @param taskTypeToSelect the type of task to be selected
+     * @return the randomly selected {@link Task}
+     * @param <T> the type of {@code taskTypeToSelect}
+     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
+     */
+    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect) throws NoSuchTasksFoundException {
+        ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
+
+        if (tasks.size() == 0) {
+            throw new NoSuchTasksFoundException();
+        }
+        return tasks.get(random.nextInt(tasks.size()));
+    }
+
     public static Task clone(Task root) {
-        return insertTask(root, null, 0, null);
+        Task newRoot = instantiateTaskObject(root);
+        for (int i = 0; i < root.getChildCount(); i++) {
+            newRoot.addChild(clone(root.getChild(i)));
+        }
+        return newRoot;
+    }
+
+    /**
+     * Selects a random {@link Task} of the specified type and with the specified minimum number of children
+     * from an already existing behavior tree.
+     * existing behavior tree, excluding the root {@link Task}.
+     * @param root the root {@link Task} of the behavior tree that is to be searched
+     * @param includeRoot whether to include the root in the selection process
+     * @param taskTypeToSelect the type of task to be selected
+     * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link BranchTask}) can have
+     * @param <T> the type of {@code taskTypeToSelect}
+     * @return the randomly selected composite task ({@link BranchTask}). {@code Null} if none was found.
+     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
+     */
+    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTasksFoundException {
+        ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
+        ArrayList<T> selectionTasks = new ArrayList<>();
+
+        for (T task : tasks) {
+            if (task.getChildCount() >= minimumNumberOfChildren) {
+                selectionTasks.add(task);
+            }
+        }
+        if (selectionTasks.size() == 0) {
+            throw new NoSuchTasksFoundException();
+        }
+        return selectionTasks.get(random.nextInt(selectionTasks.size()));
     }
 
     /**
@@ -121,13 +231,17 @@ public abstract class BehaviorTreeUtil {
      * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task removeTask(Task root, Task taskToRemove) {
-        Task newRoot = instantiateTaskObject(root);
+        Task newRoot;
+        if (root == taskToRemove) {
+            return null;
+        } else {
+            newRoot = instantiateTaskObject(root);
+        }
         for (int i = 0; i < root.getChildCount(); i++) {
-            Task child = root.getChild(i);
-            if (child == taskToRemove) {
-                continue;
+            Task newChild = removeTask(root.getChild(i), taskToRemove);
+            if (newChild != null) {
+                newRoot.addChild(newChild);
             }
-            newRoot.addChild(removeTask(child, taskToRemove));
         }
         return newRoot;
     }
@@ -135,33 +249,34 @@ public abstract class BehaviorTreeUtil {
     /**
      * Replaces a subtree in an already existing behavior tree.
      * @param root the root {@link Task} of the complete behavior tree that is to be edited
-     * @param taskToReplace the root {@link Task} of the behavior tree to be replaced. Can not be the same as {@code root}.
-     * @param newTask the root {@link Task} of the behavior tree that is to replace {@code taskToReplace}
+     * @param rootOfSubtreeToBeReplaced the root {@link Task} of the behavior tree to be replaced. Can not be the same as {@code root}.
+     * @param rootOfNewSubtree the root {@link Task} of the behavior tree that is to replace {@code rootOfSubtreeToBeReplaced}
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task replaceTask(Task root, Task taskToReplace, Task newTask) {
-        Task newRoot = instantiateTaskObject(root);
-        for (int i = 0; i < root.getChildCount(); i++) {
-            Task child = root.getChild(i);
-            if (child == taskToReplace) {
-                newRoot.addChild(newTask);
-            } else {
-                newRoot.addChild(replaceTask(root.getChild(i), taskToReplace, newTask));
+    public static Task replaceSubtree(Task root, Task rootOfSubtreeToBeReplaced, Task rootOfNewSubtree) {
+        Task newRoot;
+        if (root == rootOfSubtreeToBeReplaced) {
+            newRoot = instantiateTaskObject(rootOfNewSubtree);
+        } else {
+            newRoot = instantiateTaskObject(root);
+            for (int i = 0; i < root.getChildCount(); i++) {
+                newRoot.addChild(replaceSubtree(root.getChild(i), rootOfSubtreeToBeReplaced, rootOfNewSubtree));
             }
         }
         return newRoot;
     }
 
     /**
-     * Flips the positions of two subtrees in an already existing behavior tree. Do NOT insert two subtrees where one
+     * Switches the positions of two subtrees in an already existing behavior tree. Do NOT insert two subtrees where one
      * is a the descendant of the other.
      * @param root the root {@link Task} of the complete behavior tree that is to be edited
      * @param subtree1 the root {@link Task} of the first subtree to flip
      * @param subtree2 the root {@link Task} of the second subtree to flip
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task flipTwoTasks(Task root, Task subtree1, Task subtree2) {
+    public static Task switchTasks(Task root, Task subtree1, Task subtree2) {
         Task newRoot = instantiateTaskObject(root);
+
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = root.getChild(i);
             if (child == subtree1) {
@@ -169,82 +284,10 @@ public abstract class BehaviorTreeUtil {
             } else if (child == subtree2) {
                 newRoot.addChild(subtree1);
             } else {
-                newRoot.addChild(flipTwoTasks(root.getChild(i), subtree1, subtree2));
+                newRoot.addChild(switchTasks(root.getChild(i), subtree1, subtree2));
             }
         }
         return newRoot;
-    }
-
-    /**
-     * Gets all tasks of the specified type.
-     * @param root the root {@link Task} of the behavior tree that is to be searched
-     * @param includeRoot whether to include the root in the selection process
-     * @param taskTypeToSelect the type of task to be selected
-     * @return a {@link List} of all tasks of type {@code taskTypeToSelect}
-     */
-    public static ArrayList<Task> getTasks(Task root, boolean includeRoot, Class<? extends Task> taskTypeToSelect) {
-        ArrayList<Task> subtreeRoots = new ArrayList<>();
-
-        if (includeRoot && taskTypeToSelect.isInstance(root)) {
-            subtreeRoots.add(root);
-        }
-
-        Stack<Task> stack = new Stack<>();
-        stack.add(root);
-
-        while (!stack.empty()) {
-            Task currentRoot = stack.pop();
-            for (int i = 0; i < currentRoot.getChildCount(); i++) {
-                Task child = currentRoot.getChild(i);
-                stack.add(child);
-                if (taskTypeToSelect.isInstance(child)) {
-                    subtreeRoots.add(child);
-                }
-            }
-        }
-        return subtreeRoots;
-    }
-
-    /**
-     * Selects a random {@link Task} of the specified type and with the specified minimum number of children
-     * from an already existing behavior tree.
-     * existing behavior tree, excluding the root {@link Task}.
-     * @param root the root {@link Task} of the behavior tree that is to be searched
-     * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link BranchTask}) can have
-     * @return the randomly selected composite task ({@link BranchTask}). {@code Null} if none was found.
-     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
-     */
-    public static Task getRandomTask(Task root, boolean includeRoot, Class<? extends Task> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTasksFoundException {
-        ArrayList<Task> tasks = getTasks(root, includeRoot, taskTypeToSelect);
-
-        for (Task task : tasks) {
-            if (task.getChildCount() < minimumNumberOfChildren) {
-                tasks.remove(task);
-            }
-        }
-
-        if (tasks.size() == 0) {
-            throw new NoSuchTasksFoundException();
-        }
-
-        return tasks.get(random.nextInt(tasks.size()));
-    }
-
-    /**
-     * Selects a random {@link Task} of the specified type from an already existing behavior tree.
-     * @param root the root {@link Task} of the behavior tree that is to be searched
-     * @param includeRoot whether to include the root in the selection process
-     * @param taskTypeToSelect the type of task to be selected
-     * @return the randomly selected {@link Task}
-     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
-     */
-    public static Task getRandomTask(Task root, boolean includeRoot, Class<? extends Task> taskTypeToSelect) throws NoSuchTasksFoundException {
-        ArrayList<Task> tasks = getTasks(root, includeRoot, taskTypeToSelect);
-
-        if (tasks.size() == 0) {
-            throw new NoSuchTasksFoundException();
-        }
-        return tasks.get(random.nextInt(tasks.size()));
     }
 
     /**
@@ -254,21 +297,30 @@ public abstract class BehaviorTreeUtil {
      * @param unitClass the class of the unit the behavior tree is to be used for
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task randomiseTask(Task root, Task taskToRandomise, Class<? extends Unit> unitClass) {
+    public static Task randomiseTask(Task root, Task taskToRandomise, Class<? extends Unit> unitClass) throws NoAvailableTaskClassException {
         Task newRoot = instantiateTaskObject(root);
 
-        List<Class<? extends Task>> availableTaskTypes = new ArrayList<>();
+        ArrayList<Class<? extends Task>> availableTaskClasses = new ArrayList<>();
+
         if (root == taskToRandomise) {
 
+            // TODO Decorator
             if (taskToRandomise instanceof LeafTask) {
-                availableTaskTypes.addAll(UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableLeafTasks());
+                availableTaskClasses.addAll(UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableLeafTasks());
             } else if (taskToRandomise instanceof BranchTask) {
-                availableTaskTypes.addAll(UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks());
+                availableTaskClasses.addAll(UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks());
             }
-            availableTaskTypes.remove(taskToRandomise.getClass());
+            availableTaskClasses.remove(taskToRandomise.getClass());
+
+            if (availableTaskClasses.isEmpty()) {
+                throw new NoAvailableTaskClassException(
+                        "No available task classes for " + taskToRandomise.getClass().getSimpleName()
+                                + "(" + taskToRandomise.getClass().getTypeName() + " type)"
+                );
+            }
 
             try {
-                newRoot = availableTaskTypes.get(random.nextInt(availableTaskTypes.size())).newInstance();
+                newRoot = availableTaskClasses.get(random.nextInt(availableTaskClasses.size())).newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -312,137 +364,5 @@ public abstract class BehaviorTreeUtil {
             newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child));
         }
         return newRoot;
-    }
-
-    private static Task instantiateTaskObject(Task task) {
-        Task newTask = null;
-        try {
-            //noinspection unchecked
-            newTask = task.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return newTask;
-    }
-
-    public static Task crossover(Task parent1Root, Task parent2Root) {
-        try {
-            Task parent1RandomSubtreeRoot = BehaviorTreeUtil.getRandomTask(parent1Root, false, Task.class);
-            Task parent2RandomSubtreeRoot = BehaviorTreeUtil.getRandomTask(parent2Root, true, Task.class);
-            Task child = BehaviorTreeUtil.replaceTask(parent1Root, parent1RandomSubtreeRoot, parent2RandomSubtreeRoot);
-            return removeEmptyAndSingleChildCompositeTasks(child);
-        } catch (NoSuchTasksFoundException e) {
-            e.printStackTrace();
-            return BehaviorTreeUtil.clone(parent1Root);
-        }
-    }
-
-    /**
-     *
-     * @param root the root {@link Task} of the behavior tree that is to be mutated
-     * @param unitClass the class of the unit the behavior tree is to be used for
-     * @return
-     */
-    public static Task mutate(Task root, Class<? extends Unit> unitClass) {
-        Task result;
-
-        // Add
-        double randValue = random.nextDouble();
-        if (randValue < 0.25) {
-            System.out.println("ADD");
-            result = mutateAdd(root, unitClass);
-        }
-        // Remove
-        else if (randValue < 0.5) {
-            System.out.println("REMOVE");
-            result = mutateRemove(root);
-        }
-        // Flip
-        else if (randValue < 0.75){
-            System.out.println("FLIP");
-            result = mutateFlip(root);
-        }
-        // Randomise task
-        else {
-            System.out.println("RANDOMISE TASK");
-            result = mutateRandomiseTask(root, unitClass);
-        }
-        result = removeEmptyAndSingleChildCompositeTasks(result);
-        if (result == null) {
-            return BehaviorTreeUtil.clone(root);
-        }
-        return result;
-    }
-
-    private static Task mutateAdd(Task root, Class<? extends Unit> unitClass) {
-        try {
-            Task randomRoot = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class);
-            try {
-                Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass);
-                return BehaviorTreeUtil.insertTask(root, randomRoot, random.nextInt(randomRoot.getChildCount() + 1), randomTree);
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
-                e.printStackTrace();
-                return BehaviorTreeUtil.clone(root);
-            }
-        } catch (NoSuchTasksFoundException e) {
-            e.printStackTrace();
-            return BehaviorTreeUtil.clone(root);
-        }
-    }
-
-    private static Task mutateRemove(Task root) {
-        try {
-            Task randomRoot = BehaviorTreeUtil.getRandomTask(root, false, Task.class);
-            return BehaviorTreeUtil.removeTask(root, randomRoot);
-        } catch (NoSuchTasksFoundException e) {
-            e.printStackTrace();
-            return BehaviorTreeUtil.clone(root);
-        }
-    }
-
-    private static Task mutateFlip(Task root) {
-        try {
-            Task randomRoot = BehaviorTreeUtil.getRandomTask(root, false, BranchTask.class, 2);
-            int numberOfChildren = randomRoot.getChildCount();
-            ArrayList<Task> childList = new ArrayList<>(numberOfChildren);
-            for (int i = 0; i < numberOfChildren; i++) {
-                childList.add(randomRoot.getChild(i));
-            }
-            Task child1 = childList.remove(random.nextInt(childList.size()));
-            Task child2 = childList.remove(random.nextInt(childList.size()));
-
-            return BehaviorTreeUtil.flipTwoTasks(root, child1, child2);
-
-        } catch (NoSuchTasksFoundException e) {
-            e.printStackTrace();
-            return BehaviorTreeUtil.clone(root);
-        }
-    }
-
-    private static Task mutateRandomiseTask(Task root, Class<? extends Unit> unitClass) {
-        try {
-            Task randomTask = getRandomTask(root, true, Task.class);
-            return randomiseTask(root, randomTask, unitClass);
-        } catch (NoSuchTasksFoundException e) {
-            e.printStackTrace();
-            return BehaviorTreeUtil.clone(root);
-        }
-    }
-
-    public static Task generateTestTree() {
-        Selector shouldMoveSelector = new Selector(new IsApproaching(), new IsWithin());
-        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, new TurnToTarget());
-        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new MoveToTarget());
-        return waitOrMoveSelector;
-    }
-
-    public static int getSize(Task root) {
-        int size = 1;
-
-        for (int i = 0; i < root.getChildCount(); i++) {
-            Task child = root.getChild(i);
-            size += getSize(child);
-        }
-        return size;
     }
 }

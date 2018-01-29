@@ -1,12 +1,11 @@
 package experiments.experiment1.model.btree.task.unit.followerunit;
 
-import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
-import core.model.btree.task.VariableTask;
+import core.model.btree.task.VariableLeafTask;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import experiments.experiment1.unit.Experiment1Unit;
@@ -16,7 +15,7 @@ import core.util.exceptions.IllegalArgumentCombinationException;
 
 import static core.util.SystemUtil.random;
 
-public class MoveInTargetDirection extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, VariableTask {
+public class MoveInTargetDirection extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private int ticksToRun;
     private TaskTickTracker tickTracker;
@@ -40,6 +39,12 @@ public class MoveInTargetDirection extends LeafTask<Blackboard<FollowerUnit>> im
             sendLLBMLMoveToLocationTask();
         }
         return tickTracker.tick();
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        this.tickTracker = new TaskTickTracker(ticksToRun);
     }
 
     private void sendLLBMLMoveToLocationTask(){
@@ -94,7 +99,6 @@ public class MoveInTargetDirection extends LeafTask<Blackboard<FollowerUnit>> im
 
     private void setTicksToRun(int ticksToRun) {
         this.ticksToRun = ticksToRun;
-        this.tickTracker = new TaskTickTracker(ticksToRun);
         this.name = "Move in target direction (" + ticksToRun + ")";
     }
 }

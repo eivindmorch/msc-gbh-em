@@ -4,12 +4,12 @@ package core.training.algorithms.SimpleSingleObjectiveGA;
 import com.badlogic.gdx.ai.btree.Task;
 import core.data.DataSet;
 import core.data.rows.DataRow;
+import core.model.btree.genops.Crossover;
+import core.model.btree.genops.Mutator;
 import core.training.Chromosome;
-import core.model.btree.BehaviorTreeUtil;
 import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
-import core.training.algorithms.NSGA2.NSGA2Chromosome;
 import core.util.SystemUtil;
 
 import java.util.ArrayList;
@@ -77,10 +77,10 @@ public class SimpleSingleObjectiveGA<D extends DataRow> extends Algorithm<D, Chr
                 // TODO Separate in methods
                 if (random.nextDouble() < SimpleSingleObjectiveGASettings.crossoverRate) {
                     Chromosome parent2 = population.selectionTournament(2, oneDimensionalComparator);
-                    Task crossoverTask = BehaviorTreeUtil.crossover(parent1.getBtree(), parent2.getBtree());
+                    Task crossoverTask = Crossover.crossover(parent1.getBtree(), parent2.getBtree());
                     newPopulation.add(new Chromosome(crossoverTask));
                 } else if (random.nextDouble() < SimpleSingleObjectiveGASettings.mutationRate) {
-                    Task mutateTask = BehaviorTreeUtil.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
+                    Task mutateTask = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
                     newPopulation.add(new Chromosome(mutateTask));
                 } else {
                     newPopulation.add(parent1.clone());

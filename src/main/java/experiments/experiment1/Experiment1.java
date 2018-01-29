@@ -2,6 +2,8 @@ package experiments.experiment1;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.BehaviorTreeUtil;
+import core.model.btree.genops.Crossover;
+import core.model.btree.genops.Mutator;
 import core.training.Chromosome;
 import core.simulation.Rti;
 import core.simulation.SimController;
@@ -46,7 +48,7 @@ public class Experiment1 {
 
     private void run() {
 
-        Rti.getInstance().start();
+//        Rti.getInstance().start();
 
         sleepSeconds(5);
         Federate.getInstance().start();
@@ -55,7 +57,7 @@ public class Experiment1 {
         Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
         SimController.getInstance().startSimEngine();
-        SimController.getInstance().startSimGui();
+//        SimController.getInstance().startSimGui();
         sleepSeconds(10);
 
 
@@ -90,7 +92,7 @@ public class Experiment1 {
             Task btree2 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
             Grapher.graph(btree2);
 
-            Task btree3 = BehaviorTreeUtil.crossover(btree1, btree2);
+            Task btree3 = Crossover.crossover(btree1, btree2);
             Grapher.graph(btree3);
 
             sleepSeconds(7);
@@ -123,7 +125,7 @@ public class Experiment1 {
             Task btree2 = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
             Grapher.graph(btree2);
 
-            Task btree3 = BehaviorTreeUtil.crossover(btree1, btree2);
+            Task btree3 = Crossover.crossover(btree1, btree2);
             Grapher.graph(btree3);
 
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
@@ -164,7 +166,7 @@ public class Experiment1 {
 //            Grapher grapher3 = new Grapher("R2 @" + Integer.toString(btree1.hashCode()));
 //            grapher3.graph(rnd2);
 //
-//            Task result = BehaviorTreeUtil.flipTwoTasks(btree1, rnd1, rnd2);
+//            Task result = BehaviorTreeUtil.switchTasks(btree1, rnd1, rnd2);
 //            Grapher grapher4 = new Grapher("RESULT @" + Integer.toString(btree1.hashCode()));
 //            grapher4.graph(result);
 //
@@ -236,7 +238,7 @@ public class Experiment1 {
 //                Grapher grapher1 = new Grapher("P1 @" + Integer.toString(btree.hashCode()));
 //                grapher1.graph(btree);
 
-                Task mutatedTree = BehaviorTreeUtil.mutate(btree, FollowerUnit.class);
+                Task mutatedTree = Mutator.mutate(btree, FollowerUnit.class);
 //                Grapher grapher2 = new Grapher("MUTATED @" + Integer.toString(mutatedTree.hashCode()));
 //                grapher2.graph(mutatedTree);
 

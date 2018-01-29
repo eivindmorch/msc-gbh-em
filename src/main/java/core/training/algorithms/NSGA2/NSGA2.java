@@ -1,8 +1,11 @@
 package core.training.algorithms.NSGA2;
 
+import com.badlogic.gdx.ai.btree.Task;
 import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.model.btree.BehaviorTreeUtil;
+import core.model.btree.genops.Crossover;
+import core.model.btree.genops.Mutator;
 import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
@@ -19,11 +22,10 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     private DataSet<D> lastExample;
 
+    // TODO Move Settings references to fields set in constructor
     public NSGA2(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator) {
         super(evaluationDataRowClass, fitnessEvaluator);
     }
-
-    ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation;
 
     @Override
     public void setup() {
@@ -62,7 +64,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         System.out.println();
 
         population.addAll(offspring);
-        rankedPopulation = rankPopulationByNonDomination(population);
+        ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation = rankPopulationByNonDomination(population);
 
         System.out.println("Ranked population");
         printRankedPopulation(rankedPopulation);
@@ -102,32 +104,23 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     private Population<NSGA2Chromosome> createOffspringPopulation(Population<NSGA2Chromosome> population) {
         Population<NSGA2Chromosome> offspringPopulation = new Population<>();
-        for (int i = 0; i < NSGA2Settings.populationSize; i++) {
+        for (int i = 0; i < population.getSize(); i++) {
             // TODO
             NSGA2Chromosome parent1 = population.selectionTournament(2, nonDominationRankAndCrowdingDistanceComparator());
-//            NSGA2Chromosome parent2 = population.selectionTournament(2, nonDominationRankAndCrowdingDistanceComparator());
-//            if (SystemUtil.random.nextDouble() < NSGA2Settings.crossoverRate) {
-//                Task crossoverChild = BehaviorTreeUtil.crossover(parent1.getBtree(), parent2.getBtree());
-//                offspringPopulation.add(new NSGA2Chromosome(crossoverChild));
-//            } else {
-//                Task mutationChild = BehaviorTreeUtil.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
-//                offspringPopulation.add(new NSGA2Chromosome(mutationChild));
-//            }
-            offspringPopulation.add(new NSGA2Chromosome(BehaviorTreeUtil.clone(parent1.getBtree())));
+            NSGA2Chromosome parent2 = population.selectionTournament(2, nonDominationRankAndCrowdingDistanceComparator());
+            // TODO Fix use of crossoverRate and mutationRate
+            if (SystemUtil.random.nextDouble() < NSGA2Settings.crossoverRate) {
+                Task crossoverChild = Crossover.crossover(parent1.getBtree(), parent2.getBtree());
+                offspringPopulation.add(new NSGA2Chromosome(crossoverChild));
+            } else {
+                Task mutationChild = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
+                offspringPopulation.add(new NSGA2Chromosome(mutationChild));
+            }
+            System.out.println(offspringPopulation.get(offspringPopulation.getSize() - 1).getBtree());
 
         }
         return offspringPopulation;
     }
-
-    private NSGA2Chromosome binaryTournament(ArrayList<NSGA2Chromosome> population) {
-        NSGA2Chromosome c1 = population.get(SystemUtil.random.nextInt(population.size()));
-        NSGA2Chromosome c2 = population.get(SystemUtil.random.nextInt(population.size()));
-//        if (c1.compare(c2) < 0) return c1;
-        // TODO Sjekk at denne blir riktig
-        if (nonDominationRankAndCrowdingDistanceComparator().compare(c1, c2) < 0 ) return c1;
-        else return c2;
-    }
-
 
     private ArrayList<ArrayList<NSGA2Chromosome>> rankPopulationByNonDomination(Population<NSGA2Chromosome> population) {
 

@@ -16,7 +16,6 @@ public class TaskTickTracker {
             currentTick++;
             return Task.Status.RUNNING;
         } else {
-            currentTick = 0;
             return Task.Status.SUCCEEDED;
         }
     }

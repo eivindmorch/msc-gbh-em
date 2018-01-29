@@ -1,17 +1,17 @@
 package core.model.btree.task.unit;
 
-import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
-import core.model.btree.task.VariableTask;
+import core.model.btree.task.VariableLeafTask;
+import core.unit.Unit;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
 import static core.util.SystemUtil.random;
 
 
-public class Wait extends LeafTask<Blackboard> implements NamedTask, VariableTask {
+public class Wait extends VariableLeafTask<Blackboard<Unit>> implements NamedTask {
 
     private int ticksToRun;
     private TaskTickTracker tickTracker;
@@ -37,6 +37,12 @@ public class Wait extends LeafTask<Blackboard> implements NamedTask, VariableTas
         return tickTracker.tick();
     }
 
+    @Override
+    public void start() {
+        super.start();
+        this.tickTracker = new TaskTickTracker(ticksToRun);
+    }
+
     private void sendLLBMLWaitTask(String entityMarkingString){
         WaitInteraction interaction = new WaitInteraction();
         interaction.setTaskee(entityMarkingString);
@@ -44,8 +50,8 @@ public class Wait extends LeafTask<Blackboard> implements NamedTask, VariableTas
     }
 
     @Override
-    protected Task<Blackboard> copyTo(Task<Blackboard> task) {
-        return task;
+    protected Task<Blackboard<Unit>> copyTo(Task<Blackboard<Unit>> task) {
+        return null;
     }
 
     @Override
@@ -64,7 +70,6 @@ public class Wait extends LeafTask<Blackboard> implements NamedTask, VariableTas
 
     private void setTicksToRun(int ticksToRun) {
         this.ticksToRun = ticksToRun;
-        this.tickTracker = new TaskTickTracker(ticksToRun);
         this.name = "Wait (" + ticksToRun + ")";
     }
 }
