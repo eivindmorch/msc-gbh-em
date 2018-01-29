@@ -6,7 +6,7 @@ import core.model.btree.BehaviorTreeUtil;
 import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
-import core.util.Graphing.Grapher;
+import core.util.graphing.Grapher;
 import core.util.SystemUtil;
 
 import java.util.ArrayList;

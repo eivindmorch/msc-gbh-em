@@ -2,67 +2,62 @@ package experiments.experiment1.model.btree.task.unit.followerunit;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import core.model.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
 import core.model.btree.task.VariableTask;
-import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
-import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import experiments.experiment1.unit.FollowerUnit;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.FollowUnitInteraction;
 
 import static core.util.SystemUtil.random;
 
-public class MoveToTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, VariableTask {
+public class FollowTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, VariableTask {
 
     private int ticksToRun;
     private TaskTickTracker tickTracker;
     private String name;
 
-    public MoveToTarget() {
+    public FollowTarget() {
         randomiseTicksToRun();
     }
 
-    public MoveToTarget(int ticksToRun) {
+    public FollowTarget(int ticksToRun) {
         setTicksToRun(ticksToRun);
     }
 
-    public MoveToTarget(MoveToTarget moveToTarget) {
-        this(moveToTarget.ticksToRun);
+    public FollowTarget(FollowTarget followUnit) {
+        this(followUnit.ticksToRun);
     }
 
     @Override
     public Status execute() {
         if (tickTracker.getCurrentTick() == 0) {
-            sendLLBMLMoveToLocationTask();
+            sendLLBMLFollowUnitTask();
         }
         return tickTracker.tick();
     }
 
-    private void sendLLBMLMoveToLocationTask(){
-        MoveToLocationInteraction interaction = new MoveToLocationInteraction();
+    private void sendLLBMLFollowUnitTask(){
+        FollowUnitInteraction interaction = new FollowUnitInteraction();
 
-        Lla destinationLla = getObject().getUnit().getTarget().getRawDataRow().getLla();
-
-        GeodeticLocationStruct geoLocationStruct = new GeodeticLocationStruct(
-                (float)destinationLla.getLatitude(),
-                (float)destinationLla.getLongitude(),
-                (float)destinationLla.getAltitude()
-        );
-
-        interaction.setDestination(geoLocationStruct);
+        interaction.setUnit(getObject().getUnit().getTarget().getMarking());
         interaction.setTaskee(getObject().getUnit().getMarking());
         interaction.sendInteraction();
     }
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return task;
+        return null;
+    }
+
+    @Override
+    public Task<Blackboard<FollowerUnit>> cloneTask() {
+        return new FollowTarget();
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
@@ -77,6 +72,6 @@ public class MoveToTarget extends LeafTask<Blackboard<FollowerUnit>> implements 
     private void setTicksToRun(int ticksToRun) {
         this.ticksToRun = ticksToRun;
         this.tickTracker = new TaskTickTracker(ticksToRun);
-        this.name = "Move to target (" + ticksToRun + ")";
+        this.name = "Follow target (" + ticksToRun + ")";
     }
 }

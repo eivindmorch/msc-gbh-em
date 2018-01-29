@@ -18,7 +18,7 @@ public abstract class Experiment1UnitInfo {
                         MoveToTarget.class,
                         Wait.class,
                         IsApproaching.class,
-                        IsCloseEnough.class,
+                        IsWithin.class,
                         TurnToTarget.class
                 ),
                 Arrays.asList(

@@ -12,7 +12,7 @@ import core.training.algorithms.Algorithm;
 import core.training.algorithms.NSGA2.NSGA2;
 import core.training.algorithms.NSGA2.NSGA2Chromosome;
 import core.unit.UnitHandler;
-import core.util.Graphing.Grapher;
+import core.util.graphing.Grapher;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 import experiments.experiment1.unit.Experiment1AddUnitMethod;
 import experiments.experiment1.unit.Experiment1UnitInfo;

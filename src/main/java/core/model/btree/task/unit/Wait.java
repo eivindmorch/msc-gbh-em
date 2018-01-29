@@ -5,14 +5,29 @@ import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
+import core.model.btree.task.VariableTask;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
-public class Wait extends LeafTask<Blackboard> implements NamedTask {
+import static core.util.SystemUtil.random;
 
-    private final String name = "Wait";
 
-    private TaskTickTracker tickTracker = new TaskTickTracker(1);
+public class Wait extends LeafTask<Blackboard> implements NamedTask, VariableTask {
 
+    private int ticksToRun;
+    private TaskTickTracker tickTracker;
+    private String name;
+
+    public Wait(){
+        randomiseTicksToRun();
+    }
+
+    public Wait(int ticksToRun) {
+        setTicksToRun(ticksToRun);
+    }
+
+    public Wait(Wait wait) {
+        this(wait.ticksToRun);
+    }
 
     @Override
     public Status execute() {
@@ -38,4 +53,18 @@ public class Wait extends LeafTask<Blackboard> implements NamedTask {
         return this.name;
     }
 
+    @Override
+    public void randomiseVariables() {
+        randomiseTicksToRun();
+    }
+
+    private void randomiseTicksToRun() {
+        setTicksToRun(1 + random.nextInt(9));
+    }
+
+    private void setTicksToRun(int ticksToRun) {
+        this.ticksToRun = ticksToRun;
+        this.tickTracker = new TaskTickTracker(ticksToRun);
+        this.name = "Wait (" + ticksToRun + ")";
+    }
 }

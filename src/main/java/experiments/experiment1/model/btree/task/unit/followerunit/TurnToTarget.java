@@ -14,9 +14,8 @@ import core.util.exceptions.IllegalArgumentCombinationException;
 
 public class TurnToTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
-    private final String name = "Turn to heading";
-
-    private TaskTickTracker tickTracker = new TaskTickTracker(20);
+    private TaskTickTracker tickTracker = new TaskTickTracker(1);
+    private final String name = "Turn to target";
 
     @Override
     public Status execute() {
