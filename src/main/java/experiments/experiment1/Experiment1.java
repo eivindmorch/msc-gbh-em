@@ -56,7 +56,10 @@ public class Experiment1 {
         // TODO Population size as argument?
         Algorithm<FollowerEvaluationDataRow, NSGA2Chromosome> algorithm = new NSGA2<>(
                 FollowerEvaluationDataRow.class,
-                new Experiment1FitnessEvaluator()
+                new Experiment1FitnessEvaluator(),
+                20,
+                0.5,
+                0.8
         );
 
         String[] exampleFileNames = new String[]{
@@ -69,6 +72,7 @@ public class Experiment1 {
                 algorithm,
                 exampleFileNames
         );
+
 
         trainer.train(10000);
 

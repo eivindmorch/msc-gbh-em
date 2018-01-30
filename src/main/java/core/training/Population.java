@@ -2,6 +2,7 @@ package core.training;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.BehaviorTreeUtil;
+import core.training.algorithms.NSGA2.NSGA2Chromosome;
 import core.unit.Unit;
 
 import java.lang.reflect.Constructor;
@@ -92,5 +93,9 @@ public class Population<C extends Chromosome> {
         }
         sb.append("\n}");
         return sb.toString();
+    }
+
+    public void removeAll(ArrayList<C> chromosomes) {
+        this.chromosomes.removeAll(chromosomes);
     }
 }

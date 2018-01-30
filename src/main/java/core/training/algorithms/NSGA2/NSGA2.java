@@ -22,14 +22,21 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     private DataSet<D> lastExample;
 
-    // TODO Move Settings references to fields set in constructor
-    public NSGA2(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator) {
+    private final int POPULATION_SIZE;
+    private final double CROSSOVER_RATE;
+    private final double MUTATION_RATE;
+
+    public NSGA2(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator, int populationSize,
+                 double crossoverRate, double mutationRate) {
         super(evaluationDataRowClass, fitnessEvaluator);
+        this.POPULATION_SIZE = populationSize;
+        this.CROSSOVER_RATE = crossoverRate;
+        this.MUTATION_RATE = mutationRate;
     }
 
     @Override
     public void setup() {
-        population = Population.generateRandomPopulation(NSGA2Settings.populationSize, trainer.getUnitToTrainClass(), NSGA2Chromosome.class);
+        population = Population.generateRandomPopulation(POPULATION_SIZE, trainer.getUnitToTrainClass(), NSGA2Chromosome.class);
     }
 
     @Override
@@ -109,7 +116,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             NSGA2Chromosome parent1 = population.selectionTournament(2, nonDominationRankAndCrowdingDistanceComparator());
             NSGA2Chromosome parent2 = population.selectionTournament(2, nonDominationRankAndCrowdingDistanceComparator());
             // TODO Fix use of crossoverRate and mutationRate
-            if (SystemUtil.random.nextDouble() < NSGA2Settings.crossoverRate) {
+            if (SystemUtil.random.nextDouble() < CROSSOVER_RATE) {
                 Task crossoverChild = Crossover.crossover(parent1.getBtree(), parent2.getBtree());
                 offspringPopulation.add(new NSGA2Chromosome(crossoverChild));
             } else {
@@ -138,31 +145,26 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
                 }
             }
         }
-//        for (NSGA2Chromosome chromosome : population)
-//            System.out.print(chromosome.numOfDominators + " ");
-//        System.out.println();
-
-        // Add to ranks depending on domination relationships
         ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation = new ArrayList<>();
 
-        int totalRanked = 0;
-        while (totalRanked < NSGA2Settings.populationSize) {
+        while (populationCopy.getSize() > 0) {
             ArrayList<NSGA2Chromosome> rank = new ArrayList<>();
-            int i = 0;
-            while (i < populationCopy.getSize()){
-                if(populationCopy.get(i).numOfDominators == 0){
-                    NSGA2Chromosome chromosome = populationCopy.remove(i);
+
+            for (NSGA2Chromosome chromosome : populationCopy.getChromosomes()) {
+                if(chromosome.numOfDominators == 0){
                     chromosome.rank = rankedPopulation.size();
                     rank.add(chromosome);
                 }
-                else i++;
             }
-            // TODO Change loop to init first to not do this for last unecessary
-            for (NSGA2Chromosome dominator : rank)
-                for (NSGA2Chromosome dominated : dominator.dominates)
+            populationCopy.removeAll(rank);
+
+            for (NSGA2Chromosome dominator : rank) {
+                for (NSGA2Chromosome dominated : dominator.dominates) {
                     dominated.numOfDominators--;
+                }
+            }
+            assignCrowdingDistance(rank);
             rankedPopulation.add(rank);
-            totalRanked += rank.size();
         }
         System.out.println("Rank0 size: " + rankedPopulation.get(0).size());
         return rankedPopulation;
@@ -174,19 +176,15 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
         for (ArrayList<NSGA2Chromosome> rank : rankedPopulation) {
             assignCrowdingDistance(rank);
-            if (rank.size() <= NSGA2Settings.populationSize - newPopulation.getSize()) {
+            if (rank.size() <= POPULATION_SIZE - newPopulation.getSize()) {
                 newPopulation.addAll(rank);
             }
             else {
                 ArrayList<NSGA2Chromosome> rankCopy = new ArrayList<>(rank);
-                System.out.print("Sorting...");
                 rankCopy.sort(NSGA2Chromosome.crowdingDistanceComparator());
-                System.out.println("done");
-                System.out.print("Collecting best...");
-                while (newPopulation.getSize() < NSGA2Settings.populationSize) {
+                while (newPopulation.getSize() < POPULATION_SIZE) {
                     newPopulation.add(rankCopy.remove(0));
                 }
-                System.out.println("done");
             }
         }
         return newPopulation;
@@ -203,9 +201,9 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             rank.get(0).crowdingDistance = Double.POSITIVE_INFINITY;
             rank.get(rank.size() - 1).crowdingDistance = Double.POSITIVE_INFINITY;
 
-            double span = Math.abs(rank.get(0).getFitness().get(fitnessIndex) - rank.get(rank.size() - 1).getFitness().get(fitnessIndex));
+            double span = Math.abs(rank.get(rank.size() - 1).getFitness().get(fitnessIndex) - rank.get(0).getFitness().get(fitnessIndex));
             for (int i = 1; i < rank.size() - 1; i++) {
-                rank.get(i).crowdingDistance += Math.abs(rank.get(i-1).getFitness().get(fitnessIndex) - rank.get(i+1).getFitness().get(fitnessIndex)) / span;
+                rank.get(i).crowdingDistance += Math.abs(rank.get(i+1).getFitness().get(fitnessIndex) - rank.get(i-1).getFitness().get(fitnessIndex)) / span;
             }
         }
     }
