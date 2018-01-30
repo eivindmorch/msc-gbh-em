@@ -8,26 +8,29 @@ import core.model.btree.task.TaskTickTracker;
 import core.model.btree.task.VariableLeafTask;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
+import experiments.experiment1.unit.Experiment1Unit;
 import experiments.experiment1.unit.FollowerUnit;
+import core.util.Geometer;
+import core.util.exceptions.IllegalArgumentCombinationException;
 
 import static core.util.SystemUtil.random;
 
-public class MoveToTarget extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class MoveInTargetDirectionTask extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private int ticksToRun;
     private TaskTickTracker tickTracker;
     private String name;
 
-    public MoveToTarget() {
+    public MoveInTargetDirectionTask() {
         randomiseTicksToRun();
     }
 
-    public MoveToTarget(int ticksToRun) {
+    public MoveInTargetDirectionTask(int ticksToRun) {
         setTicksToRun(ticksToRun);
     }
 
-    public MoveToTarget(MoveToTarget moveToTarget) {
-        this(moveToTarget.ticksToRun);
+    public MoveInTargetDirectionTask(MoveInTargetDirectionTask moveInTargetDirectionTask) {
+        this(moveInTargetDirectionTask.ticksToRun);
     }
 
     @Override
@@ -46,8 +49,16 @@ public class MoveToTarget extends VariableLeafTask<Blackboard<FollowerUnit>> imp
 
     private void sendLLBMLMoveToLocationTask(){
         MoveToLocationInteraction interaction = new MoveToLocationInteraction();
+        double deg;
 
-        Lla destinationLla = getObject().getUnit().getTarget().getRawDataRow().getLla();
+        try {
+            deg = calculateMovementAngle();
+        } catch (IllegalArgumentCombinationException e) {
+            return;
+        }
+
+        Lla currentLla = getObject().getUnit().getRawDataRow().getLla();
+        Lla destinationLla = Geometer.getDestinationPointFromAzimuthAngle(currentLla, deg, 30);
 
         GeodeticLocationStruct geoLocationStruct = new GeodeticLocationStruct(
                 (float)destinationLla.getLatitude(),
@@ -60,9 +71,16 @@ public class MoveToTarget extends VariableLeafTask<Blackboard<FollowerUnit>> imp
         interaction.sendInteraction();
     }
 
+    private double calculateMovementAngle() throws IllegalArgumentCombinationException {
+        FollowerUnit unit = getObject().getUnit();
+        Experiment1Unit target = getObject().getUnit().getTarget();
+
+        return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), target.getRawDataRow().getLla()));
+    }
+
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return task;
+        return new MoveInTargetDirectionTask(this);
     }
 
     @Override
@@ -81,6 +99,6 @@ public class MoveToTarget extends VariableLeafTask<Blackboard<FollowerUnit>> imp
 
     private void setTicksToRun(int ticksToRun) {
         this.ticksToRun = ticksToRun;
-        this.name = "Move to target (" + ticksToRun + ")";
+        this.name = "Move in target direction (" + ticksToRun + ")";
     }
 }

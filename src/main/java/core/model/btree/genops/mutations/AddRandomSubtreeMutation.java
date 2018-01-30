@@ -31,11 +31,12 @@ public class AddRandomSubtreeMutation extends Mutation {
                 return BehaviorTreeUtil.insertTask(root, randomRoot, random.nextInt(randomRoot.getChildCount() + 1), randomTree);
             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
-                return BehaviorTreeUtil.clone(root);
+                return BehaviorTreeUtil.cloneTree(root);
             }
         } catch (NoSuchTasksFoundException e) {
             e.printStackTrace();
-            return BehaviorTreeUtil.clone(root);
+            System.exit(1);
+            return null;
         }
     }
 

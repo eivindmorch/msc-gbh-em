@@ -1,38 +1,39 @@
 package experiments.experiment1.model.btree.task.unit.followerunit;
 
-import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
+import core.model.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
 import core.model.btree.task.VariableLeafTask;
+import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import experiments.experiment1.unit.FollowerUnit;
-import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.FollowUnitInteraction;
 
 import static core.util.SystemUtil.random;
 
-public class FollowTarget extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class MoveToTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private int ticksToRun;
     private TaskTickTracker tickTracker;
     private String name;
 
-    public FollowTarget() {
+    public MoveToTargetTask() {
         randomiseTicksToRun();
     }
 
-    public FollowTarget(int ticksToRun) {
+    public MoveToTargetTask(int ticksToRun) {
         setTicksToRun(ticksToRun);
     }
 
-    public FollowTarget(FollowTarget followUnit) {
-        this(followUnit.ticksToRun);
+    public MoveToTargetTask(MoveToTargetTask moveToTargetTask) {
+        this(moveToTargetTask.ticksToRun);
     }
 
     @Override
     public Status execute() {
         if (tickTracker.getCurrentTick() == 0) {
-            sendLLBMLFollowUnitTask();
+            sendLLBMLMoveToLocationTask();
         }
         return tickTracker.tick();
     }
@@ -43,27 +44,30 @@ public class FollowTarget extends VariableLeafTask<Blackboard<FollowerUnit>> imp
         this.tickTracker = new TaskTickTracker(ticksToRun);
     }
 
-    private void sendLLBMLFollowUnitTask(){
-        FollowUnitInteraction interaction = new FollowUnitInteraction();
+    private void sendLLBMLMoveToLocationTask(){
+        MoveToLocationInteraction interaction = new MoveToLocationInteraction();
 
-        interaction.setUnit(getObject().getUnit().getTarget().getMarking());
+        Lla destinationLla = getObject().getUnit().getTarget().getRawDataRow().getLla();
+
+        GeodeticLocationStruct geoLocationStruct = new GeodeticLocationStruct(
+                (float)destinationLla.getLatitude(),
+                (float)destinationLla.getLongitude(),
+                (float)destinationLla.getAltitude()
+        );
+
+        interaction.setDestination(geoLocationStruct);
         interaction.setTaskee(getObject().getUnit().getMarking());
         interaction.sendInteraction();
     }
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return null;
-    }
-
-    @Override
-    public Task<Blackboard<FollowerUnit>> cloneTask() {
-        return new FollowTarget();
+        return new MoveToTargetTask(this);
     }
 
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Override
@@ -77,6 +81,6 @@ public class FollowTarget extends VariableLeafTask<Blackboard<FollowerUnit>> imp
 
     private void setTicksToRun(int ticksToRun) {
         this.ticksToRun = ticksToRun;
-        this.name = "Follow target (" + ticksToRun + ")";
+        this.name = "Move to target (" + ticksToRun + ")";
     }
 }

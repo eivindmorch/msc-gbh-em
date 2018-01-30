@@ -8,21 +8,21 @@ import experiments.experiment1.unit.FollowerUnit;
 
 import static core.util.SystemUtil.random;
 
-public class IsApproaching extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class IsApproachingTask extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private double degreeLimit;
     private String name;
 
-    public IsApproaching() {
+    public IsApproachingTask() {
         randomiseDegreeLimit();
     }
 
-    public IsApproaching(double degreeLimit) {
+    public IsApproachingTask(double degreeLimit) {
         setDegreeLimit(degreeLimit);
     }
 
-    public IsApproaching(IsApproaching isApproachingTask) {
-        this(isApproachingTask.degreeLimit);
+    public IsApproachingTask(IsApproachingTask isApproachingTaskTask) {
+        this(isApproachingTaskTask.degreeLimit);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class IsApproaching extends VariableLeafTask<Blackboard<FollowerUnit>> im
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return task;
+        return new IsApproachingTask(this);
     }
 
     @Override

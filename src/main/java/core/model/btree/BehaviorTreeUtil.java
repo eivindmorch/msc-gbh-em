@@ -1,12 +1,12 @@
 package core.model.btree;
 
-import com.badlogic.gdx.ai.btree.BranchTask;
-import com.badlogic.gdx.ai.btree.Decorator;
-import com.badlogic.gdx.ai.btree.LeafTask;
-import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.*;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
+import core.model.btree.task.VariableLeafTask;
 import core.unit.UnitTypeInfo;
 import core.util.exceptions.NoAvailableTaskClassException;
 import core.util.exceptions.NoSuchTasksFoundException;
@@ -32,7 +32,8 @@ public abstract class BehaviorTreeUtil {
                 UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks();
         // TODO Decorators
         Task subtree = generateRandomTree(availableLeafTasks, availableCompositeTasks,1);
-        return subtree;
+
+        return removeEmptyAndSingleChildCompositeTasks(subtree);
     }
 
     // TODO Probabilities as arguments
@@ -76,26 +77,14 @@ public abstract class BehaviorTreeUtil {
             probabilityForChild *= 0.6;
         }
         Constructor<? extends BranchTask> constructor = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).getConstructor(Array.class);
-        return removeEmptyAndSingleChildCompositeTasks(constructor.newInstance(children));
+        return constructor.newInstance(children);
     }
 
     public static Task generateTestTree() {
-        Selector shouldMoveSelector = new Selector(new IsApproaching(), new IsWithin());
-        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, new TurnToTarget());
-        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new MoveToTarget());
+        Selector shouldMoveSelector = new Selector(new IsApproachingTask(), new IsWithinTask());
+        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, new TurnToTargetTask());
+        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new MoveToTargetTask());
         return waitOrMoveSelector;
-    }
-
-    // TODO Replace with clone
-    private static Task instantiateTaskObject(Task task) {
-        Task newTask = null;
-        try {
-            //noinspection unchecked
-            newTask = task.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return newTask;
     }
 
     public static int getSize(Task root) {
@@ -157,12 +146,32 @@ public abstract class BehaviorTreeUtil {
         return tasks.get(random.nextInt(tasks.size()));
     }
 
-    public static Task clone(Task root) {
-        Task newRoot = instantiateTaskObject(root);
-        for (int i = 0; i < root.getChildCount(); i++) {
-            newRoot.addChild(clone(root.getChild(i)));
+    /**
+     * Selects a random {@link Task} that can be removed from the tree without breaking it
+     * @param root the root {@link Task} of the behavior tree that is to be searched
+     * @return a {@link Task} that can be removed from the tree without breaking it
+     * @throws NoSuchTasksFoundException
+     */
+    public static Task getRemovableTask(Task root) throws NoSuchTasksFoundException {
+        ArrayList<Task> removableTasks = new ArrayList<>();
+
+        Stack<Task> stack = new Stack<>();
+        stack.add(root);
+
+        while (!stack.empty()) {
+            Task currentRoot = stack.pop();
+            if (currentRoot.getChildCount() > 1) {
+                removableTasks.addAll(getTasks(currentRoot, false, Task.class));
+            } else {
+                for (int i = 0; i < currentRoot.getChildCount(); i++) {
+                    stack.add(currentRoot.getChild(i));
+                }
+            }
         }
-        return newRoot;
+        if (removableTasks.isEmpty()) {
+            throw new NoSuchTasksFoundException();
+        }
+        return removableTasks.get(random.nextInt(removableTasks.size()));
     }
 
     /**
@@ -206,7 +215,7 @@ public abstract class BehaviorTreeUtil {
                 int childInsertIndex,
                 Task rootOfSubtreeToBeInserted
         ) {
-        Task newRoot = instantiateTaskObject(root);
+        Task newRoot = cloneIndividualTask(root);
         if (childInsertIndex < 0 || (root == compositeTaskToInsertChildTo && childInsertIndex > root.getChildCount())) {
             throw new IllegalArgumentException("Invalid insertion index: " + childInsertIndex);
         }
@@ -235,7 +244,7 @@ public abstract class BehaviorTreeUtil {
         if (root == taskToRemove) {
             return null;
         } else {
-            newRoot = instantiateTaskObject(root);
+            newRoot = cloneIndividualTask(root);
         }
         for (int i = 0; i < root.getChildCount(); i++) {
             Task newChild = removeTask(root.getChild(i), taskToRemove);
@@ -256,9 +265,9 @@ public abstract class BehaviorTreeUtil {
     public static Task replaceSubtree(Task root, Task rootOfSubtreeToBeReplaced, Task rootOfNewSubtree) {
         Task newRoot;
         if (root == rootOfSubtreeToBeReplaced) {
-            newRoot = instantiateTaskObject(rootOfNewSubtree);
+            newRoot = cloneTree(rootOfNewSubtree);
         } else {
-            newRoot = instantiateTaskObject(root);
+            newRoot = cloneIndividualTask(root);
             for (int i = 0; i < root.getChildCount(); i++) {
                 newRoot.addChild(replaceSubtree(root.getChild(i), rootOfSubtreeToBeReplaced, rootOfNewSubtree));
             }
@@ -275,7 +284,7 @@ public abstract class BehaviorTreeUtil {
      * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task switchTasks(Task root, Task subtree1, Task subtree2) {
-        Task newRoot = instantiateTaskObject(root);
+        Task newRoot = cloneIndividualTask(root);
 
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = root.getChild(i);
@@ -298,7 +307,7 @@ public abstract class BehaviorTreeUtil {
      * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task randomiseTask(Task root, Task taskToRandomise, Class<? extends Unit> unitClass) throws NoAvailableTaskClassException {
-        Task newRoot = instantiateTaskObject(root);
+        Task newRoot = cloneIndividualTask(root);
 
         ArrayList<Class<? extends Task>> availableTaskClasses = new ArrayList<>();
 
@@ -340,29 +349,78 @@ public abstract class BehaviorTreeUtil {
      * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task removeEmptyAndSingleChildCompositeTasks(Task root) {
-        if (root.getChildCount() == 0) {
-            return null;
-        } else if (root.getChildCount() == 1 && root.getChild(0) instanceof BranchTask) {
-            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(0));
-        } else {
-            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root);
+//        if (root.getChildCount() == 0) {
+//            return null;
+//        }
+//        else if (root.getChildCount() == 1 && root.getChild(0) instanceof BranchTask) {
+//            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(0));
+//        } else {
+//            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root);
+//        }
+
+        Task newRoot = cloneIndividualTask(root);
+        for (int i = 0; i < root.getChildCount(); i++) {
+            Task child = removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(i));
+            if (child != null) {
+                newRoot.addChild(child);
+            }
         }
+        if (newRoot.getChildCount() == 1 && newRoot.getChild(0) instanceof BranchTask) {
+            return newRoot.getChild(0);
+        }
+        return newRoot;
     }
 
     private static Task removeEmptyAndSingleChildCompositeTasksRecursiveHelper(Task root) {
-        Task newRoot = instantiateTaskObject(root);
+        Task newRoot = cloneIndividualTask(root);
         for (int i = 0; i < root.getChildCount(); i++) {
-            Task child = root.getChild(i);
-            if (child instanceof BranchTask) {
-                if (child.getChildCount() == 1) {
-                    newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child.getChild(0)));
-                    continue;
-                } else if (child.getChildCount() == 0) {
-                    continue;
-                }
+            Task child = removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(i));
+            if (child != null) {
+                newRoot.addChild(child);
             }
-            newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child));
+        }
+        if (newRoot instanceof BranchTask) {
+            if (newRoot.getChildCount() == 0) {
+                return null;
+            } else if (newRoot.getChildCount() == 1) {
+                return newRoot.getChild(0);
+            }
         }
         return newRoot;
+    }
+
+//    private static Task removeEmptyAndSingleChildCompositeTasksRecursiveHelper(Task root) {
+//        Task newRoot = cloneIndividualTask(root);
+//        for (int i = 0; i < root.getChildCount(); i++) {
+//            Task child = root.getChild(i);
+//            if (child instanceof BranchTask) {
+//                if (child.getChildCount() == 1) {
+//                    newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child.getChild(0)));
+//                    continue;
+//                } else if (child.getChildCount() == 0) {
+//                    continue;
+//                }
+//            }
+//            newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child));
+//        }
+//
+//
+//        return newRoot;
+//    }
+
+    public static Task cloneTree(Task root) {
+        return root.cloneTask();
+    }
+
+    // TODO Handle Decorators
+    private static Task cloneIndividualTask(Task task) {
+       try {
+           if (task instanceof VariableLeafTask) {
+               return cloneTree(task);
+           }
+           return ClassReflection.newInstance(task.getClass());
+        } catch (ReflectionException var3) {
+            throw new TaskCloneException(var3);
+        }
     }
 }

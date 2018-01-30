@@ -9,21 +9,21 @@ import experiments.experiment1.unit.FollowerUnit;
 import static core.util.SystemUtil.random;
 
 // TODO Rename
-public class IsWithin extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class IsWithinTask extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private double distanceLimit;
     private String name;
 
-    public IsWithin() {
+    public IsWithinTask() {
         randomiseDistanceLimit();
     }
 
-    public IsWithin(double distanceLimit) {
+    public IsWithinTask(double distanceLimit) {
         setDistanceLimit(distanceLimit);
     }
 
-    public IsWithin(IsWithin isWithinTask) {
-        this(isWithinTask.distanceLimit);
+    public IsWithinTask(IsWithinTask isWithinTaskTask) {
+        this(isWithinTaskTask.distanceLimit);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class IsWithin extends VariableLeafTask<Blackboard<FollowerUnit>> impleme
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return task;
+        return new IsWithinTask(this);
     }
 
     @Override

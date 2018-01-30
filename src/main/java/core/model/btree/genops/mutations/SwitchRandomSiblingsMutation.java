@@ -44,7 +44,8 @@ public class SwitchRandomSiblingsMutation extends Mutation {
 
         } catch (NoSuchTasksFoundException e) {
             e.printStackTrace();
-            return BehaviorTreeUtil.clone(root);
+            System.exit(1);
+            return null;
         }
     }
 }

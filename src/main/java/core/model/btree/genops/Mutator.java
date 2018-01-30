@@ -19,6 +19,7 @@ public abstract class Mutator {
         mutations.add(new AddRandomSubtreeMutation(1));
         mutations.add(new RemoveRandomSubtreeMutation(1));
         mutations.add(new SwitchRandomSiblingsMutation(1));
+        mutations.add(new ReplaceWithSubtreeMutation(1));
         mutations.add(new ReplaceWithTaskOfSameTypeMutation(1));
         mutations.add(new RandomiseTaskVariablesMutation(1));
     }
@@ -34,11 +35,9 @@ public abstract class Mutator {
                 selectionMap.put(totalWeight, mutation);
             }
         }
-        System.out.println(selectionMap.size());
 
         double randomValue = random.nextDouble() * totalWeight;
         Mutation selectedMutation = selectionMap.higherEntry(randomValue).getValue();
-        System.out.println(selectedMutation.getClass().getSimpleName());
 
         Task mutatedTree = selectedMutation.mutate(root, unitClass);
         return BehaviorTreeUtil.removeEmptyAndSingleChildCompositeTasks(mutatedTree);

@@ -1,38 +1,37 @@
-package core.model.btree.task.unit;
+package experiments.experiment1.model.btree.task.unit.followerunit;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
 import core.model.btree.task.VariableLeafTask;
-import core.unit.Unit;
-import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
+import experiments.experiment1.unit.FollowerUnit;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.FollowUnitInteraction;
 
 import static core.util.SystemUtil.random;
 
-
-public class Wait extends VariableLeafTask<Blackboard<Unit>> implements NamedTask {
+public class FollowTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private int ticksToRun;
     private TaskTickTracker tickTracker;
     private String name;
 
-    public Wait(){
+    public FollowTargetTask() {
         randomiseTicksToRun();
     }
 
-    public Wait(int ticksToRun) {
+    public FollowTargetTask(int ticksToRun) {
         setTicksToRun(ticksToRun);
     }
 
-    public Wait(Wait wait) {
-        this(wait.ticksToRun);
+    public FollowTargetTask(FollowTargetTask followUnit) {
+        this(followUnit.ticksToRun);
     }
 
     @Override
     public Status execute() {
         if (tickTracker.getCurrentTick() == 0) {
-            sendLLBMLWaitTask(getObject().getUnit().getMarking());
+            sendLLBMLFollowUnitTask();
         }
         return tickTracker.tick();
     }
@@ -43,20 +42,22 @@ public class Wait extends VariableLeafTask<Blackboard<Unit>> implements NamedTas
         this.tickTracker = new TaskTickTracker(ticksToRun);
     }
 
-    private void sendLLBMLWaitTask(String entityMarkingString){
-        WaitInteraction interaction = new WaitInteraction();
-        interaction.setTaskee(entityMarkingString);
+    private void sendLLBMLFollowUnitTask(){
+        FollowUnitInteraction interaction = new FollowUnitInteraction();
+
+        interaction.setUnit(getObject().getUnit().getTarget().getMarking());
+        interaction.setTaskee(getObject().getUnit().getMarking());
         interaction.sendInteraction();
     }
 
     @Override
-    protected Task<Blackboard<Unit>> copyTo(Task<Blackboard<Unit>> task) {
-        return null;
+    protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
+        return new FollowTargetTask(this);
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
@@ -70,6 +71,6 @@ public class Wait extends VariableLeafTask<Blackboard<Unit>> implements NamedTas
 
     private void setTicksToRun(int ticksToRun) {
         this.ticksToRun = ticksToRun;
-        this.name = "Wait (" + ticksToRun + ")";
+        this.name = "Follow target (" + ticksToRun + ")";
     }
 }

@@ -12,7 +12,7 @@ import core.util.Geometer;
 import core.util.LlbmlUtil;
 import core.util.exceptions.IllegalArgumentCombinationException;
 
-public class TurnToTarget extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class TurnToTargetTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
     private TaskTickTracker tickTracker;
     private final String name = "Turn to target";
@@ -60,7 +60,7 @@ public class TurnToTarget extends LeafTask<Blackboard<FollowerUnit>> implements 
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return task;
+        return new TurnToTargetTask();
     }
 
     @Override

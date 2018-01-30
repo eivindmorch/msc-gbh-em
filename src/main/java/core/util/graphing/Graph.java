@@ -34,7 +34,7 @@ class  Graph {
     }
 
     private mxGraphComponent createGraphComponent() {
-        Task rootClone = BehaviorTreeUtil.clone(root);
+        Task rootClone = BehaviorTreeUtil.cloneTree(root);
 
         mxGraph.getModel().beginUpdate();
         try {

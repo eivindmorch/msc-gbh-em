@@ -33,7 +33,7 @@ public class Chromosome {
 
     @Override
     public Chromosome clone(){
-        Chromosome newEvalBtree = new Chromosome(BehaviorTreeUtil.clone(btree));
+        Chromosome newEvalBtree = new Chromosome(BehaviorTreeUtil.cloneTree(btree));
         newEvalBtree.setFitness(fitness);
         return newEvalBtree;
     }

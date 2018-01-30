@@ -15,21 +15,23 @@ public class RemoveRandomSubtreeMutation extends Mutation {
 
     @Override
     public boolean canBePerformed(Task root) {
-        return BehaviorTreeUtil.getSize(root) > 1;
+        try {
+            BehaviorTreeUtil.getRemovableTask(root);
+        } catch (NoSuchTasksFoundException e) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public Task mutate(Task root, Class<? extends Unit> unitClass) {
-        Grapher.closeAllGraphs();
-        Grapher.graph("Tree", root);
         try {
-            Task randomRoot = BehaviorTreeUtil.getRandomTask(root, false, Task.class);
-            Grapher.graph("Subtree", randomRoot);
-            System.out.println(randomRoot);
+            Task randomRoot = BehaviorTreeUtil.getRemovableTask(root);
             return BehaviorTreeUtil.removeTask(root, randomRoot);
         } catch (NoSuchTasksFoundException e) {
             e.printStackTrace();
-            return BehaviorTreeUtil.clone(root);
+            System.exit(1);
+            return null;
         }
     }
 }

@@ -14,7 +14,7 @@ public abstract class Crossover {
             return BehaviorTreeUtil.removeEmptyAndSingleChildCompositeTasks(child);
         } catch (NoSuchTasksFoundException e) {
             e.printStackTrace();
-            return BehaviorTreeUtil.clone(parent1Root);
+            return BehaviorTreeUtil.cloneTree(parent1Root);
         }
     }
 }
