@@ -14,6 +14,7 @@ import core.util.SystemStatus;
 
 import java.util.concurrent.TimeUnit;
 
+import static core.util.SystemUtil.sleepMilliseconds;
 import static core.util.SystemUtil.sleepSeconds;
 
 
@@ -89,6 +90,11 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
      * @param simulationEndedListener
      */
     public void play(int numOfTicks, SimulationEndedListener simulationEndedListener) {
+        while (Federate.getInstance().unitsDiscovered < 2) {
+            sleepMilliseconds(500);
+            System.out.println(Federate.getInstance().unitsDiscovered);
+        }
+        sleepMilliseconds(250);
         ticksToPlay = numOfTicks;
         this.simulationEndedListener = simulationEndedListener;
         play();

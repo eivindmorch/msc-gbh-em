@@ -6,9 +6,13 @@ import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
 import core.model.btree.task.VariableLeafTask;
+import no.ffi.hlalib.datatypes.arrayData.ArrayOfTaskIds;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
+import no.ffi.hlalib.datatypes.fixedRecordData.TaskId;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import experiments.experiment1.unit.FollowerUnit;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTaskManagement.CancelAllTasksInteraction;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTaskManagement.CancelSpecifiedTasksInteraction;
 
 import static core.util.SystemUtil.random;
 
@@ -17,6 +21,8 @@ public class MoveToTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>>
     private int ticksToRun;
     private TaskTickTracker tickTracker;
     private String name;
+
+    private TaskId taskId;
 
     public MoveToTargetTask() {
         randomiseTicksToRun();
@@ -34,6 +40,8 @@ public class MoveToTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>>
     public Status execute() {
         if (tickTracker.getCurrentTick() == 0) {
             sendLLBMLMoveToLocationTask();
+        } else if (tickTracker.getCurrentTick() == ticksToRun) {
+            sendCancelTaskInteraction();
         }
         return tickTracker.tick();
     }
@@ -45,7 +53,10 @@ public class MoveToTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>>
     }
 
     private void sendLLBMLMoveToLocationTask(){
+        taskId = new TaskId();
+
         MoveToLocationInteraction interaction = new MoveToLocationInteraction();
+        interaction.setTask(taskId);
 
         Lla destinationLla = getObject().getUnit().getTarget().getRawDataRow().getLla();
 
@@ -58,6 +69,14 @@ public class MoveToTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>>
         interaction.setDestination(geoLocationStruct);
         interaction.setTaskee(getObject().getUnit().getMarking());
         interaction.sendInteraction();
+    }
+
+    private void sendCancelTaskInteraction() {
+        // TODO CancelSpecifiedTask slows down simengine drastically
+//        CancelSpecifiedTasksInteraction cancelSpecifiedTasksInteraction = new CancelSpecifiedTasksInteraction();
+//        cancelSpecifiedTasksInteraction.setTasks(new ArrayOfTaskIds(taskId));
+//        cancelSpecifiedTasksInteraction.sendInteraction();
+        new CancelAllTasksInteraction().sendInteraction();
     }
 
     @Override

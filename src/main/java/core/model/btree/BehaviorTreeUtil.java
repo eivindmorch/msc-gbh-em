@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import core.model.btree.task.VariableLeafTask;
+import core.model.btree.task.unit.WaitTask;
 import core.unit.UnitTypeInfo;
 import core.util.exceptions.NoAvailableTaskClassException;
 import core.util.exceptions.NoSuchTasksFoundException;
@@ -81,9 +82,9 @@ public abstract class BehaviorTreeUtil {
     }
 
     public static Task generateTestTree() {
-        Selector shouldMoveSelector = new Selector(new IsApproachingTask(), new IsWithinTask());
-        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, new TurnToTargetTask());
-        Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new MoveToTargetTask());
+        Selector shouldNotMoveSelector = new Selector(new IsApproachingTask(20), new IsWithinTask(50));
+        Sequence waitSequence = new Sequence(shouldNotMoveSelector, new WaitTask(1));
+        Selector waitOrMoveSelector = new Selector(waitSequence, new MoveToTargetTask(5));
         return waitOrMoveSelector;
     }
 

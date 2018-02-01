@@ -49,7 +49,7 @@ public class Experiment1 {
         Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
         SimController.getInstance().startSimEngine();
-//        SimController.getInstance().startSimGui();
+        SimController.getInstance().startSimGui();
         sleepSeconds(10);
 
 
@@ -63,7 +63,7 @@ public class Experiment1 {
         );
 
         String[] exampleFileNames = new String[]{
-                "experiment1/brooklyn-simple.csv"
+                "experiment1/brooklyn-simple-short.csv"
         };
 
         Trainer trainer = new Trainer<>(
@@ -78,26 +78,6 @@ public class Experiment1 {
 
 //        sleepSeconds(20);
 //        rti.destroy();
-    }
-
-    private void testMutate(Mutation mutation) {
-        try {
-            Task task = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
-//            System.out.println(task);
-//            Grapher.graph("Original", task);
-
-            Task task5 = new Sequence(new Sequence(new Selector(), new Selector(new MoveToTargetTask(), new TurnToTargetTask())));
-            task = BehaviorTreeUtil.removeEmptyAndSingleChildCompositeTasks(task);
-//            System.out.println(task);
-//            Grapher.graph("Original", task);
-
-//            Task task2 = mutation.mutate(task, FollowerUnit.class);
-//            System.out.println(task2);
-//            Grapher.graph("Result", task2);
-
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
-        }
     }
 
 }

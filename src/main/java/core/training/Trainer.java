@@ -92,10 +92,7 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
 
             if (!scenarioPath.equals(SystemStatus.currentScenario)) {
-                // TODO Let UnitLogger write before writers are reset
-//                sleepSeconds(5);
                 SimController.getInstance().loadScenario(scenarioPath);
-                sleepSeconds(5);
             } else {
                 SimController.getInstance().rewind();
             }

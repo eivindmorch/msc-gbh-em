@@ -29,7 +29,8 @@ public class Population<C extends Chromosome> {
         for (int i = 0; i < size; i++) {
             try {
                 Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(Task.class);
-                Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass);
+//                Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass);
+                Task randomTree = BehaviorTreeUtil.generateTestTree();
                 C chromosome = chromosomeConstructor.newInstance(randomTree);
                 population.add(chromosome);
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {

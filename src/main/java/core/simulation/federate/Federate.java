@@ -1,5 +1,6 @@
 package core.simulation.federate;
 
+import core.simulation.Rti;
 import core.simulation.SimSettings;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.RTIexception;
@@ -15,6 +16,7 @@ import no.ffi.hlalib.interactions.HLAinteractionRoot.CgfControlInteraction;
 import no.ffi.hlalib.listeners.HlaObjectListener;
 import no.ffi.hlalib.listeners.HlaObjectUpdateListener;
 import no.ffi.hlalib.listeners.TimeManagementListener;
+import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.HumanObject;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import no.ffi.hlalib.services.FederateManager;
 import org.slf4j.Logger;
@@ -41,6 +43,8 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
     private volatile boolean holdTimeAdvancement = true;
     private final Object TIME_ADVANCE_LOCK = new Object();
+
+    public volatile int unitsDiscovered = 0;
 
     private Federate() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
@@ -78,11 +82,14 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
     @Override
     public void remoteObjectDiscovered(HlaObject object) {
+
         if (object instanceof PhysicalEntityObject) {
             PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
+            logger.debug("Remote object discovered: " + physicalEntity.getMarking());
             physicalEntity.addObjectUpdateListener(this);
             physicalEntity.requestUpdateOnAllAttributes();
         }
+        unitsDiscovered++;
     }
 
     @Override
@@ -172,12 +179,14 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     }
 
     public void sendCgfRewindInteraction() {
+        unitsDiscovered = 0;
         CgfCommand cgfCommand = new CgfCommand();
         cgfCommand.setCommand(CommandType.Rewind);
         sendCgfControlInteraction(cgfCommand);
     }
 
     public void sendCgfLoadScenarioInteraction(String scenarioPath) {
+        unitsDiscovered = 0;
         CgfCommand cgfCommand = new CgfCommand();
         cgfCommand.setCommand(CommandType.LoadScenario);
         cgfCommand.getLoadScenario().setString(scenarioPath);

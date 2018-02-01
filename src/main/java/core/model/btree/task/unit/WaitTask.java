@@ -32,7 +32,7 @@ public class WaitTask extends VariableLeafTask<Blackboard<Unit>> implements Name
     @Override
     public Status execute() {
         if (tickTracker.getCurrentTick() == 0) {
-            sendLLBMLWaitTask(getObject().getUnit().getMarking());
+            sendLLBMLWaitTask();
         }
         return tickTracker.tick();
     }
@@ -43,9 +43,9 @@ public class WaitTask extends VariableLeafTask<Blackboard<Unit>> implements Name
         this.tickTracker = new TaskTickTracker(ticksToRun);
     }
 
-    private void sendLLBMLWaitTask(String entityMarkingString){
+    private void sendLLBMLWaitTask(){
         WaitInteraction interaction = new WaitInteraction();
-        interaction.setTaskee(entityMarkingString);
+        interaction.setTaskee(getObject().getUnit().getMarking());
         interaction.sendInteraction();
     }
 
