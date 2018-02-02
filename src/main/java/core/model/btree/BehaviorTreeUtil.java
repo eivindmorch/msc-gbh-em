@@ -147,6 +147,33 @@ public abstract class BehaviorTreeUtil {
     }
 
     /**
+     * Selects a random {@link Task} of the specified type and with the specified minimum number of children
+     * from an already existing behavior tree.
+     * existing behavior tree, excluding the root {@link Task}.
+     * @param root the root {@link Task} of the behavior tree that is to be searched
+     * @param includeRoot whether to include the root in the selection process
+     * @param taskTypeToSelect the type of task to be selected
+     * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link BranchTask}) can have
+     * @param <T> the type of {@code taskTypeToSelect}
+     * @return the randomly selected composite task ({@link BranchTask}). {@code Null} if none was found.
+     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
+     */
+    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTasksFoundException {
+        ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
+        ArrayList<T> selectionTasks = new ArrayList<>();
+
+        for (T task : tasks) {
+            if (task.getChildCount() >= minimumNumberOfChildren) {
+                selectionTasks.add(task);
+            }
+        }
+        if (selectionTasks.size() == 0) {
+            throw new NoSuchTasksFoundException();
+        }
+        return selectionTasks.get(random.nextInt(selectionTasks.size()));
+    }
+
+    /**
      * Selects a random {@link Task} that can be removed from the tree without breaking it
      * @param root the root {@link Task} of the behavior tree that is to be searched
      * @return a {@link Task} that can be removed from the tree without breaking it
@@ -172,33 +199,6 @@ public abstract class BehaviorTreeUtil {
             throw new NoSuchTasksFoundException();
         }
         return removableTasks.get(random.nextInt(removableTasks.size()));
-    }
-
-    /**
-     * Selects a random {@link Task} of the specified type and with the specified minimum number of children
-     * from an already existing behavior tree.
-     * existing behavior tree, excluding the root {@link Task}.
-     * @param root the root {@link Task} of the behavior tree that is to be searched
-     * @param includeRoot whether to include the root in the selection process
-     * @param taskTypeToSelect the type of task to be selected
-     * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link BranchTask}) can have
-     * @param <T> the type of {@code taskTypeToSelect}
-     * @return the randomly selected composite task ({@link BranchTask}). {@code Null} if none was found.
-     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
-     */
-    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTasksFoundException {
-        ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
-        ArrayList<T> selectionTasks = new ArrayList<>();
-
-        for (T task : tasks) {
-            if (task.getChildCount() >= minimumNumberOfChildren) {
-                selectionTasks.add(task);
-            }
-        }
-        if (selectionTasks.size() == 0) {
-            throw new NoSuchTasksFoundException();
-        }
-        return selectionTasks.get(random.nextInt(selectionTasks.size()));
     }
 
     /**
@@ -349,15 +349,6 @@ public abstract class BehaviorTreeUtil {
      * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task removeEmptyAndSingleChildCompositeTasks(Task root) {
-//        if (root.getChildCount() == 0) {
-//            return null;
-//        }
-//        else if (root.getChildCount() == 1 && root.getChild(0) instanceof BranchTask) {
-//            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(0));
-//        } else {
-//            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root);
-//        }
-
         Task newRoot = cloneIndividualTask(root);
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(i));
@@ -389,25 +380,6 @@ public abstract class BehaviorTreeUtil {
         return newRoot;
     }
 
-//    private static Task removeEmptyAndSingleChildCompositeTasksRecursiveHelper(Task root) {
-//        Task newRoot = cloneIndividualTask(root);
-//        for (int i = 0; i < root.getChildCount(); i++) {
-//            Task child = root.getChild(i);
-//            if (child instanceof BranchTask) {
-//                if (child.getChildCount() == 1) {
-//                    newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child.getChild(0)));
-//                    continue;
-//                } else if (child.getChildCount() == 0) {
-//                    continue;
-//                }
-//            }
-//            newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child));
-//        }
-//
-//
-//        return newRoot;
-//    }
-
     public static Task cloneTree(Task root) {
         return root.cloneTask();
     }
@@ -422,5 +394,30 @@ public abstract class BehaviorTreeUtil {
         } catch (ReflectionException var3) {
             throw new TaskCloneException(var3);
         }
+    }
+
+    public static boolean areEqualTrees(Task root1, Task root2) {
+        ArrayList<Task> tree1Tasks = getTasks(root1, true, Task.class);
+        ArrayList<Task> tree2Tasks = getTasks(root2, true, Task.class);
+        if (tree1Tasks.size() != tree2Tasks.size()) {
+            return false;
+        }
+        for (int i = 0; i < tree1Tasks.size(); i++) {
+            if (!areEqualIndividualTasks(tree1Tasks.get(i), tree2Tasks.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean areEqualIndividualTasks(Task task1, Task task2) {
+        if (task1.getClass() == task2.getClass()) {
+            if (task1 instanceof VariableLeafTask) {
+                return task1.equals(task2);
+            }
+            return true;
+        }
+        return false;
+
     }
 }

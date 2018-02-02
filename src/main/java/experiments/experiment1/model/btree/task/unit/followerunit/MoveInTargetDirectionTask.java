@@ -93,6 +93,11 @@ public class MoveInTargetDirectionTask extends VariableLeafTask<Blackboard<Follo
         randomiseTicksToRun();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof MoveInTargetDirectionTask && this.ticksToRun == ((MoveInTargetDirectionTask) obj).ticksToRun;
+    }
+
     private void randomiseTicksToRun() {
         setTicksToRun(1 + random.nextInt(9));
     }

@@ -65,6 +65,11 @@ public class FollowTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>>
         randomiseTicksToRun();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof FollowTargetTask && this.ticksToRun == ((FollowTargetTask) obj).ticksToRun;
+    }
+
     private void randomiseTicksToRun() {
         setTicksToRun(1 + random.nextInt(9));
     }

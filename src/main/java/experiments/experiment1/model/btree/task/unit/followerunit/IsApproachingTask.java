@@ -54,6 +54,11 @@ public class IsApproachingTask extends VariableLeafTask<Blackboard<FollowerUnit>
         randomiseDegreeLimit();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof IsApproachingTask && this.degreeLimit == ((IsApproachingTask) obj).degreeLimit;
+    }
+
     private void randomiseDegreeLimit() {
         setDegreeLimit(1 + (random.nextDouble() * 44));
     }
