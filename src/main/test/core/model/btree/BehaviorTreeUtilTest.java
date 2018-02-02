@@ -11,7 +11,10 @@ import core.util.exceptions.NoSuchTasksFoundException;
 import experiments.experiment1.model.btree.task.unit.followerunit.*;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -182,22 +185,9 @@ class BehaviorTreeUtilTest {
         return new Sequence<>(selector1, selector2, turnToTargetTask);
     }
 
-    @Test
-    void insertTaskFirstIndex() {
-        assertTrue(compareManualInsertionAndInsertTaskWithSpecificIndex(0));
-    }
-
-    @Test
-    void insertTaskMiddleIndex() {
-        assertTrue(compareManualInsertionAndInsertTaskWithSpecificIndex(1));
-    }
-
-    @Test
-    void insertTaskLastIndex() {
-        assertTrue(compareManualInsertionAndInsertTaskWithSpecificIndex(2));
-    }
-
-    private boolean compareManualInsertionAndInsertTaskWithSpecificIndex(int index) {
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2})
+    void insertIndex(int index) {
         Task waitTask = new WaitTask(1);
         Task moveToTargetTask1 = new MoveToTargetTask(4);
         Task moveToTargetTask2 = new MoveToTargetTask(5);
@@ -219,27 +209,25 @@ class BehaviorTreeUtilTest {
 
         taskArray.insert(index, insertionSelector);
         Task root2 = new Sequence<>(selector, new Sequence(taskArray), moveToTargetTask2, turnToTargetTask);
-        return BehaviorTreeUtil.areEqualTrees(root1WithInsertedTask, root2);
+        assertTrue(BehaviorTreeUtil.areEqualTrees(root1WithInsertedTask, root2));
     }
 
-    @Test
+    @RepeatedTest(1000)
     void insertAndRemoveThoroughTest() {
         Experiment1UnitInfo.init();
-        for (int i = 0; i < 10000; i++) {
-            try {
-                Task root = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
-                Task randomCompositeTask = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class);
+        try {
+            Task root = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+            Task randomCompositeTask = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class);
 
-                Task insertionRoot = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+            Task insertionRoot = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
 
-                Task rootWithInsertion = BehaviorTreeUtil.insertTask(root, randomCompositeTask, random.nextInt(randomCompositeTask.getChildCount()), insertionRoot);
-                Task rootWitRemovedInsertion = BehaviorTreeUtil.removeTask(rootWithInsertion, insertionRoot);
+            Task rootWithInsertion = BehaviorTreeUtil.insertTask(root, randomCompositeTask, random.nextInt(randomCompositeTask.getChildCount()), insertionRoot);
+            Task rootWitRemovedInsertion = BehaviorTreeUtil.removeTask(rootWithInsertion, insertionRoot);
 
-                assertTrue(BehaviorTreeUtil.areEqualTrees(root, rootWitRemovedInsertion));
+            assertTrue(BehaviorTreeUtil.areEqualTrees(root, rootWitRemovedInsertion));
 
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTasksFoundException e) {
-                e.printStackTrace();
-            }
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTasksFoundException e) {
+            e.printStackTrace();
         }
     }
 
