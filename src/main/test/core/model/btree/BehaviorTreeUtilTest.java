@@ -7,12 +7,17 @@ import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.utils.Array;
 import core.model.btree.task.VariableLeafTask;
 import core.model.btree.task.unit.WaitTask;
+import core.util.exceptions.NoSuchTasksFoundException;
 import experiments.experiment1.model.btree.task.unit.followerunit.*;
+import experiments.experiment1.unit.Experiment1UnitInfo;
+import experiments.experiment1.unit.FollowerUnit;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static core.util.SystemUtil.random;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BehaviorTreeUtilTest {
@@ -215,6 +220,27 @@ class BehaviorTreeUtilTest {
         taskArray.insert(index, insertionSelector);
         Task root2 = new Sequence<>(selector, new Sequence(taskArray), moveToTargetTask2, turnToTargetTask);
         return BehaviorTreeUtil.areEqualTrees(root1WithInsertedTask, root2);
+    }
+
+    @Test
+    void insertAndRemoveThoroughTest() {
+        Experiment1UnitInfo.init();
+        for (int i = 0; i < 10000; i++) {
+            try {
+                Task root = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+                Task randomCompositeTask = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class);
+
+                Task insertionRoot = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+
+                Task rootWithInsertion = BehaviorTreeUtil.insertTask(root, randomCompositeTask, random.nextInt(randomCompositeTask.getChildCount()), insertionRoot);
+                Task rootWitRemovedInsertion = BehaviorTreeUtil.removeTask(rootWithInsertion, insertionRoot);
+
+                assertTrue(BehaviorTreeUtil.areEqualTrees(root, rootWitRemovedInsertion));
+
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTasksFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
