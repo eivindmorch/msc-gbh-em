@@ -397,20 +397,18 @@ public abstract class BehaviorTreeUtil {
     }
 
     public static boolean areEqualTrees(Task root1, Task root2) {
-        ArrayList<Task> tree1Tasks = getTasks(root1, true, Task.class);
-        ArrayList<Task> tree2Tasks = getTasks(root2, true, Task.class);
-        if (tree1Tasks.size() != tree2Tasks.size()) {
-            return false;
-        }
-        for (int i = 0; i < tree1Tasks.size(); i++) {
-            if (!areEqualIndividualTasks(tree1Tasks.get(i), tree2Tasks.get(i))) {
-                return false;
+        if (areOfSameClassWithSameVariables(root1, root2) && root1.getChildCount() == root2.getChildCount()) {
+            for (int i = 0; i < root1.getChildCount(); i++) {
+                if (!areEqualTrees(root1.getChild(i), root2.getChild(i))) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
-    public static boolean areEqualIndividualTasks(Task task1, Task task2) {
+    public static boolean areOfSameClassWithSameVariables(Task task1, Task task2) {
         if (task1.getClass() == task2.getClass()) {
             if (task1 instanceof VariableLeafTask) {
                 return task1.equals(task2);
