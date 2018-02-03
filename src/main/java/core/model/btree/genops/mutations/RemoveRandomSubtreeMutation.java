@@ -5,7 +5,6 @@ import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTasksFoundException;
-import core.util.graphing.Grapher;
 
 public class RemoveRandomSubtreeMutation extends Mutation {
 
@@ -16,7 +15,7 @@ public class RemoveRandomSubtreeMutation extends Mutation {
     @Override
     public boolean canBePerformed(Task root) {
         try {
-            BehaviorTreeUtil.getRemovableTask(root);
+            BehaviorTreeUtil. getRandomRemovableTask(root);
         } catch (NoSuchTasksFoundException e) {
             return false;
         }
@@ -26,7 +25,7 @@ public class RemoveRandomSubtreeMutation extends Mutation {
     @Override
     public Task mutate(Task root, Class<? extends Unit> unitClass) {
         try {
-            Task randomRoot = BehaviorTreeUtil.getRemovableTask(root);
+            Task randomRoot = BehaviorTreeUtil.getRandomRemovableTask(root);
             return BehaviorTreeUtil.removeTask(root, randomRoot);
         } catch (NoSuchTasksFoundException e) {
             e.printStackTrace();

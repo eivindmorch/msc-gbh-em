@@ -23,7 +23,7 @@ public class ReplaceWithTaskOfSameTypeMutation extends Mutation {
     public Task mutate(Task root, Class<? extends Unit> unitClass) {
         try {
             Task randomTask = BehaviorTreeUtil.getRandomTask(root, true, Task.class);
-            return BehaviorTreeUtil.randomiseTask(root, randomTask, unitClass);
+            return BehaviorTreeUtil.randomiseIndividualTask(root, randomTask, unitClass);
         } catch (NoSuchTasksFoundException | NoAvailableTaskClassException e) {
             e.printStackTrace();
             System.exit(1);

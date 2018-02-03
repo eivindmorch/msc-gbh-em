@@ -10,7 +10,7 @@ public abstract class Crossover {
         try {
             Task parent1RandomSubtreeRoot = BehaviorTreeUtil.getRandomTask(parent1Root, false, Task.class);
             Task parent2RandomSubtreeRoot = BehaviorTreeUtil.getRandomTask(parent2Root, true, Task.class);
-            Task child = BehaviorTreeUtil.replaceSubtree(parent1Root, parent1RandomSubtreeRoot, parent2RandomSubtreeRoot);
+            Task child = BehaviorTreeUtil.replaceTask(parent1Root, parent1RandomSubtreeRoot, parent2RandomSubtreeRoot);
             return BehaviorTreeUtil.removeEmptyAndSingleChildCompositeTasks(child);
         } catch (NoSuchTasksFoundException e) {
             e.printStackTrace();

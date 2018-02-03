@@ -179,7 +179,7 @@ public abstract class BehaviorTreeUtil {
      * @return a {@link Task} that can be removed from the tree without breaking it
      * @throws NoSuchTasksFoundException
      */
-    public static Task getRemovableTask(Task root) throws NoSuchTasksFoundException {
+    public static Task getRandomRemovableTask(Task root) throws NoSuchTasksFoundException {
         ArrayList<Task> removableTasks = new ArrayList<>();
 
         Stack<Task> stack = new Stack<>();
@@ -262,14 +262,14 @@ public abstract class BehaviorTreeUtil {
      * @param rootOfNewSubtree the root {@link Task} of the behavior tree that is to replace {@code rootOfSubtreeToBeReplaced}
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task replaceSubtree(Task root, Task rootOfSubtreeToBeReplaced, Task rootOfNewSubtree) {
+    public static Task replaceTask(Task root, Task rootOfSubtreeToBeReplaced, Task rootOfNewSubtree) {
         Task newRoot;
         if (root == rootOfSubtreeToBeReplaced) {
             newRoot = cloneTree(rootOfNewSubtree);
         } else {
             newRoot = cloneIndividualTask(root);
             for (int i = 0; i < root.getChildCount(); i++) {
-                newRoot.addChild(replaceSubtree(root.getChild(i), rootOfSubtreeToBeReplaced, rootOfNewSubtree));
+                newRoot.addChild(replaceTask(root.getChild(i), rootOfSubtreeToBeReplaced, rootOfNewSubtree));
             }
         }
         return newRoot;
@@ -306,7 +306,7 @@ public abstract class BehaviorTreeUtil {
      * @param unitClass the class of the unit the behavior tree is to be used for
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task randomiseTask(Task root, Task taskToRandomise, Class<? extends Unit> unitClass) throws NoAvailableTaskClassException {
+    public static Task randomiseIndividualTask(Task root, Task taskToRandomise, Class<? extends Unit> unitClass) throws NoAvailableTaskClassException {
         Task newRoot = cloneIndividualTask(root);
 
         ArrayList<Class<? extends Task>> availableTaskClasses = new ArrayList<>();
@@ -336,7 +336,7 @@ public abstract class BehaviorTreeUtil {
         }
 
         for (int i = 0; i < root.getChildCount(); i++) {
-            newRoot.addChild(randomiseTask(root.getChild(i), taskToRandomise, unitClass));
+            newRoot.addChild(randomiseIndividualTask(root.getChild(i), taskToRandomise, unitClass));
         }
         return newRoot;
     }
