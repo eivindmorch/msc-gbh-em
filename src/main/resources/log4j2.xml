@@ -6,8 +6,30 @@
     <Appenders>
 
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %-14logger{1}@%L - %msg%n}"/>
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %-14logger{1}@%L - %msg%n"/>
         </Console>
+
+        <Console name="ConsoleTraining" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%L - %msg%n}{magenta}"/>
+        </Console>
+
+        <Console name="ConsoleUnit" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%L - %msg%n}{yellow}"/>
+        </Console>
+
+        <Console name="ConsoleFederate" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%L - %msg%n}{green}"/>
+        </Console>
+
+        <Console name="ConsoleSimController" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%L - %msg%n}{blue}"/>
+        </Console>
+
+        <Console name="ConsoleSimEngine" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%L - %msg%n}{cyan}"/>
+        </Console>
+
+
 
         <File name="HlaLib" fileName="logs/hlalib/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
@@ -38,7 +60,7 @@
 
     <Loggers>
 
-        <Root level="error">
+        <Root level="info">
             <appender-ref ref="Console"/>
         </Root>
 
@@ -48,27 +70,27 @@
 
         <Logger name="core.training" level="debug" additivity="false">
             <AppenderRef ref="Training"/>
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ConsoleTraining"/>
         </Logger>
 
         <Logger name="core.unit" level="debug" additivity="false">
             <AppenderRef ref="Unit"/>
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ConsoleUnit"/>
         </Logger>
 
         <Logger name="core.simulation.federate.Federate" level="debug" additivity="false">
             <AppenderRef ref="Simulation"/>
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ConsoleFederate"/>
         </Logger>
 
         <Logger name="core.simulation.SimController" level="debug" additivity="false">
             <AppenderRef ref="Simulation"/>
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ConsoleSimController"/>
         </Logger>
 
         <Logger name="core.simulation.SimEngine" level="debug" additivity="false">
             <AppenderRef ref="SimEngine"/>
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ConsoleSimEngine"/>
         </Logger>
 
         <Logger name="core.simulation.SimGui" level="debug" additivity="false">
