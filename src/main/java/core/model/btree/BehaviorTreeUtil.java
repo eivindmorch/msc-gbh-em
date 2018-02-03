@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 import core.model.btree.task.VariableLeafTask;
 import core.unit.UnitTypeInfo;
 import core.util.exceptions.NoAvailableTaskClassException;
-import core.util.exceptions.NoSuchTasksFoundException;
+import core.util.exceptions.NoSuchTaskFoundException;
 import experiments.experiment1.model.btree.task.unit.followerunit.*;
 import core.unit.Unit;
 
@@ -135,13 +135,13 @@ public abstract class BehaviorTreeUtil {
      * @param taskTypeToSelect the type of task to be selected
      * @return the randomly selected {@link Task}
      * @param <T> the type of {@code taskTypeToSelect}
-     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
+     * @throws NoSuchTaskFoundException tree does not contain any tasks meeting the specified requirements
      */
-    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect) throws NoSuchTasksFoundException {
+    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect) throws NoSuchTaskFoundException {
         ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
 
         if (tasks.size() == 0) {
-            throw new NoSuchTasksFoundException();
+            throw new NoSuchTaskFoundException();
         }
         return tasks.get(random.nextInt(tasks.size()));
     }
@@ -156,9 +156,9 @@ public abstract class BehaviorTreeUtil {
      * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link BranchTask}) can have
      * @param <T> the type of {@code taskTypeToSelect}
      * @return the randomly selected composite task ({@link BranchTask}). {@code Null} if none was found.
-     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
+     * @throws NoSuchTaskFoundException tree does not contain any tasks meeting the specified requirements
      */
-    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTasksFoundException {
+    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTaskFoundException {
         ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
         ArrayList<T> selectionTasks = new ArrayList<>();
 
@@ -168,7 +168,7 @@ public abstract class BehaviorTreeUtil {
             }
         }
         if (selectionTasks.size() == 0) {
-            throw new NoSuchTasksFoundException();
+            throw new NoSuchTaskFoundException();
         }
         return selectionTasks.get(random.nextInt(selectionTasks.size()));
     }
@@ -177,9 +177,9 @@ public abstract class BehaviorTreeUtil {
      * Selects a random {@link Task} that can be removed from the tree without breaking it
      * @param root the root {@link Task} of the behavior tree that is to be searched
      * @return a {@link Task} that can be removed from the tree without breaking it
-     * @throws NoSuchTasksFoundException
+     * @throws NoSuchTaskFoundException
      */
-    public static Task getRandomRemovableTask(Task root) throws NoSuchTasksFoundException {
+    public static Task getRandomRemovableTask(Task root) throws NoSuchTaskFoundException {
         ArrayList<Task> removableTasks = new ArrayList<>();
 
         Stack<Task> stack = new Stack<>();
@@ -196,7 +196,7 @@ public abstract class BehaviorTreeUtil {
             }
         }
         if (removableTasks.isEmpty()) {
-            throw new NoSuchTasksFoundException();
+            throw new NoSuchTaskFoundException();
         }
         return removableTasks.get(random.nextInt(removableTasks.size()));
     }
@@ -239,7 +239,12 @@ public abstract class BehaviorTreeUtil {
      * @param taskToRemove the root {@link Task} of the behavior tree to be removed. Can not be the same as {@code root}.
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task removeTask(Task root, Task taskToRemove) {
+    public static Task removeTask(Task root, Task taskToRemove) throws NoSuchTaskFoundException {
+        HashSet<Task> taskSet = new HashSet<>(BehaviorTreeUtil.getTasks(root, true, Task.class));
+        if (!taskSet.contains(taskToRemove)) {
+            throw new NoSuchTaskFoundException();
+        }
+
         Task newRoot;
         if (root == taskToRemove) {
             return null;

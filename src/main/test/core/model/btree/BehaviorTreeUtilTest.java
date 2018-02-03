@@ -7,7 +7,7 @@ import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.utils.Array;
 import core.model.btree.task.VariableLeafTask;
 import core.model.btree.task.unit.WaitTask;
-import core.util.exceptions.NoSuchTasksFoundException;
+import core.util.exceptions.NoSuchTaskFoundException;
 import experiments.experiment1.model.btree.task.unit.followerunit.*;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
@@ -168,7 +168,7 @@ class BehaviorTreeUtilTest {
 
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
-        } catch (NoSuchTasksFoundException e) {
+        } catch (NoSuchTaskFoundException e) {
             ArrayList<Task> taskList = BehaviorTreeUtil.getTasks(rootOfRandomTree, true, Task.class);
             ArrayList<Task> tasksWithEnoughChildren = new ArrayList<>();
             for (Task task : taskList) {
@@ -217,6 +217,39 @@ class BehaviorTreeUtilTest {
 
     @Test
     void removeTask() {
+        try {
+            Task waitTask = new WaitTask(1);
+            Task moveToTargetTask1 = new MoveToTargetTask(4);
+            Task moveToTargetTask2 = new MoveToTargetTask(5);
+            Task isApproachingTask = new IsApproachingTask(20);
+            Task followTargetTask = new FollowTargetTask(1);
+            Task isWithinTask = new IsWithinTask(42);
+            Task turnToTargetTask = new TurnToTargetTask();
+            Sequence sequence = new Sequence<>(moveToTargetTask1, isApproachingTask);
+            Selector selector = new Selector<>(followTargetTask, isWithinTask, waitTask);
+            Task rootOfOriginalTree = new Sequence<>(selector, sequence, moveToTargetTask2, turnToTargetTask);
+
+            Task rootOfTreeWithMethodRemove1 = BehaviorTreeUtil.removeTask(rootOfOriginalTree, followTargetTask);
+            Task rootOfTreeWithMethodRemove2 = BehaviorTreeUtil.removeTask(rootOfOriginalTree, sequence);
+
+            Selector selectorWithRemovedTask = new Selector(isWithinTask, waitTask);
+            Task rootOfTreWithManualRemove1 = new Sequence(selectorWithRemovedTask, sequence, moveToTargetTask2, turnToTargetTask);
+            Task rootOfTreWithManualRemove2 = new Sequence(selector, moveToTargetTask2, turnToTargetTask);
+
+            assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfTreWithManualRemove1, rootOfTreeWithMethodRemove1));
+            assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfTreWithManualRemove2, rootOfTreeWithMethodRemove2));
+
+
+            assertTrue(treeDoesNotContainDuplicateTasks(rootOfTreeWithMethodRemove1));
+            assertTrue(treeDoesNotContainDuplicateTasks(rootOfTreeWithMethodRemove2));
+
+        } catch (NoSuchTaskFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void removeTaskNotPresent() {
         Task waitTask = new WaitTask(1);
         Task moveToTargetTask1 = new MoveToTargetTask(4);
         Task moveToTargetTask2 = new MoveToTargetTask(5);
@@ -228,19 +261,10 @@ class BehaviorTreeUtilTest {
         Selector selector = new Selector<>(followTargetTask, isWithinTask, waitTask);
         Task rootOfOriginalTree = new Sequence<>(selector, sequence, moveToTargetTask2, turnToTargetTask);
 
-        Task rootOfTreeWithMethodRemove1 = BehaviorTreeUtil.removeTask(rootOfOriginalTree, followTargetTask);
-        Task rootOfTreeWithMethodRemove2 = BehaviorTreeUtil.removeTask(rootOfOriginalTree, sequence);
-
-        Selector selectorWithRemovedTask = new Selector(isWithinTask, waitTask);
-        Task rootOfTreWithManualRemove1 = new Sequence(selectorWithRemovedTask, sequence, moveToTargetTask2, turnToTargetTask);
-        Task rootOfTreWithManualRemove2 = new Sequence(selector, moveToTargetTask2, turnToTargetTask);
-
-        assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfTreWithManualRemove1, rootOfTreeWithMethodRemove1));
-        assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfTreWithManualRemove2, rootOfTreeWithMethodRemove2));
-
-
-        assertTrue(treeDoesNotContainDuplicateTasks(rootOfTreeWithMethodRemove1));
-        assertTrue(treeDoesNotContainDuplicateTasks(rootOfTreeWithMethodRemove2));
+        assertThrows(
+                NoSuchTaskFoundException.class,
+                ()->BehaviorTreeUtil.removeTask(rootOfOriginalTree, new IsWithinTask(20))
+        );
     }
 
     @Test
@@ -373,7 +397,7 @@ class BehaviorTreeUtilTest {
 
             assertTrue(treeDoesNotContainDuplicateTasks(rootWithRemovedInsertion));
 
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTasksFoundException e) {
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTaskFoundException e) {
             e.printStackTrace();
         }
     }

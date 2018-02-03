@@ -5,7 +5,7 @@ import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoAvailableTaskClassException;
-import core.util.exceptions.NoSuchTasksFoundException;
+import core.util.exceptions.NoSuchTaskFoundException;
 
 
 public class ReplaceWithTaskOfSameTypeMutation extends Mutation {
@@ -24,7 +24,7 @@ public class ReplaceWithTaskOfSameTypeMutation extends Mutation {
         try {
             Task randomTask = BehaviorTreeUtil.getRandomTask(root, true, Task.class);
             return BehaviorTreeUtil.randomiseIndividualTask(root, randomTask, unitClass);
-        } catch (NoSuchTasksFoundException | NoAvailableTaskClassException e) {
+        } catch (NoSuchTaskFoundException | NoAvailableTaskClassException e) {
             e.printStackTrace();
             System.exit(1);
             return null;
