@@ -47,7 +47,7 @@ public abstract class UnitHandler {
         unitIdentifierToHandleMap.remove(unit.getIdentifier());
         UnitLogger.remove(unit);
         controlledUnits.remove(objectInstanceHandle);
-        logger.debug("Unit removed -- Handle: " + objectInstanceHandle);
+        logger.debug("Unit removed :" + unit);
     }
 
     public static boolean putUnit(Unit unit) {
@@ -56,7 +56,7 @@ public abstract class UnitHandler {
 
             unitIdentifierToHandleMap.put(unit.getIdentifier(), unit.getHandle());
 
-            logger.info("Unit added -- Marking: " + unit.getMarking() + ", Handle: " + unit.getHandle());
+            logger.info("Unit added: " + unit);
             UnitLogger.register(unit);
             return true;
         }
@@ -64,7 +64,7 @@ public abstract class UnitHandler {
     }
 
     public static void addControlledUnit(ControlledUnit controlledUnit) {
-        logger.info("Controlled unit added -- Marking: " + controlledUnit.getUnit().getMarking());
+        logger.info("Controlled unit added: " + controlledUnit.getUnit());
         controlledUnits.put(controlledUnit.getUnit().getHandle(), controlledUnit);
     }
 

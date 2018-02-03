@@ -43,11 +43,12 @@ public abstract class Unit {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Unit: " + marking);
-        for (DataRow dataRow : dataRows) {
-            sb.append("\t").append(dataRow.toString());
-        }
-        return sb.toString();
+        return "Unit@" + hashCode()
+                + " {"
+                + "Marking: " + marking + ", "
+                + "Identifier: " + identifier + ", "
+                + "Handle" + handle
+                + "}";
     }
 
     public PhysicalEntityObject getPhysicalEntityObject() {

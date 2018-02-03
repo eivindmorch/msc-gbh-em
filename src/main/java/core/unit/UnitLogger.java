@@ -21,12 +21,12 @@ public abstract class UnitLogger {
 
     static void register(Unit unit) {
         unitDataWriters.put(unit.getHandle(), new UnitDataWriter(unit));
-        logger.info("Unit registered for logging -- Marking: " + unit.getMarking());
+        logger.info("Unit registered for logging: " + unit);
     }
 
     static void remove(Unit unit) {
         unitDataWriters.remove(unit.getHandle()).closeWriters();
-        logger.info("Unit removed from logging -- Marking: " + unit.getMarking());
+        logger.info("Unit removed from logging: " + unit);
     }
 
     public static void logAllRegisteredUnits() {
