@@ -245,6 +245,10 @@ public abstract class BehaviorTreeUtil {
             throw new NoSuchTaskFoundException();
         }
 
+        return removeTaskHelper(root, taskToRemove);
+    }
+
+    private static Task removeTaskHelper(Task root, Task taskToRemove) {
         Task newRoot;
         if (root == taskToRemove) {
             return null;
@@ -252,7 +256,7 @@ public abstract class BehaviorTreeUtil {
             newRoot = cloneIndividualTask(root);
         }
         for (int i = 0; i < root.getChildCount(); i++) {
-            Task newChild = removeTask(root.getChild(i), taskToRemove);
+            Task newChild = removeTaskHelper(root.getChild(i), taskToRemove);
             if (newChild != null) {
                 newRoot.addChild(newChild);
             }
