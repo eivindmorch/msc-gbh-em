@@ -8,4 +8,7 @@ public abstract class VariableLeafTask <B extends Blackboard> extends LeafTask<B
 
     public abstract void randomiseVariables();
 
+    @Override
+    public abstract boolean equals(Object obj);
+
 }

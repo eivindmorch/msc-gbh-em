@@ -5,7 +5,7 @@ import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.unit.Unit;
-import core.util.exceptions.NoSuchTasksFoundException;
+import core.util.exceptions.NoSuchTaskFoundException;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -33,7 +33,7 @@ public class AddRandomSubtreeMutation extends Mutation {
                 e.printStackTrace();
                 return BehaviorTreeUtil.cloneTree(root);
             }
-        } catch (NoSuchTasksFoundException e) {
+        } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
             return null;

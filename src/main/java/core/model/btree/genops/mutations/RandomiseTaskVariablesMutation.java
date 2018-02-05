@@ -5,7 +5,7 @@ import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.model.btree.task.VariableLeafTask;
 import core.unit.Unit;
-import core.util.exceptions.NoSuchTasksFoundException;
+import core.util.exceptions.NoSuchTaskFoundException;
 
 public class RandomiseTaskVariablesMutation extends Mutation {
 
@@ -25,7 +25,7 @@ public class RandomiseTaskVariablesMutation extends Mutation {
             VariableLeafTask randomTask  = BehaviorTreeUtil.getRandomTask(newTreeRoot, true, VariableLeafTask.class);
             randomTask.randomiseVariables();
             return newTreeRoot;
-        } catch (NoSuchTasksFoundException e) {
+        } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
             return null;

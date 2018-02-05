@@ -5,7 +5,7 @@ import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.unit.Unit;
-import core.util.exceptions.NoSuchTasksFoundException;
+import core.util.exceptions.NoSuchTaskFoundException;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ public class SwitchRandomSiblingsMutation extends Mutation {
     public boolean canBePerformed(Task root) {
         try {
             BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class, 2);
-        } catch (NoSuchTasksFoundException e) {
+        } catch (NoSuchTaskFoundException e) {
             return false;
         }
         return true;
@@ -42,7 +42,7 @@ public class SwitchRandomSiblingsMutation extends Mutation {
 
             return BehaviorTreeUtil.switchTasks(root, child1, child2);
 
-        } catch (NoSuchTasksFoundException e) {
+        } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
             return null;

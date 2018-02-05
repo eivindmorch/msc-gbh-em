@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 import core.model.btree.task.VariableLeafTask;
 import core.unit.UnitTypeInfo;
 import core.util.exceptions.NoAvailableTaskClassException;
-import core.util.exceptions.NoSuchTasksFoundException;
+import core.util.exceptions.NoSuchTaskFoundException;
 import experiments.experiment1.model.btree.task.unit.followerunit.*;
 import core.unit.Unit;
 
@@ -135,24 +135,51 @@ public abstract class BehaviorTreeUtil {
      * @param taskTypeToSelect the type of task to be selected
      * @return the randomly selected {@link Task}
      * @param <T> the type of {@code taskTypeToSelect}
-     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
+     * @throws NoSuchTaskFoundException tree does not contain any tasks meeting the specified requirements
      */
-    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect) throws NoSuchTasksFoundException {
+    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect) throws NoSuchTaskFoundException {
         ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
 
         if (tasks.size() == 0) {
-            throw new NoSuchTasksFoundException();
+            throw new NoSuchTaskFoundException();
         }
         return tasks.get(random.nextInt(tasks.size()));
+    }
+
+    /**
+     * Selects a random {@link Task} of the specified type and with the specified minimum number of children
+     * from an already existing behavior tree.
+     * existing behavior tree, excluding the root {@link Task}.
+     * @param root the root {@link Task} of the behavior tree that is to be searched
+     * @param includeRoot whether to include the root in the selection process
+     * @param taskTypeToSelect the type of task to be selected
+     * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link BranchTask}) can have
+     * @param <T> the type of {@code taskTypeToSelect}
+     * @return the randomly selected composite task ({@link BranchTask}). {@code Null} if none was found.
+     * @throws NoSuchTaskFoundException tree does not contain any tasks meeting the specified requirements
+     */
+    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTaskFoundException {
+        ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
+        ArrayList<T> selectionTasks = new ArrayList<>();
+
+        for (T task : tasks) {
+            if (task.getChildCount() >= minimumNumberOfChildren) {
+                selectionTasks.add(task);
+            }
+        }
+        if (selectionTasks.size() == 0) {
+            throw new NoSuchTaskFoundException();
+        }
+        return selectionTasks.get(random.nextInt(selectionTasks.size()));
     }
 
     /**
      * Selects a random {@link Task} that can be removed from the tree without breaking it
      * @param root the root {@link Task} of the behavior tree that is to be searched
      * @return a {@link Task} that can be removed from the tree without breaking it
-     * @throws NoSuchTasksFoundException
+     * @throws NoSuchTaskFoundException
      */
-    public static Task getRemovableTask(Task root) throws NoSuchTasksFoundException {
+    public static Task getRandomRemovableTask(Task root) throws NoSuchTaskFoundException {
         ArrayList<Task> removableTasks = new ArrayList<>();
 
         Stack<Task> stack = new Stack<>();
@@ -169,36 +196,9 @@ public abstract class BehaviorTreeUtil {
             }
         }
         if (removableTasks.isEmpty()) {
-            throw new NoSuchTasksFoundException();
+            throw new NoSuchTaskFoundException();
         }
         return removableTasks.get(random.nextInt(removableTasks.size()));
-    }
-
-    /**
-     * Selects a random {@link Task} of the specified type and with the specified minimum number of children
-     * from an already existing behavior tree.
-     * existing behavior tree, excluding the root {@link Task}.
-     * @param root the root {@link Task} of the behavior tree that is to be searched
-     * @param includeRoot whether to include the root in the selection process
-     * @param taskTypeToSelect the type of task to be selected
-     * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link BranchTask}) can have
-     * @param <T> the type of {@code taskTypeToSelect}
-     * @return the randomly selected composite task ({@link BranchTask}). {@code Null} if none was found.
-     * @throws NoSuchTasksFoundException tree does not contain any tasks meeting the specified requirements
-     */
-    public static <T extends Task> T getRandomTask(Task root, boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTasksFoundException {
-        ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
-        ArrayList<T> selectionTasks = new ArrayList<>();
-
-        for (T task : tasks) {
-            if (task.getChildCount() >= minimumNumberOfChildren) {
-                selectionTasks.add(task);
-            }
-        }
-        if (selectionTasks.size() == 0) {
-            throw new NoSuchTasksFoundException();
-        }
-        return selectionTasks.get(random.nextInt(selectionTasks.size()));
     }
 
     /**
@@ -239,7 +239,16 @@ public abstract class BehaviorTreeUtil {
      * @param taskToRemove the root {@link Task} of the behavior tree to be removed. Can not be the same as {@code root}.
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task removeTask(Task root, Task taskToRemove) {
+    public static Task removeTask(Task root, Task taskToRemove) throws NoSuchTaskFoundException {
+        HashSet<Task> taskSet = new HashSet<>(BehaviorTreeUtil.getTasks(root, true, Task.class));
+        if (!taskSet.contains(taskToRemove)) {
+            throw new NoSuchTaskFoundException();
+        }
+
+        return removeTaskHelper(root, taskToRemove);
+    }
+
+    private static Task removeTaskHelper(Task root, Task taskToRemove) {
         Task newRoot;
         if (root == taskToRemove) {
             return null;
@@ -247,7 +256,7 @@ public abstract class BehaviorTreeUtil {
             newRoot = cloneIndividualTask(root);
         }
         for (int i = 0; i < root.getChildCount(); i++) {
-            Task newChild = removeTask(root.getChild(i), taskToRemove);
+            Task newChild = removeTaskHelper(root.getChild(i), taskToRemove);
             if (newChild != null) {
                 newRoot.addChild(newChild);
             }
@@ -262,14 +271,14 @@ public abstract class BehaviorTreeUtil {
      * @param rootOfNewSubtree the root {@link Task} of the behavior tree that is to replace {@code rootOfSubtreeToBeReplaced}
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task replaceSubtree(Task root, Task rootOfSubtreeToBeReplaced, Task rootOfNewSubtree) {
+    public static Task replaceTask(Task root, Task rootOfSubtreeToBeReplaced, Task rootOfNewSubtree) {
         Task newRoot;
         if (root == rootOfSubtreeToBeReplaced) {
             newRoot = cloneTree(rootOfNewSubtree);
         } else {
             newRoot = cloneIndividualTask(root);
             for (int i = 0; i < root.getChildCount(); i++) {
-                newRoot.addChild(replaceSubtree(root.getChild(i), rootOfSubtreeToBeReplaced, rootOfNewSubtree));
+                newRoot.addChild(replaceTask(root.getChild(i), rootOfSubtreeToBeReplaced, rootOfNewSubtree));
             }
         }
         return newRoot;
@@ -306,7 +315,7 @@ public abstract class BehaviorTreeUtil {
      * @param unitClass the class of the unit the behavior tree is to be used for
      * @return the root {@link Task} of the resulting behavior tree
      */
-    public static Task randomiseTask(Task root, Task taskToRandomise, Class<? extends Unit> unitClass) throws NoAvailableTaskClassException {
+    public static Task randomiseIndividualTask(Task root, Task taskToRandomise, Class<? extends Unit> unitClass) throws NoAvailableTaskClassException {
         Task newRoot = cloneIndividualTask(root);
 
         ArrayList<Class<? extends Task>> availableTaskClasses = new ArrayList<>();
@@ -336,7 +345,7 @@ public abstract class BehaviorTreeUtil {
         }
 
         for (int i = 0; i < root.getChildCount(); i++) {
-            newRoot.addChild(randomiseTask(root.getChild(i), taskToRandomise, unitClass));
+            newRoot.addChild(randomiseIndividualTask(root.getChild(i), taskToRandomise, unitClass));
         }
         return newRoot;
     }
@@ -349,15 +358,6 @@ public abstract class BehaviorTreeUtil {
      * @return the root {@link Task} of the resulting behavior tree
      */
     public static Task removeEmptyAndSingleChildCompositeTasks(Task root) {
-//        if (root.getChildCount() == 0) {
-//            return null;
-//        }
-//        else if (root.getChildCount() == 1 && root.getChild(0) instanceof BranchTask) {
-//            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(0));
-//        } else {
-//            return removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root);
-//        }
-
         Task newRoot = cloneIndividualTask(root);
         for (int i = 0; i < root.getChildCount(); i++) {
             Task child = removeEmptyAndSingleChildCompositeTasksRecursiveHelper(root.getChild(i));
@@ -389,25 +389,6 @@ public abstract class BehaviorTreeUtil {
         return newRoot;
     }
 
-//    private static Task removeEmptyAndSingleChildCompositeTasksRecursiveHelper(Task root) {
-//        Task newRoot = cloneIndividualTask(root);
-//        for (int i = 0; i < root.getChildCount(); i++) {
-//            Task child = root.getChild(i);
-//            if (child instanceof BranchTask) {
-//                if (child.getChildCount() == 1) {
-//                    newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child.getChild(0)));
-//                    continue;
-//                } else if (child.getChildCount() == 0) {
-//                    continue;
-//                }
-//            }
-//            newRoot.addChild(removeEmptyAndSingleChildCompositeTasksRecursiveHelper(child));
-//        }
-//
-//
-//        return newRoot;
-//    }
-
     public static Task cloneTree(Task root) {
         return root.cloneTask();
     }
@@ -422,5 +403,28 @@ public abstract class BehaviorTreeUtil {
         } catch (ReflectionException var3) {
             throw new TaskCloneException(var3);
         }
+    }
+
+    public static boolean areEqualTrees(Task root1, Task root2) {
+        if (areOfSameClassWithSameVariables(root1, root2) && root1.getChildCount() == root2.getChildCount()) {
+            for (int i = 0; i < root1.getChildCount(); i++) {
+                if (!areEqualTrees(root1.getChild(i), root2.getChild(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean areOfSameClassWithSameVariables(Task task1, Task task2) {
+        if (task1.getClass() == task2.getClass()) {
+            if (task1 instanceof VariableLeafTask) {
+                return task1.equals(task2);
+            }
+            return true;
+        }
+        return false;
+
     }
 }

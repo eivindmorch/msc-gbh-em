@@ -50,6 +50,11 @@ public class IsWithinTask extends VariableLeafTask<Blackboard<FollowerUnit>> imp
         randomiseDistanceLimit();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof IsWithinTask && this.distanceLimit== ((IsWithinTask) obj).distanceLimit;
+    }
+
     private void randomiseDistanceLimit() {
         setDistanceLimit(random.nextDouble() * 50);
     }

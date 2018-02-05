@@ -64,6 +64,11 @@ public class WaitTask extends VariableLeafTask<Blackboard<Unit>> implements Name
         randomiseTicksToRun();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof WaitTask && this.ticksToRun == ((WaitTask) obj).ticksToRun;
+    }
+
     private void randomiseTicksToRun() {
         setTicksToRun(1 + random.nextInt(9));
     }
