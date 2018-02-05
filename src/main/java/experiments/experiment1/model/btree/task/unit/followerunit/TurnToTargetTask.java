@@ -12,42 +12,44 @@ import core.util.Geometer;
 import core.util.LlbmlUtil;
 import core.util.exceptions.IllegalArgumentCombinationException;
 
+
 public class TurnToTargetTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
-    private TaskTickTracker tickTracker;
     private final String name = "Turn to target";
+    private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
 
     @Override
-    public Status execute() {
-        if (tickTracker.getCurrentTick() == 0) {
-            sendLLBMLTurnToHeadingTask(getObject().getUnit().getMarking());
+    public Task.Status execute() {
+        if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.FIRST) {
+            sendLLBMLTurnToHeadingTask();
         }
-        return tickTracker.tick();
+        taskTickTracker.tick();
+        if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.DONE) {
+            return Status.SUCCEEDED;
+        }
+        return Task.Status.RUNNING;
     }
 
     @Override
     public void start() {
         super.start();
-        this.tickTracker = new TaskTickTracker(1);
+        taskTickTracker.reset();
     }
 
-    private void sendLLBMLTurnToHeadingTask(String entityMarkingString) {
+    private void sendLLBMLTurnToHeadingTask() {
         TurnToHeadingInteraction interaction = new TurnToHeadingInteraction();
-        interaction.setTaskee(entityMarkingString);
 
         double deg;
-
         try {
             deg = calculateHeadingAngle();
         } catch (IllegalArgumentCombinationException e) {
             return;
         }
-
         deg = LlbmlUtil.normaliseDegForLlbml(deg);
 
         float rad = (float) Math.toRadians(deg);
         interaction.setHeading(rad);
-        interaction.setTaskee(entityMarkingString);
+        interaction.setTaskee(getObject().getUnit().getMarking());
         interaction.sendInteraction();
     }
 
@@ -58,9 +60,8 @@ public class TurnToTargetTask extends LeafTask<Blackboard<FollowerUnit>> impleme
         return(Geometer.absoluteBearing(unit.getRawDataRow().getLla(), target.getRawDataRow().getLla()));
     }
 
-    @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return new TurnToTargetTask();
+        return task;
     }
 
     @Override

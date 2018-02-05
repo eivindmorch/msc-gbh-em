@@ -81,7 +81,7 @@ public abstract class BehaviorTreeUtil {
     }
 
     public static Task generateTestTree() {
-        Selector shouldMoveSelector = new Selector(new IsApproachingTask(), new IsWithinTask());
+        Selector shouldMoveSelector = new Selector(new IsApproachingTask(20), new IsWithinTask(30));
         Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, new TurnToTargetTask());
         Selector waitOrMoveSelector = new Selector(shouldNotMoveSequence, new MoveToTargetTask());
         return waitOrMoveSelector;
@@ -189,10 +189,8 @@ public abstract class BehaviorTreeUtil {
             Task currentRoot = stack.pop();
             if (currentRoot.getChildCount() > 1) {
                 removableTasks.addAll(getTasks(currentRoot, false, Task.class));
-            } else {
-                for (int i = 0; i < currentRoot.getChildCount(); i++) {
-                    stack.add(currentRoot.getChild(i));
-                }
+            } else if (currentRoot.getChildCount() == 1) {
+                stack.add(currentRoot.getChild(0));
             }
         }
         if (removableTasks.isEmpty()) {

@@ -1,45 +1,35 @@
 package experiments.experiment1.model.btree.task.unit.followerunit;
 
+import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
-import core.model.btree.task.VariableLeafTask;
 import experiments.experiment1.unit.FollowerUnit;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.FollowUnitInteraction;
 
-import static core.util.SystemUtil.random;
 
-public class FollowTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class FollowTargetTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
-    private int ticksToRun;
-    private TaskTickTracker tickTracker;
-    private String name;
-
-    public FollowTargetTask() {
-        randomiseTicksToRun();
-    }
-
-    public FollowTargetTask(int ticksToRun) {
-        setTicksToRun(ticksToRun);
-    }
-
-    public FollowTargetTask(FollowTargetTask followUnit) {
-        this(followUnit.ticksToRun);
-    }
+    private String name = "Follow target";
+    private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
 
     @Override
-    public Status execute() {
-        if (tickTracker.getCurrentTick() == 0) {
+    public Task.Status execute() {
+        if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.FIRST) {
             sendLLBMLFollowUnitTask();
         }
-        return tickTracker.tick();
+        taskTickTracker.tick();
+        if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.DONE) {
+            return Status.SUCCEEDED;
+        }
+        return Task.Status.RUNNING;
     }
 
     @Override
     public void start() {
         super.start();
-        this.tickTracker = new TaskTickTracker(ticksToRun);
+        taskTickTracker.reset();
     }
 
     private void sendLLBMLFollowUnitTask(){
@@ -52,7 +42,7 @@ public class FollowTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>>
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return new FollowTargetTask(this);
+        return task;
     }
 
     @Override
@@ -60,22 +50,4 @@ public class FollowTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>>
         return name;
     }
 
-    @Override
-    public void randomiseVariables() {
-        randomiseTicksToRun();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof FollowTargetTask && this.ticksToRun == ((FollowTargetTask) obj).ticksToRun;
-    }
-
-    private void randomiseTicksToRun() {
-        setTicksToRun(1 + random.nextInt(9));
-    }
-
-    private void setTicksToRun(int ticksToRun) {
-        this.ticksToRun = ticksToRun;
-        this.name = "Follow target (" + ticksToRun + ")";
-    }
 }

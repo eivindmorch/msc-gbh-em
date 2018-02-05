@@ -12,9 +12,7 @@ import core.unit.UnitHandler;
 import core.unit.UnitLogger;
 import core.util.SystemStatus;
 
-import java.util.concurrent.TimeUnit;
-
-import static core.util.SystemUtil.sleepSeconds;
+import static core.util.SystemUtil.sleepMilliseconds;
 
 
 public class SimController implements TickListener, PhysicalEntityUpdatedListener {
@@ -55,6 +53,8 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
                 logger.debug("Ticks: " + totalTicks +
                         " | Average time per tick: " + ((System.currentTimeMillis() - startTime) / 100) + "ms");
                 startTime = System.currentTimeMillis();
+            } else if (totalTicks == 1) {
+                logger.debug("First tick");
             }
 
             ticksToPlay--;
@@ -89,6 +89,11 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
      * @param simulationEndedListener
      */
     public void play(int numOfTicks, SimulationEndedListener simulationEndedListener) {
+        while (Federate.getInstance().unitsDiscovered < 2) {
+            sleepMilliseconds(500);
+            System.out.println(Federate.getInstance().unitsDiscovered);
+        }
+        sleepMilliseconds(250);
         ticksToPlay = numOfTicks;
         this.simulationEndedListener = simulationEndedListener;
         play();
@@ -96,12 +101,12 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     public void pause() {
         logger.info("Pausing scenario.");
+        Federate.getInstance().sendCgfPauseInteraction();
         Federate.getInstance().holdTimeAdvancement();
     }
 
     public void rewind() {
         logger.info("Rewinding scenario.");
-        Federate.getInstance().holdTimeAdvancement();
         Federate.getInstance().sendCgfRewindInteraction();
         UnitHandler.reset();
         UnitLogger.reset();

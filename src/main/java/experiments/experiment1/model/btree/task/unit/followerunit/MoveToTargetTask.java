@@ -1,47 +1,37 @@
 package experiments.experiment1.model.btree.task.unit.followerunit;
 
+import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
-import core.model.btree.task.VariableLeafTask;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import experiments.experiment1.unit.FollowerUnit;
 
-import static core.util.SystemUtil.random;
 
-public class MoveToTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
 
-    private int ticksToRun;
-    private TaskTickTracker tickTracker;
-    private String name;
-
-    public MoveToTargetTask() {
-        randomiseTicksToRun();
-    }
-
-    public MoveToTargetTask(int ticksToRun) {
-        setTicksToRun(ticksToRun);
-    }
-
-    public MoveToTargetTask(MoveToTargetTask moveToTargetTask) {
-        this(moveToTargetTask.ticksToRun);
-    }
+    String name = "Move to target";
+    private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
 
     @Override
-    public Status execute() {
-        if (tickTracker.getCurrentTick() == 0) {
+    public Task.Status execute() {
+        if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.FIRST) {
             sendLLBMLMoveToLocationTask();
         }
-        return tickTracker.tick();
+        taskTickTracker.tick();
+        if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.DONE) {
+            return Status.SUCCEEDED;
+        }
+        return Task.Status.RUNNING;
     }
 
     @Override
     public void start() {
         super.start();
-        this.tickTracker = new TaskTickTracker(ticksToRun);
+        taskTickTracker.reset();
     }
 
     private void sendLLBMLMoveToLocationTask(){
@@ -62,30 +52,11 @@ public class MoveToTargetTask extends VariableLeafTask<Blackboard<FollowerUnit>>
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return new MoveToTargetTask(this);
+        return task;
     }
 
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public void randomiseVariables() {
-        randomiseTicksToRun();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof MoveToTargetTask && this.ticksToRun == ((MoveToTargetTask) obj).ticksToRun;
-    }
-
-    private void randomiseTicksToRun() {
-        setTicksToRun(1 + random.nextInt(9));
-    }
-
-    private void setTicksToRun(int ticksToRun) {
-        this.ticksToRun = ticksToRun;
-        this.name = "Move to target (" + ticksToRun + ")";
     }
 }

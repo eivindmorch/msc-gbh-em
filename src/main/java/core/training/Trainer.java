@@ -55,7 +55,7 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
 
     public void train(int epochs) {
         for (;currentEpoch < currentEpoch + epochs; currentEpoch++) {
-            logger.info("EPOCH " + currentEpoch);
+            logger.info("================ EPOCH " + currentEpoch  + " ================");
             // TODO Not working when calling train twice (overwrites)
             SystemStatus.currentTrainingEpoch = currentEpoch;
             for (int exampleDataSetIndex = 0; exampleDataSetIndex < exampleDataSets.size(); exampleDataSetIndex++) {
@@ -95,7 +95,7 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
                 // TODO Let UnitLogger write before writers are reset
 //                sleepSeconds(5);
                 SimController.getInstance().loadScenario(scenarioPath);
-                sleepSeconds(5);
+//                sleepSeconds(5);
             } else {
                 SimController.getInstance().rewind();
             }

@@ -11,6 +11,8 @@ import core.training.Population;
 import core.training.algorithms.Algorithm;
 import core.util.graphing.Grapher;
 import core.util.SystemUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,6 +21,8 @@ import static core.training.algorithms.NSGA2.NSGA2Chromosome.nonDominationRankAn
 import static core.training.algorithms.NSGA2.NSGA2Chromosome.singleObjectiveComparator;
 
 public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
+
+    private final Logger logger = LoggerFactory.getLogger(NSGA2.class);
 
     private DataSet<D> lastExample;
 
@@ -55,9 +59,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         population.sort(singleObjectiveComparator(0));
         Grapher.graph(population);
 
-        System.out.println("Population");
-        System.out.println(population);
-        System.out.println();
+        logger.debug("Population: " + population.toString());
 
         Population<NSGA2Chromosome> offspring = createOffspringPopulation(population);
 
@@ -66,23 +68,23 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         trainer.simulatePopulation(offspring, exampleDataSet.getNumOfTicks(), exampleDataSet.getScenarioPath());
         setFitness(offspring, epoch, exampleNumber, exampleDataSet);
 
-        System.out.println("Offspring");
-        System.out.println(offspring);
-        System.out.println();
+        logger.debug("Offspring: " + offspring.toString());
 
         population.addAll(offspring);
         ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation = rankPopulationByNonDomination(population);
 
-        System.out.println("Ranked population");
-        printRankedPopulation(rankedPopulation);
+        logger.debug(getRankedPopulationAsString(rankedPopulation));
 
         population = selectNewPopulationFromRankedPopulation(rankedPopulation);
     }
 
-    private void printRankedPopulation(ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation) {
+    private String getRankedPopulationAsString(ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation) {
+        StringBuilder stringBuilder = new StringBuilder("Ranked population@" + rankedPopulation.hashCode() + " {");
         for (ArrayList<NSGA2Chromosome> rank : rankedPopulation) {
-            System.out.println(rank);
+            stringBuilder.append("\n\t").append(rank);
         }
+        stringBuilder.append("\n}");
+        return stringBuilder.toString();
     }
 
     private void setFitness(Population<NSGA2Chromosome> population, int epoch, int exampleNumber, DataSet<D> exampleDataSet) {
@@ -123,8 +125,6 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
                 Task mutationChild = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
                 offspringPopulation.add(new NSGA2Chromosome(mutationChild));
             }
-            System.out.println(offspringPopulation.get(offspringPopulation.getSize() - 1).getBtree());
-
         }
         return offspringPopulation;
     }
@@ -166,7 +166,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             assignCrowdingDistance(rank);
             rankedPopulation.add(rank);
         }
-        System.out.println("Rank0 size: " + rankedPopulation.get(0).size());
+        logger.debug("Non-dominated chromosomes (rank 0): " + rankedPopulation.get(0).size());
         return rankedPopulation;
     }
 

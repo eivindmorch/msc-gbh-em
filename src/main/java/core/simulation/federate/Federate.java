@@ -42,6 +42,8 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     private volatile boolean holdTimeAdvancement = true;
     private final Object TIME_ADVANCE_LOCK = new Object();
 
+    public volatile int unitsDiscovered = 0;
+
     private Federate() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
     }
@@ -80,8 +82,10 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     public void remoteObjectDiscovered(HlaObject object) {
         if (object instanceof PhysicalEntityObject) {
             PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
+            logger.debug("Remote object discovered: " + physicalEntity.getMarking());
             physicalEntity.addObjectUpdateListener(this);
             physicalEntity.requestUpdateOnAllAttributes();
+            unitsDiscovered++;
         }
     }
 
@@ -172,12 +176,14 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     }
 
     public void sendCgfRewindInteraction() {
+        unitsDiscovered = 0;
         CgfCommand cgfCommand = new CgfCommand();
         cgfCommand.setCommand(CommandType.Rewind);
         sendCgfControlInteraction(cgfCommand);
     }
 
     public void sendCgfLoadScenarioInteraction(String scenarioPath) {
+        unitsDiscovered = 0;
         CgfCommand cgfCommand = new CgfCommand();
         cgfCommand.setCommand(CommandType.LoadScenario);
         cgfCommand.getLoadScenario().setString(scenarioPath);

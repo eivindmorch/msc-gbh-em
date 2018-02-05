@@ -49,7 +49,7 @@ public class Experiment1 {
         Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
         SimController.getInstance().startSimEngine();
-//        SimController.getInstance().startSimGui();
+        SimController.getInstance().startSimGui();
         sleepSeconds(10);
 
 
@@ -57,13 +57,13 @@ public class Experiment1 {
         Algorithm<FollowerEvaluationDataRow, NSGA2Chromosome> algorithm = new NSGA2<>(
                 FollowerEvaluationDataRow.class,
                 new Experiment1FitnessEvaluator(),
-                20,
+                10,
                 0.5,
                 0.8
         );
 
         String[] exampleFileNames = new String[]{
-                "experiment1/brooklyn-simple.csv"
+                "experiment1/brooklyn.csv"
         };
 
         Trainer trainer = new Trainer<>(
