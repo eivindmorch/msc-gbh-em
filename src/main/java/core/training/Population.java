@@ -2,8 +2,8 @@ package core.training;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.BehaviorTreeUtil;
-import core.training.algorithms.NSGA2.NSGA2Chromosome;
 import core.unit.Unit;
+import core.util.ToStringBuilder;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +20,10 @@ public class Population<C extends Chromosome> {
 
     public Population() {
         chromosomes = new ArrayList<>();
+    }
+
+    public Population(Population<C> population) {
+        chromosomes = new ArrayList<>(population.getChromosomes());
     }
 
     public static <C extends Chromosome> Population<C> generateRandomPopulation(
@@ -55,6 +59,10 @@ public class Population<C extends Chromosome> {
         return chromosomes.remove(i);
     }
 
+    public void removeAll(ArrayList<C> chromosomes) {
+        this.chromosomes.removeAll(chromosomes);
+    }
+
     public void sort(Comparator<C> comparator) {
         chromosomes.sort(comparator);
     }
@@ -79,23 +87,11 @@ public class Population<C extends Chromosome> {
         return Collections.min(listOfContenders, comparator);
     }
 
-    public Population<C> shallowCopy() {
-        Population<C> copy = new Population<>();
-        copy.addAll(chromosomes);
-        return copy;
-    }
-
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Population@" + hashCode() + " {");
-        for (C chromosome : chromosomes) {
-            sb.append("\n\t").append(chromosome);
-        }
-        sb.append("\n}");
-        return sb.toString();
-    }
-
-    public void removeAll(ArrayList<C> chromosomes) {
-        this.chromosomes.removeAll(chromosomes);
+        return ToStringBuilder.toStringBuilder(this)
+                .add("size", getSize())
+                .addListedElements(chromosomes)
+                .toString();
     }
 }

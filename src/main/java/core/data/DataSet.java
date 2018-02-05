@@ -2,6 +2,7 @@ package core.data;
 
 import core.data.rows.DataRow;
 import core.util.Reader;
+import core.util.ToStringBuilder;
 
 import java.util.ArrayList;
 
@@ -63,6 +64,10 @@ public class DataSet<D extends DataRow> {
 
     @Override
     public String toString() {
-        return "Example@" + hashCode() + " {Scenario: " + scenarioPath + ", Unit: " + unitMarking + ", Ticks: " + numOfTicks + "}";
+        return ToStringBuilder.toStringBuilder(this)
+                .add("scenarioPath", scenarioPath)
+                .add("unitMarking", unitMarking)
+                .add("numOfTicks", numOfTicks)
+                .toString();
     }
 }

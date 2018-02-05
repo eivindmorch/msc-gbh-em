@@ -9,6 +9,7 @@ import core.model.btree.genops.Mutator;
 import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
+import core.util.ToStringBuilder;
 import core.util.graphing.Grapher;
 import core.util.SystemUtil;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     @Override
     public void setup() {
+        //noinspection unchecked
         population = Population.generateRandomPopulation(POPULATION_SIZE, trainer.getUnitToTrainClass(), NSGA2Chromosome.class);
     }
 
@@ -52,39 +54,44 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             trainer.simulatePopulation(population, exampleDataSet.getNumOfTicks(), exampleDataSet.getScenarioPath());
             setFitness(population, epoch, exampleNumber, exampleDataSet);
             rankPopulationByNonDomination(population);
+
+            graphAndLogPopulation("Initial population", population);
         }
 
-        Grapher.closeAllPopulationGraphs();
-
-        population.sort(singleObjectiveComparator(0));
-        Grapher.graph(population);
-
-        logger.debug("Population: " + population.toString());
-
+        // Create, evaluate and add offspring
         Population<NSGA2Chromosome> offspring = createOffspringPopulation(population);
-
-        Grapher.graph("Offspring", offspring);
-
         trainer.simulatePopulation(offspring, exampleDataSet.getNumOfTicks(), exampleDataSet.getScenarioPath());
         setFitness(offspring, epoch, exampleNumber, exampleDataSet);
-
-        logger.debug("Offspring: " + offspring.toString());
-
         population.addAll(offspring);
+
+        // Rank population
         ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation = rankPopulationByNonDomination(population);
 
-        logger.debug(getRankedPopulationAsString(rankedPopulation));
+        // Select new population
+        Population<NSGA2Chromosome> newPopulation = selectNewPopulationFromRankedPopulation(rankedPopulation);
 
-        population = selectNewPopulationFromRankedPopulation(rankedPopulation);
+        Grapher.closeAllPopulationGraphs();
+        graphAndLogPopulation("Old population", population);
+        graphAndLogPopulation("Offspring", offspring);
+        logger.debug("RANKS: " + getRanksAsString(rankedPopulation));
+        graphAndLogPopulation("New population", newPopulation);
+
+        population = newPopulation;
     }
 
-    private String getRankedPopulationAsString(ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation) {
-        StringBuilder stringBuilder = new StringBuilder("Ranked population@" + rankedPopulation.hashCode() + " {");
+    private void graphAndLogPopulation(String name, Population<NSGA2Chromosome> population) {
+        Population<NSGA2Chromosome> populationClone = new Population<>(population);
+        populationClone.sort(singleObjectiveComparator(0));
+        logger.debug(name.toUpperCase() + ": " + populationClone.toString());
+        Grapher.graph(name, populationClone);
+    }
+
+    private String getRanksAsString(ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation) {
+        ToStringBuilder toStringBuilder = ToStringBuilder.toStringBuilder(rankedPopulation);
         for (ArrayList<NSGA2Chromosome> rank : rankedPopulation) {
-            stringBuilder.append("\n\t").append(rank);
+            toStringBuilder.addListedElement(rank.size() + " " + rank.toString());
         }
-        stringBuilder.append("\n}");
-        return stringBuilder.toString();
+        return toStringBuilder.toString();
     }
 
     private void setFitness(Population<NSGA2Chromosome> population, int epoch, int exampleNumber, DataSet<D> exampleDataSet) {
@@ -131,7 +138,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     private ArrayList<ArrayList<NSGA2Chromosome>> rankPopulationByNonDomination(Population<NSGA2Chromosome> population) {
 
-        Population<NSGA2Chromosome> populationCopy = population.shallowCopy();
+        Population<NSGA2Chromosome> populationCopy = new Population<>(population);
 
         // Generate numOfDominators and domnates set
         for (NSGA2Chromosome c1 : populationCopy.getChromosomes()) {
@@ -166,7 +173,6 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             assignCrowdingDistance(rank);
             rankedPopulation.add(rank);
         }
-        logger.debug("Non-dominated chromosomes (rank 0): " + rankedPopulation.get(0).size());
         return rankedPopulation;
     }
 

@@ -2,6 +2,7 @@ package experiments.experiment1.data.rows;
 
 import core.data.rows.DataRow;
 import core.model.Lla;
+import core.util.ToStringBuilder;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -76,6 +77,10 @@ public class RawDataRow extends DataRow {
 
     @Override
     public String toString() {
-        return getDataSetName() + " {Timestamp: " + this.getTimestamp() + ", Position:" + lla + ", Movement angle:" + movementAngle + "}" ;
+        return ToStringBuilder.toStringBuilder(this)
+                .add("timestamp", this.getTimestamp())
+                .add("position", lla)
+                .add("movementAngle", movementAngle)
+                .toString();
     }
 }

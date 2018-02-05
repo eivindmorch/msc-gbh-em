@@ -1,5 +1,7 @@
 package core.model;
 
+import core.util.ToStringBuilder;
+
 public class Lla {
 
     private final double latitude, longitude, altitude;
@@ -24,7 +26,11 @@ public class Lla {
 
     @Override
     public String toString() {
-        return "Lat: " + latitude + ", Lon: " + longitude + ", Alt: " + altitude;
+        return ToStringBuilder.toStringBuilder(this)
+                .add("latitude", latitude)
+                .add("longitude", longitude)
+                .add("altitude", altitude)
+                .toString();
     }
 
     @Override

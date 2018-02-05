@@ -2,6 +2,7 @@ package core.training;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.BehaviorTreeUtil;
+import core.util.ToStringBuilder;
 
 import java.util.ArrayList;
 
@@ -40,12 +41,9 @@ public class Chromosome {
 
     @Override
     public String toString() {
-        String btreeHashCode;
-        if (btree != null) {
-            btreeHashCode = String.valueOf(btree.hashCode());
-        } else {
-            btreeHashCode = "null";
-        }
-        return "Chromosome@" + hashCode() + " {Fitness: " + fitness + ", " + "Root task: @" + btreeHashCode + "}";
+        return ToStringBuilder.toStringBuilder(this)
+                .add("fitness", (fitness == null) ? "null" : fitness)
+                .add("btree", (btree == null) ? "null" : Integer.toHexString(btree.hashCode()))
+                .toString();
     }
 }

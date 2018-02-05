@@ -89,10 +89,11 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
      * @param simulationEndedListener
      */
     public void play(int numOfTicks, SimulationEndedListener simulationEndedListener) {
+        logger.info("Waiting for all units to be discovered.");
         while (Federate.getInstance().unitsDiscovered < 2) {
             sleepMilliseconds(500);
-            System.out.println(Federate.getInstance().unitsDiscovered);
         }
+        logger.info("All units to be discovered -> continuing.");
         sleepMilliseconds(250);
         ticksToPlay = numOfTicks;
         this.simulationEndedListener = simulationEndedListener;

@@ -2,6 +2,7 @@ package experiments.experiment1.data.rows;
 
 import core.data.rows.DataRow;
 import core.util.Geometer;
+import core.util.ToStringBuilder;
 import core.util.exceptions.IllegalArgumentCombinationException;
 
 import java.util.List;
@@ -67,6 +68,10 @@ public class FollowerProcessedDataRow extends DataRow {
 
     @Override
     public String toString() {
-        return getDataSetName() + " {Timestamp: " + this.getTimestamp() + ", " + "Distance to target: " + distanceToTarget + ", " + "Target movement angle relative to follower position: " + targetMovementAngleRelativeToFollowerPosition + "}";
+        return ToStringBuilder.toStringBuilder(this)
+                .add("timestamp", this.getTimestamp())
+                .add("distanceToTarget", this.getDistanceToTarget())
+                .add("targetMovementAngleRelativeToFollowerPosition", targetMovementAngleRelativeToFollowerPosition)
+                .toString();
     }
 }

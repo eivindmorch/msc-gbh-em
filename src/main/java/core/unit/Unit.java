@@ -1,6 +1,7 @@
 package core.unit;
 
 import core.data.rows.DataRow;
+import core.util.ToStringBuilder;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 
@@ -41,18 +42,16 @@ public abstract class Unit {
         return dataRows;
     }
 
-    @Override
-    public String toString() {
-        return "Unit@" + hashCode()
-                + " {"
-                + "Marking: " + marking + ", "
-                + "Identifier: " + identifier + ", "
-                + "Handle" + handle
-                + "}";
+    public PhysicalEntityObject getPhysicalEntityObject() {
+        return PhysicalEntityObject.getAllPhysicalEntitys().get(this.getHandle());
     }
 
-    public PhysicalEntityObject getPhysicalEntityObject() {
-        PhysicalEntityObject physicalEntityObject = PhysicalEntityObject.getAllPhysicalEntitys().get(this.getHandle());
-        return physicalEntityObject;
+    @Override
+    public String toString() {
+        return ToStringBuilder.toStringBuilder(this)
+                .add("marking", marking)
+                .add("identifier", identifier)
+                .add("handle", handle)
+                .toString();
     }
 }

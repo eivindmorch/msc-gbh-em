@@ -49,7 +49,7 @@ public class Experiment1 {
         Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
         SimController.getInstance().startSimEngine();
-        SimController.getInstance().startSimGui();
+//        SimController.getInstance().startSimGui();
         sleepSeconds(10);
 
 
@@ -74,7 +74,7 @@ public class Experiment1 {
         );
 
 
-        trainer.train(10000);
+        trainer.train(100000);
 
 //        sleepSeconds(20);
 //        rti.destroy();

@@ -2,6 +2,7 @@ package experiments.experiment1.data.rows;
 
 import core.data.rows.DataRow;
 import core.util.Geometer;
+import core.util.ToStringBuilder;
 
 import java.util.List;
 
@@ -46,6 +47,9 @@ public class FollowerEvaluationDataRow extends DataRow {
 
     @Override
     public String toString() {
-        return getDataSetName() + " {Timestamp: " + this.getTimestamp() + ", " + "Distance to target: " + distanceToTarget + "}";
+        return ToStringBuilder.toStringBuilder(this)
+                .add("timestamp", this.getTimestamp())
+                .add("distanceToTarget", this.getDistanceToTarget())
+                .toString();
     }
 }
