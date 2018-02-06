@@ -59,7 +59,8 @@ public class ToStringBuilder {
 //            stringBuilder.append(String.format("\n%29s", ""));
             stringBuilder.append("\n");
             for (String element : listedElements) {
-                stringBuilder.append("\t\t").append(element).append(String.format("\n%29s", ""));
+//                stringBuilder.append("\t\t").append(element).append(String.format("\n%29s", ""));
+                stringBuilder.append("\t").append(element).append("\n");
             }
             stringBuilder.append(']');
         }
