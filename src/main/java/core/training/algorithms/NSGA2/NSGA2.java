@@ -230,7 +230,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         Population<NSGA2Chromosome> populationClone = new Population<>(population);
         populationClone.sort(singleObjectiveComparator(0));
 
-        logger.debug("INITIAL POPULATION", population);
+        logger.debug("INITIAL POPULATION\n" + population);
 
         Grapher.closeAllGraphs();
         GraphFrame graphFrame = Grapher.createNewFrame("Initial population");
@@ -255,16 +255,17 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         offspringClone.sort(singleObjectiveComparator(0));
         newPopulationClone.sort(singleObjectiveComparator(0));
 
-        logger.debug("OLD POPULATION", oldPopulationClone);
-        logger.debug("OFFSPRING", offspringClone);
-        logger.debug("RANKS", getRanksAsString(rankedPopulationClone));
-        logger.debug("NEW POPULATION", newPopulationClone);
+        logger.debug("OLD POPULATION\n" + oldPopulationClone);
+        logger.debug("OFFSPRING\n" + offspringClone);
+        logger.debug("RANKS\n" + getRanksAsString(rankedPopulationClone));
+        logger.debug("NEW POPULATION\n" + newPopulationClone);
 
         Grapher.closeAllGraphs();
         GraphFrame graphFrame = Grapher.createNewFrame("Epoch " + epoch);
         graphFrame.addTab(new GraphTab("Old population").add(oldPopulationClone));
         graphFrame.addTab(new GraphTab("Offspring").add(offspringClone));
         graphFrame.addTab(new GraphTab("New population").add(newPopulationClone));
+        graphFrame.addTab(new GraphTab("Non-dominated").add(rankedPopulation.get(0)));
         graphFrame.display();
     }
 
