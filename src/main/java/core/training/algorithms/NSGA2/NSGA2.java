@@ -57,7 +57,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             setFitness(population, epoch, exampleNumber, exampleDataSet);
             rankPopulationByNonDomination(population);
 
-            logPopulation("Initial population", population);
+            outputInitialPopulation(population);
         }
 
         Population<NSGA2Chromosome> oldPopulation = new Population<>(population);
@@ -75,23 +75,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         population = selectNewPopulationFromRankedPopulation(rankedPopulation);
 
         // Output
-        logPopulation("OLD POPULATION", oldPopulation);
-        logPopulation("OFFSPRING", offspring);
-        logger.debug("RANKS: " + getRanksAsString(rankedPopulation));
-        logPopulation("NEW POPULATION", population);
-
-        Grapher.closeAllGraphs();
-        GraphFrame graphFrame = Grapher.createNewFrame("Epoch " + epoch);
-        graphFrame.addTab(new GraphTab("Old population").add(oldPopulation));
-        graphFrame.addTab(new GraphTab("Offspring").add(offspring));
-        graphFrame.addTab(new GraphTab("New population").add(population));
-        graphFrame.display();
-    }
-
-    private void logPopulation(String name, Population<NSGA2Chromosome> population) {
-        Population<NSGA2Chromosome> populationClone = new Population<>(population);
-        populationClone.sort(singleObjectiveComparator(0));
-        logger.debug(name + ": " + populationClone.toString());
+        output(epoch, oldPopulation, offspring, rankedPopulation, population);
     }
 
     private String getRanksAsString(ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation) {
@@ -240,5 +224,49 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 //            rank.get(i).crowdingDistance += Math.abs(rank.get(i-1).cost[index] - rank.get(i+1).cost[index]) / span;
 //        }
 //    }
+
+    private void outputInitialPopulation(Population<NSGA2Chromosome> population) {
+
+        Population<NSGA2Chromosome> populationClone = new Population<>(population);
+        populationClone.sort(singleObjectiveComparator(0));
+
+        logger.debug("INITIAL POPULATION", population);
+
+        Grapher.closeAllGraphs();
+        GraphFrame graphFrame = Grapher.createNewFrame("Initial population");
+        graphFrame.addTab(new GraphTab("Initial population").add(populationClone));
+        graphFrame.display();
+    }
+
+    private void output(
+            int epoch,
+            Population<NSGA2Chromosome> oldPopulation,
+            Population<NSGA2Chromosome> offspring,
+            ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation,
+            Population<NSGA2Chromosome> newPopulation
+    ) {
+
+        Population<NSGA2Chromosome> oldPopulationClone = new Population<>(oldPopulation);
+        Population<NSGA2Chromosome> offspringClone = new Population<>(offspring);
+        ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulationClone = new ArrayList<>(rankedPopulation);
+        Population<NSGA2Chromosome> newPopulationClone = new Population<>(newPopulation);
+
+        oldPopulationClone.sort(singleObjectiveComparator(0));
+        offspringClone.sort(singleObjectiveComparator(0));
+        newPopulationClone.sort(singleObjectiveComparator(0));
+
+        logger.debug("OLD POPULATION", oldPopulationClone);
+        logger.debug("OFFSPRING", offspringClone);
+        logger.debug("RANKS", getRanksAsString(rankedPopulationClone));
+        logger.debug("NEW POPULATION", newPopulationClone);
+
+        Grapher.closeAllGraphs();
+        GraphFrame graphFrame = Grapher.createNewFrame("Epoch " + epoch);
+        graphFrame.addTab(new GraphTab("Old population").add(oldPopulationClone));
+        graphFrame.addTab(new GraphTab("Offspring").add(offspringClone));
+        graphFrame.addTab(new GraphTab("New population").add(newPopulationClone));
+        graphFrame.display();
+    }
+
 
 }
