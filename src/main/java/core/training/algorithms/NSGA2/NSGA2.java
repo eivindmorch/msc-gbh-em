@@ -230,7 +230,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         Population<NSGA2Chromosome> populationClone = new Population<>(population);
         populationClone.sort(singleObjectiveComparator(0));
 
-        logger.debug("INITIAL POPULATION\n" + population);
+        logger.debug("INITIAL POPULATION\n" + populationClone);
 
         Grapher.closeAllGraphs();
         GraphFrame graphFrame = Grapher.createNewFrame("Initial population");
