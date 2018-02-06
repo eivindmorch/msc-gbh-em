@@ -93,7 +93,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         while (Federate.getInstance().unitsDiscovered < 2) {
             sleepMilliseconds(500);
         }
-        logger.info("All units to be discovered -> continuing.");
+        logger.info("All units discovered -> continuing.");
         sleepMilliseconds(250);
         ticksToPlay = numOfTicks;
         this.simulationEndedListener = simulationEndedListener;
