@@ -10,6 +10,8 @@ import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
 import core.util.ToStringBuilder;
+import core.util.graphing.GraphFrame;
+import core.util.graphing.GraphTab;
 import core.util.graphing.Grapher;
 import core.util.SystemUtil;
 import org.slf4j.Logger;
@@ -55,8 +57,10 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             setFitness(population, epoch, exampleNumber, exampleDataSet);
             rankPopulationByNonDomination(population);
 
-            graphAndLogPopulation("Initial population", population);
+            logPopulation("Initial population", population);
         }
+
+        Population<NSGA2Chromosome> oldPopulation = new Population<>(population);
 
         // Create, evaluate and add offspring
         Population<NSGA2Chromosome> offspring = createOffspringPopulation(population);
@@ -68,22 +72,26 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation = rankPopulationByNonDomination(population);
 
         // Select new population
-        Population<NSGA2Chromosome> newPopulation = selectNewPopulationFromRankedPopulation(rankedPopulation);
+        population = selectNewPopulationFromRankedPopulation(rankedPopulation);
 
-        Grapher.closeAllPopulationGraphs();
-        graphAndLogPopulation("Old population", population);
-        graphAndLogPopulation("Offspring", offspring);
+        // Output
+        logPopulation("OLD POPULATION", oldPopulation);
+        logPopulation("OFFSPRING", offspring);
         logger.debug("RANKS: " + getRanksAsString(rankedPopulation));
-        graphAndLogPopulation("New population", newPopulation);
+        logPopulation("NEW POPULATION", population);
 
-        population = newPopulation;
+        Grapher.closeAllGraphs();
+        GraphFrame graphFrame = Grapher.createNewFrame("Epoch " + epoch);
+        graphFrame.addTab(new GraphTab("Old population").add(oldPopulation));
+        graphFrame.addTab(new GraphTab("Offspring").add(offspring));
+        graphFrame.addTab(new GraphTab("New population").add(population));
+        graphFrame.display();
     }
 
-    private void graphAndLogPopulation(String name, Population<NSGA2Chromosome> population) {
+    private void logPopulation(String name, Population<NSGA2Chromosome> population) {
         Population<NSGA2Chromosome> populationClone = new Population<>(population);
         populationClone.sort(singleObjectiveComparator(0));
-        logger.debug(name.toUpperCase() + ": " + populationClone.toString());
-        Grapher.graph(name, populationClone);
+        logger.debug(name + ": " + populationClone.toString());
     }
 
     private String getRanksAsString(ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation) {
