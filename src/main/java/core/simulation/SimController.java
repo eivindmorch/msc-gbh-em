@@ -90,8 +90,13 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
      */
     public void play(int numOfTicks, SimulationEndedListener simulationEndedListener) {
         logger.info("Waiting for all units to be discovered.");
+        startTime = System.currentTimeMillis();
         while (Federate.getInstance().unitsDiscovered < 2) {
             sleepMilliseconds(500);
+            if (System.currentTimeMillis() - startTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
+                logger.warn("Not all units discovered. Reloading scenario.");
+                loadScenario(SystemStatus.currentScenario);
+            }
         }
         logger.info("All units discovered -> continuing.");
         sleepMilliseconds(250);
