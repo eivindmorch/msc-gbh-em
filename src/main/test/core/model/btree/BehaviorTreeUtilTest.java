@@ -374,6 +374,9 @@ class BehaviorTreeUtilTest {
     void areEqualTrees() {
         assertTrue(BehaviorTreeUtil.areEqualTrees(generateTree1(), generateTree1()));
         assertFalse(BehaviorTreeUtil.areEqualTrees(generateTree1(), generateTree2()));
+
+        assertTrue(BehaviorTreeUtil.areEqualTrees(new IsApproachingTask(10), new IsApproachingTask(10)));
+        assertFalse(BehaviorTreeUtil.areEqualTrees(new IsApproachingTask(10), new IsApproachingTask(12)));
     }
 
     @RepeatedTest(1000)
