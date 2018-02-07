@@ -27,7 +27,7 @@ public class AddRandomSubtreeMutation extends Mutation {
         try {
             Task randomRoot = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class);
             try {
-                Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass);
+                Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass, 1, 0.2, 1, 0.6);
                 return BehaviorTreeUtil.insertTask(root, randomRoot, random.nextInt(randomRoot.getChildCount() + 1), randomTree);
             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();

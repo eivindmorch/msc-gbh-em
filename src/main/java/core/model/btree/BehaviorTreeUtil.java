@@ -23,17 +23,66 @@ import static core.util.SystemUtil.random;
 @SuppressWarnings("WeakerAccess")
 public abstract class BehaviorTreeUtil {
 
-    public static Task generateRandomTree(Class<? extends Unit> unitClass)
-            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    /**
+     * Generates a random behavior tree.
+     * @param unitClass the class of the unit type that the behavior tree is intended te be used for
+     * @param initialCompositeProbability initial probability of a generated child {@link Task} being composite ({@link BranchTask}). Reduced by {@code compositeProbabilityFactor} for each level in the tree.
+     * @param compositeProbabilityFactor the factor for reducing the internal {@code compositeProbability} for each level in the tree, starting with {@code initialCompositeProbability}.
+     * @param initialChildProbability initial probability of generating a child {@link Task}. Reduced by {@code childProbabilityFactor} for each added child per parent {@Task}.
+     * @param childProbabilityFactor the factor for reducing the internal {@code childProbability} for each added child per parent {@Task}, starting with {@initialChildProbability}.
+     * @return the root {@link Task} of the generated behavior tree
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    @SuppressWarnings("JavaDoc")
+    public static Task  generateRandomTree(
+            Class<? extends Unit> unitClass,
+            double initialCompositeProbability,
+            double compositeProbabilityFactor,
+            double initialChildProbability,
+            double childProbabilityFactor)
+            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException
+    {
         List<Class<? extends Task>> availableLeafTasks =
                 UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableLeafTasks();
 
         List<Class<? extends BranchTask>> availableCompositeTasks =
                 UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks();
         // TODO Decorators
-        Task subtree = generateRandomTree(availableLeafTasks, availableCompositeTasks,1);
+        Task subtree = generateRandomTreeRecursiveHelper(
+                availableLeafTasks,
+                availableCompositeTasks,
+                initialCompositeProbability,
+                compositeProbabilityFactor,
+                initialChildProbability,
+                childProbabilityFactor
+        );
 
         return removeEmptyAndSingleChildCompositeTasks(subtree);
+    }
+
+    /**
+     * Generates a random behavior tree.
+     * @param unitClass the class of the unit type that the behavior tree is intended te be used for
+     * @return the root {@link Task} of the generated behavior tree
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    @SuppressWarnings("JavaDoc")
+    public static Task generateRandomTree(Class<? extends Unit> unitClass)
+            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException
+    {
+        return generateRandomTree(
+                unitClass,
+                1,
+                0.5,
+                1,
+                0.6
+        );
     }
 
     // TODO Probabilities as arguments
@@ -41,7 +90,8 @@ public abstract class BehaviorTreeUtil {
      * Generates a random behavior tree.
      * @param availableLeafTasks pool of {@link LeafTask} that can be used in the tree
      * @param availableCompositeTasks pool of composite tasks ({@link BranchTask}) that can be used in the tree
-     * @param probabilityForComposite probability between 0 and 1 of the roots child being a composite tasks ({@link BranchTask})
+     * @param compositeProbability probability between 0 and 1 of the roots child being a composite tasks ({@link BranchTask})
+     * @param childProbability probability between 0 and 1 of the root having a single child. Reduced for each child added
      * @return the root {@link Task} of the generated behavior tree
      * @throws NoSuchMethodException
      * @throws IllegalAccessException
@@ -49,22 +99,29 @@ public abstract class BehaviorTreeUtil {
      * @throws InstantiationException
      */
     @SuppressWarnings("JavaDoc")
-    private static Task generateRandomTree(
+    private static Task generateRandomTreeRecursiveHelper(
             List<Class<? extends Task>> availableLeafTasks,
             List<Class<? extends BranchTask>> availableCompositeTasks,
-            double probabilityForComposite)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+            double compositeProbability,
+            double compositeProbabilityFactor,
+            double childProbability,
+            double childProbabilityFactor)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException
+    {
 
         Array<Task> children = new Array<>();
 
-        double probabilityForChild = 1;
-        while (random.nextDouble() < probabilityForChild) {
-            if (random.nextDouble() < probabilityForComposite) {
+        double childProbabilityCopy = childProbability;
+        while (random.nextDouble() < childProbabilityCopy) {
+            if (random.nextDouble() < compositeProbability) {
                 children.add(
-                        generateRandomTree(
-                            availableLeafTasks,
-                            availableCompositeTasks,
-                            probabilityForComposite * 0.5
+                        generateRandomTreeRecursiveHelper(
+                                availableLeafTasks,
+                                availableCompositeTasks,
+                                compositeProbability * compositeProbabilityFactor,
+                                compositeProbabilityFactor,
+                                childProbability,
+                                childProbabilityFactor
                         )
                 );
             } else {
@@ -74,7 +131,7 @@ public abstract class BehaviorTreeUtil {
                     e.printStackTrace();
                 }
             }
-            probabilityForChild *= 0.6;
+            childProbabilityCopy *= childProbabilityFactor;
         }
         Constructor<? extends BranchTask> constructor = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).getConstructor(Array.class);
         return constructor.newInstance(children);
