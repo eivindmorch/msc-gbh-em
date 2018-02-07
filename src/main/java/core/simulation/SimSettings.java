@@ -43,6 +43,7 @@ public class SimSettings {
 
     // -- OPERATION -----------------------------------------------------------------
         public static final int simulationTickDelayInMilliseconds = 0;
+        public static final int secondsToWaitForUnitsBeforeReload = 10;
     // ------------------------------------------------------------------------------
 
 }
