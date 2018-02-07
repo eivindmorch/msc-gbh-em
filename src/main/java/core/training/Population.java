@@ -30,12 +30,14 @@ public class Population<C extends Chromosome> {
             int size, Class<? extends Unit> unitClass, Class<C> chromosomeClass)
     {
         Population<C> population = new Population<>();
-        for (int i = 0; i < size; i++) {
+        while (population.getSize() < size) {
             try {
                 Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(Task.class);
                 Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass);
-                C chromosome = chromosomeConstructor.newInstance(randomTree);
-                population.add(chromosome);
+                if (!population.containsChromosomeWithEqualTree(randomTree)) {
+                    C chromosome = chromosomeConstructor.newInstance(randomTree);
+                    population.add(chromosome);
+                }
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -85,6 +87,15 @@ public class Population<C extends Chromosome> {
             listOfContenders.add(get(random.nextInt(getSize())));
         }
         return Collections.min(listOfContenders, comparator);
+    }
+
+    public boolean containsChromosomeWithEqualTree(Task root) {
+        for (Chromosome chromosome : chromosomes) {
+            if (BehaviorTreeUtil.areEqualTrees(chromosome.getBtree(), root)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

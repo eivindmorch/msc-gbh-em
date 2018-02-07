@@ -111,18 +111,23 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
     }
 
     private Population<NSGA2Chromosome> createOffspringPopulation(Population<NSGA2Chromosome> population) {
+
         Population<NSGA2Chromosome> offspringPopulation = new Population<>();
-        for (int i = 0; i < population.getSize(); i++) {
+        while (offspringPopulation.getSize() < population.getSize()) {
+
             // TODO
             NSGA2Chromosome parent1 = population.selectionTournament(2, nonDominationRankAndCrowdingDistanceComparator());
             NSGA2Chromosome parent2 = population.selectionTournament(2, nonDominationRankAndCrowdingDistanceComparator());
+
             // TODO Fix use of crossoverRate and mutationRate
+            Task newRoot;
             if (SystemUtil.random.nextDouble() < CROSSOVER_RATE) {
-                Task crossoverChild = Crossover.crossover(parent1.getBtree(), parent2.getBtree());
-                offspringPopulation.add(new NSGA2Chromosome(crossoverChild));
+                newRoot = Crossover.crossover(parent1.getBtree(), parent2.getBtree());
             } else {
-                Task mutationChild = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
-                offspringPopulation.add(new NSGA2Chromosome(mutationChild));
+                newRoot = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
+            }
+            if (!population.containsChromosomeWithEqualTree(newRoot) && !offspringPopulation.containsChromosomeWithEqualTree(newRoot)) {
+                offspringPopulation.add(new NSGA2Chromosome(newRoot));
             }
         }
         return offspringPopulation;
