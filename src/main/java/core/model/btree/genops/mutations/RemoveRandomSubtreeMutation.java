@@ -15,7 +15,7 @@ public class RemoveRandomSubtreeMutation extends Mutation {
     @Override
     public boolean canBePerformed(Task root) {
         try {
-            BehaviorTreeUtil. getRandomRemovableTask(root);
+            BehaviorTreeUtil.getRandomRemovableTask(root);
         } catch (NoSuchTaskFoundException e) {
             return false;
         }

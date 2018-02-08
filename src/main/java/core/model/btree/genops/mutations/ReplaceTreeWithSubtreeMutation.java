@@ -7,9 +7,9 @@ import core.model.btree.genops.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
 
-public class ReplaceWithSubtreeMutation extends Mutation{
+public class ReplaceTreeWithSubtreeMutation extends Mutation{
 
-    public ReplaceWithSubtreeMutation(double weight) {
+    public ReplaceTreeWithSubtreeMutation(double weight) {
         super(weight);
     }
 

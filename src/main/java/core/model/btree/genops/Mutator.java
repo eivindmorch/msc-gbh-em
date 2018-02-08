@@ -19,7 +19,7 @@ public abstract class Mutator {
         mutations.add(new AddRandomSubtreeMutation(1));
         mutations.add(new RemoveRandomSubtreeMutation(1));
         mutations.add(new SwitchRandomSiblingsMutation(1));
-        mutations.add(new ReplaceWithSubtreeMutation(1));
+        mutations.add(new ReplaceTreeWithSubtreeMutation(1));
         mutations.add(new ReplaceWithTaskOfSameTypeMutation(1));
         mutations.add(new RandomiseTaskVariablesMutation(1));
     }
