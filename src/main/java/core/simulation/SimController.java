@@ -50,8 +50,8 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
             totalTicks++;
             if (totalTicks % 100 == 0) {
-                logger.debug("Ticks: " + totalTicks +
-                        " | Average time per tick: " + ((System.currentTimeMillis() - startTime) / 100) + "ms");
+                logger.debug("Ticks: " + String.format("%4d", totalTicks)
+                        + " | Average time per tick: " + ((System.currentTimeMillis() - startTime) / 100) + "ms");
                 startTime = System.currentTimeMillis();
             } else if (totalTicks == 1) {
                 logger.debug("First tick");
