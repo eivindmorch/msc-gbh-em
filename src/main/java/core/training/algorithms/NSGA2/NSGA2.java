@@ -144,7 +144,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             }
             if (!population.containsChromosomeWithEqualTree(newRoot)
                     && !offspringPopulation.containsChromosomeWithEqualTree(newRoot)
-                    && BehaviorTreeUtil.getSize(newRoot) > MAXIMUM_TREE_SIZE) {
+                    && BehaviorTreeUtil.getSize(newRoot) <= MAXIMUM_TREE_SIZE) {
                 offspringPopulation.add(new NSGA2Chromosome(newRoot));
             }
         }
