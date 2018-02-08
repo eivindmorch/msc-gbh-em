@@ -1,6 +1,7 @@
 package core.training;
 
 import com.badlogic.gdx.ai.btree.Task;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.model.btree.BehaviorTreeUtil;
 import core.unit.Unit;
 import core.util.ToStringBuilder;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static core.util.SystemUtil.random;
 
@@ -26,18 +28,48 @@ public class Population<C extends Chromosome> {
         chromosomes = new ArrayList<>(population.getChromosomes());
     }
 
+
+    /**
+     *
+     * @param numberOfChromosomes number of chromosomes the population should contain
+     * @param unitClass the class of the unit the behavior trees are intended for
+     * @param chromosomeClass the class to be used for chromosomes
+     * @param maximumTreeSize the maximum allowed size for the behavior trees
+     * @param <C> the type of the {@code chromosomeClass}, extending {@link Chromosome}
+     * @return a population containing {@code numberOfChromosomes} chromosomes of type {@code C}
+     */
     public static <C extends Chromosome> Population<C> generateRandomPopulation(
-            int size, Class<? extends Unit> unitClass, Class<C> chromosomeClass)
-    {
+            Class<? extends Unit> unitClass,
+            Class<C> chromosomeClass,
+            int numberOfChromosomes,
+            int minimumTreeSize,
+            int maximumTreeSize
+    ) throws InvalidArgumentException, TimeoutException {
         Population<C> population = new Population<>();
-        while (population.getSize() < size) {
+
+        while (population.getSize() < numberOfChromosomes) {
             try {
                 Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(Task.class);
-                Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass);
-                if (!population.containsChromosomeWithEqualTree(randomTree)) {
-                    C chromosome = chromosomeConstructor.newInstance(randomTree);
-                    population.add(chromosome);
-                }
+
+                int numberOfAttempts = 0;
+                Task randomTree;
+                do {
+                    if (numberOfAttempts == 1000) {
+                        throw new TimeoutException(
+                                "Could not successfully create "
+                                        + numberOfChromosomes
+                                        + " unique trees with size between "
+                                        + minimumTreeSize
+                                        + " and "
+                                        + maximumTreeSize);
+                    }
+                    numberOfAttempts++;
+                    randomTree = BehaviorTreeUtil.generateRandomTree(unitClass, minimumTreeSize, maximumTreeSize);
+                } while (population.containsChromosomeWithEqualTree(randomTree));
+
+                C chromosome = chromosomeConstructor.newInstance(randomTree);
+                population.add(chromosome);
+
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }

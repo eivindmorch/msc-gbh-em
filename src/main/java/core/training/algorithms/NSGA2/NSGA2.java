@@ -1,6 +1,7 @@
 package core.training.algorithms.NSGA2;
 
 import com.badlogic.gdx.ai.btree.Task;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.model.btree.BehaviorTreeUtil;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.concurrent.TimeoutException;
 
 import static core.training.algorithms.NSGA2.NSGA2Chromosome.nonDominationRankAndCrowdingDistanceComparator;
 import static core.training.algorithms.NSGA2.NSGA2Chromosome.singleObjectiveComparator;
@@ -32,19 +34,33 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
     private final int POPULATION_SIZE;
     private final double CROSSOVER_RATE;
     private final double MUTATION_RATE;
+    private final int MINIMUM_TREE_SIZE;
+    private final int MAXIMUM_TREE_SIZE;
 
     public NSGA2(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator, int populationSize,
-                 double crossoverRate, double mutationRate) {
+                 double crossoverRate, double mutationRate, int minimumTreeSize, int maximumTreeSize) {
         super(evaluationDataRowClass, fitnessEvaluator);
         this.POPULATION_SIZE = populationSize;
         this.CROSSOVER_RATE = crossoverRate;
         this.MUTATION_RATE = mutationRate;
+        this.MINIMUM_TREE_SIZE = minimumTreeSize;
+        this.MAXIMUM_TREE_SIZE = maximumTreeSize;
     }
 
     @Override
     public void setup() {
         //noinspection unchecked
-        population = Population.generateRandomPopulation(POPULATION_SIZE, trainer.getUnitToTrainClass(), NSGA2Chromosome.class);
+        try {
+            population = Population.generateRandomPopulation(
+                    trainer.getUnitToTrainClass(),
+                    NSGA2Chromosome.class,
+                    POPULATION_SIZE,
+                    MINIMUM_TREE_SIZE,
+                    MAXIMUM_TREE_SIZE
+            );
+        } catch (InvalidArgumentException | TimeoutException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -126,7 +142,9 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             } else {
                 newRoot = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
             }
-            if (!population.containsChromosomeWithEqualTree(newRoot) && !offspringPopulation.containsChromosomeWithEqualTree(newRoot)) {
+            if (!population.containsChromosomeWithEqualTree(newRoot)
+                    && !offspringPopulation.containsChromosomeWithEqualTree(newRoot)
+                    && BehaviorTreeUtil.getSize(newRoot) > MAXIMUM_TREE_SIZE) {
                 offspringPopulation.add(new NSGA2Chromosome(newRoot));
             }
         }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.utils.Array;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.model.btree.task.VariableLeafTask;
 import core.model.btree.task.unit.WaitTask;
 import core.util.exceptions.NoSuchTaskFoundException;
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -157,12 +157,12 @@ class BehaviorTreeUtilTest {
         Task rootOfRandomTree = null;
         try {
 
-            rootOfRandomTree = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+            rootOfRandomTree = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 3, 20);
             Task randomTask = BehaviorTreeUtil.getRandomTask(rootOfRandomTree, true, Task.class, minimumNumOfChildren);
 
             assertTrue(randomTask.getChildCount() >= minimumNumOfChildren);
 
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+        } catch (InvalidArgumentException e) {
             e.printStackTrace();
         } catch (NoSuchTaskFoundException e) {
             ArrayList<Task> taskList = BehaviorTreeUtil.getTasks(rootOfRandomTree, true, Task.class);
@@ -383,10 +383,10 @@ class BehaviorTreeUtilTest {
     void insertAndRemoveThoroughTest() {
         Experiment1UnitInfo.init();
         try {
-            Task root = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+            Task root = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 3, 20);
             Task randomCompositeTask = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class);
 
-            Task insertionRoot = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class);
+            Task insertionRoot = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 3, 20);
 
             Task rootWithInsertion = BehaviorTreeUtil.insertTask(root, randomCompositeTask, random.nextInt(randomCompositeTask.getChildCount()), insertionRoot);
             Task rootWithRemovedInsertion = BehaviorTreeUtil.removeTask(rootWithInsertion, insertionRoot);
@@ -396,7 +396,7 @@ class BehaviorTreeUtilTest {
 
             assertTrue(treeDoesNotContainDuplicateTasks(rootWithRemovedInsertion));
 
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException | NoSuchTaskFoundException e) {
+        } catch (NoSuchTaskFoundException | InvalidArgumentException e) {
             e.printStackTrace();
         }
     }
@@ -434,4 +434,9 @@ class BehaviorTreeUtilTest {
         return taskList.size() == taskSet.size();
     }
 
+    @Test
+    void getDepth() {
+        assertEquals(3, BehaviorTreeUtil.getDepth(generateTree1()));
+        assertEquals(1, BehaviorTreeUtil.getDepth(new Sequence()));
+    }
 }

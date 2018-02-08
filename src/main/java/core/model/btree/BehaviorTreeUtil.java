@@ -3,9 +3,9 @@ package core.model.btree;
 import com.badlogic.gdx.ai.btree.*;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.model.btree.task.VariableLeafTask;
 import core.unit.UnitTypeInfo;
 import core.util.exceptions.NoAvailableTaskClassException;
@@ -13,8 +13,6 @@ import core.util.exceptions.NoSuchTaskFoundException;
 import experiments.experiment1.model.btree.task.unit.followerunit.*;
 import core.unit.Unit;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static core.util.SystemUtil.random;
@@ -23,118 +21,134 @@ import static core.util.SystemUtil.random;
 @SuppressWarnings("WeakerAccess")
 public abstract class BehaviorTreeUtil {
 
-    /**
-     * Generates a random behavior tree.
-     * @param unitClass the class of the unit type that the behavior tree is intended te be used for
-     * @param initialCompositeProbability initial probability of a generated child {@link Task} being composite ({@link BranchTask}). Reduced by {@code compositeProbabilityFactor} for each level in the tree.
-     * @param compositeProbabilityFactor the factor for reducing the internal {@code compositeProbability} for each level in the tree, starting with {@code initialCompositeProbability}.
-     * @param initialChildProbability initial probability of generating a child {@link Task}. Reduced by {@code childProbabilityFactor} for each added child per parent {@Task}.
-     * @param childProbabilityFactor the factor for reducing the internal {@code childProbability} for each added child per parent {@Task}, starting with {@initialChildProbability}.
-     * @return the root {@link Task} of the generated behavior tree
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    @SuppressWarnings("JavaDoc")
-    public static Task  generateRandomTree(
-            Class<? extends Unit> unitClass,
-            double initialCompositeProbability,
-            double compositeProbabilityFactor,
-            double initialChildProbability,
-            double childProbabilityFactor)
-            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException
-    {
-        List<Class<? extends Task>> availableLeafTasks =
-                UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableLeafTasks();
+    @SuppressWarnings("UnnecessaryLocalVariable")
+    public static Task generateRandomTree(Class<? extends Unit> unitClass, int minimumTasks, int maximumTasks) throws InvalidArgumentException {
 
-        List<Class<? extends BranchTask>> availableCompositeTasks =
-                UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks();
-        // TODO Decorators
-        Task subtree = generateRandomTreeRecursiveHelper(
-                availableLeafTasks,
-                availableCompositeTasks,
-                initialCompositeProbability,
-                compositeProbabilityFactor,
-                initialChildProbability,
-                childProbabilityFactor
-        );
+        if (minimumTasks < 3) {
+            throw new InvalidArgumentException(new String[]{"minimumTasks must be 3 or more"});
+        }
+        if (minimumTasks > maximumTasks) {
+            throw new InvalidArgumentException(new String[]{"minimumTasks cannot be larger than maximumTasks"});
+        }
 
-        return removeEmptyAndSingleChildCompositeTasks(subtree);
+        int numberOfTasks = random.nextInt(maximumTasks - minimumTasks + 1) + minimumTasks;
+        int halfOfNumberOfTasks = (int) Math.round(numberOfTasks / 2.0);
+        int randomOfHalf = random.nextInt(halfOfNumberOfTasks - 1) + 1;
+
+        int numberOfCompositeTasks = randomOfHalf;
+        int numberOfLeafTasks = numberOfTasks - randomOfHalf;
+
+        try {
+            return generateRandomTreeWithSpecificNumberOfTasks(unitClass, numberOfCompositeTasks, numberOfLeafTasks);
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    /**
-     * Generates a random behavior tree.
-     * @param unitClass the class of the unit type that the behavior tree is intended te be used for
-     * @return the root {@link Task} of the generated behavior tree
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    @SuppressWarnings("JavaDoc")
-    public static Task generateRandomTree(Class<? extends Unit> unitClass)
-            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException
-    {
-        return generateRandomTree(
-                unitClass,
-                1,
-                0.5,
-                1,
-                0.6
-        );
-    }
+    private static Task generateRandomTreeWithSpecificNumberOfTasks(Class<? extends Unit> unitClass, int numberOfCompositeTasks, int numberOfLeafTasks)
+            throws InvalidArgumentException {
 
-    // TODO Probabilities as arguments
-    /**
-     * Generates a random behavior tree.
-     * @param availableLeafTasks pool of {@link LeafTask} that can be used in the tree
-     * @param availableCompositeTasks pool of composite tasks ({@link BranchTask}) that can be used in the tree
-     * @param compositeProbability probability between 0 and 1 of the roots child being a composite tasks ({@link BranchTask})
-     * @param childProbability probability between 0 and 1 of the root having a single child. Reduced for each child added
-     * @return the root {@link Task} of the generated behavior tree
-     * @throws NoSuchMethodException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     * @throws InstantiationException
-     */
-    @SuppressWarnings("JavaDoc")
-    private static Task generateRandomTreeRecursiveHelper(
-            List<Class<? extends Task>> availableLeafTasks,
-            List<Class<? extends BranchTask>> availableCompositeTasks,
-            double compositeProbability,
-            double compositeProbabilityFactor,
-            double childProbability,
-            double childProbabilityFactor)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException
-    {
+        if (numberOfLeafTasks < numberOfCompositeTasks + 1) {
+            throw new InvalidArgumentException(new String[]{"Must have (numberOfCompositeTasks + 1) leaf tasks"});
+        }
 
-        Array<Task> children = new Array<>();
+        UnitTypeInfo unitTypeInfo = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass);
+        List<Class<? extends BranchTask>> availableCompositeTasks = unitTypeInfo.getAvailableCompositeTasks();
+        List<Class<? extends Task>> availableLeafTasks = unitTypeInfo.getAvailableLeafTasks();
 
-        double childProbabilityCopy = childProbability;
-        while (random.nextDouble() < childProbabilityCopy) {
-            if (random.nextDouble() < compositeProbability) {
-                children.add(
-                        generateRandomTreeRecursiveHelper(
-                                availableLeafTasks,
-                                availableCompositeTasks,
-                                compositeProbability * compositeProbabilityFactor,
-                                compositeProbabilityFactor,
-                                childProbability,
-                                childProbabilityFactor
+        // Create pool of random composite tasks
+        ArrayList<BranchTask> compositeTasks = new ArrayList<>(numberOfCompositeTasks);
+        for (int i = 0; i < numberOfCompositeTasks; i++) {
+
+            Class<? extends BranchTask> randomCompositeTaskClass = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size()));
+            try {
+                compositeTasks.add(randomCompositeTaskClass.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Create pool of random leaf tasks
+        ArrayList<Task> leafTasks = new ArrayList<>(numberOfLeafTasks);
+        for (int i = 0; i < numberOfLeafTasks; i++) {
+
+            Class<? extends Task> randomLeafTaskClass = availableLeafTasks.get(random.nextInt(availableLeafTasks.size()));
+            try {
+                leafTasks.add(randomLeafTaskClass.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Contains child list for all composites already added to the tree
+        ArrayList<ArrayList<Task>> compositeTasksChildList = new ArrayList<>();
+        // Add childList for root
+        compositeTasksChildList.add(new ArrayList<>());
+
+        // Children needed to be added to specific composites to satisfy requirement of at least 2 children per composite
+        int necessaryChildren = 2;
+
+        // Loop all composites, excluding root (already added)
+        for (int i = 1; i < compositeTasks.size(); i++) {
+
+            BranchTask compositeTask = compositeTasks.get(i);
+            // Child list of the (to be) chosen parent composite
+            ArrayList<Task> chosenParentChildList;
+
+            // Making sure there are enough leaf tasks to fill the remaining required children slots
+            int remainingCompositeTasks = compositeTasks.size() - i;
+            if (remainingCompositeTasks + necessaryChildren >= numberOfLeafTasks) {
+
+                ArrayList<ArrayList<Task>> compositeTasksWithLessThan2ChildrenChildList = new ArrayList<>();
+                for (ArrayList<Task> childList : compositeTasksChildList) {
+                    if (childList.size() < 2) {
+                        compositeTasksWithLessThan2ChildrenChildList.add(childList);
+                    }
+                }
+                chosenParentChildList = compositeTasksWithLessThan2ChildrenChildList.get(
+                        random.nextInt(compositeTasksWithLessThan2ChildrenChildList.size()
                         )
                 );
             } else {
-                try {
-                    children.add(availableLeafTasks.get(random.nextInt(availableLeafTasks.size())).newInstance());
-                } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+                chosenParentChildList = compositeTasksChildList.get(random.nextInt(compositeTasksChildList.size()));
             }
-            childProbabilityCopy *= childProbabilityFactor;
+
+            if (chosenParentChildList.size() < 2) {
+                necessaryChildren -= 1;
+            }
+            chosenParentChildList.add(compositeTask);
+            necessaryChildren += 2;
+
+            compositeTasksChildList.add(new ArrayList<>());
         }
-        Constructor<? extends BranchTask> constructor = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).getConstructor(Array.class);
-        return constructor.newInstance(children);
+
+        // Make sure all composite tasks have at least 2 children
+        for (ArrayList<Task> childList : compositeTasksChildList) {
+            while (childList.size() < 2) {
+                childList.add(leafTasks.remove(0));
+            }
+        }
+
+        // Add remaining leaf tasks to random composite task child list
+        for (Task task : leafTasks) {
+            compositeTasksChildList.get(random.nextInt(compositeTasksChildList.size())).add(task);
+        }
+
+        // Shuffle all child lists
+        for (ArrayList<Task> childList : compositeTasksChildList) {
+            Collections.shuffle(childList);
+        }
+
+        // Add children from childList to actual tasks
+        for (int i = 0; i < compositeTasksChildList.size(); i++) {
+            for (Task child : compositeTasksChildList.get(i)) {
+                compositeTasks.get(i).addChild(child);
+            }
+        }
+
+        // Return root
+        return compositeTasks.get(0);
     }
 
     public static Task generateTestTree() {
@@ -152,6 +166,28 @@ public abstract class BehaviorTreeUtil {
             size += getSize(child);
         }
         return size;
+    }
+
+    public static int getDepth(Task root) {
+        ArrayList<Integer> childDepths = new ArrayList<>();
+        for (int i = 0; i < root.getChildCount(); i++) {
+            Task child = root.getChild(i);
+            childDepths.add(getDepth(child));
+        }
+        if (!childDepths.isEmpty()) {
+            return 1 + Collections.max(childDepths);
+        }
+        return 1;
+    }
+
+    public static double getAvgChildrenPerBranch(Task root) {
+        int totalChildren = 0;
+        int totalBranchTasks = 0;
+        for (BranchTask task : getTasks(root, true, BranchTask.class)) {
+            totalBranchTasks++;
+            totalChildren += task.getChildCount();
+        }
+        return ((double) totalChildren) / totalBranchTasks;
     }
 
     /**

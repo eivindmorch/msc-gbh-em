@@ -2,12 +2,11 @@ package core.model.btree.genops.mutations;
 
 import com.badlogic.gdx.ai.btree.BranchTask;
 import com.badlogic.gdx.ai.btree.Task;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
-
-import java.lang.reflect.InvocationTargetException;
 
 import static core.util.SystemUtil.random;
 
@@ -27,9 +26,9 @@ public class AddRandomSubtreeMutation extends Mutation {
         try {
             Task randomRoot = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class);
             try {
-                Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass, 1, 0.2, 1, 0.6);
+                Task randomTree = BehaviorTreeUtil.generateRandomTree(unitClass, 3, 5);
                 return BehaviorTreeUtil.insertTask(root, randomRoot, random.nextInt(randomRoot.getChildCount() + 1), randomTree);
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+            } catch (InvalidArgumentException e) {
                 e.printStackTrace();
                 return BehaviorTreeUtil.cloneTree(root);
             }
