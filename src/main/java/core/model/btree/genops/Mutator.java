@@ -16,7 +16,8 @@ public abstract class Mutator {
 
     private static List<Mutation> mutations = new ArrayList<>();
     static {
-        mutations.add(new AddRandomSubtreeMutation(1));
+        mutations.add(new AddRandomSubtreeMutation(1, true));
+        mutations.add(new AddRandomSubtreeMutation(1, false));
         mutations.add(new RemoveRandomSubtreeMutation(1));
         mutations.add(new SwitchRandomSiblingsMutation(1));
         mutations.add(new ReplaceTreeWithSubtreeMutation(1));
