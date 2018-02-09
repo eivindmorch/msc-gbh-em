@@ -4,8 +4,13 @@ import core.data.DataSet;
 import core.data.rows.DataRow;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface FitnessEvaluator {
 
-    <D extends DataRow> ArrayList<Double> evaluate(DataSet<D> dataSet1, DataSet<D> dataSet2) throws Exception;
+    <D extends DataRow> ArrayList<Double> evaluate(
+            Chromosome chromosome,
+            List<DataSet<D>> exampleDataSets,
+            List<DataSet<D>> chromosomeDataSets
+    ) throws Exception;
 }

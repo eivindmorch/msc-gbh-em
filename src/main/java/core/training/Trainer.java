@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static core.SystemSettings.INTRA_RESOURCES_EXAMPLES_FOLDER_PATH;
-import static core.util.SystemUtil.sleepSeconds;
+import static core.util.SystemUtil.sleepMilliseconds;
 
 
 /**
@@ -58,13 +58,8 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
             logger.info("================ EPOCH " + currentEpoch  + " ================");
             // TODO Not working when calling train twice (overwrites)
             SystemStatus.currentTrainingEpoch = currentEpoch;
-            for (int exampleDataSetIndex = 0; exampleDataSetIndex < exampleDataSets.size(); exampleDataSetIndex++) {
-                SystemStatus.currentTrainingExampleDataSetIndex = exampleDataSetIndex;
-                DataSet<D> exampleDataSet = exampleDataSets.get(exampleDataSetIndex);
-
-                logger.info("Example number " + exampleDataSetIndex + ": " + exampleDataSet);
-                algorithm.step(currentEpoch, exampleDataSetIndex, exampleDataSet);
-            }
+//            logger.info("Example number " + exampleDataSetIndex + ": " + exampleDataSet);
+            algorithm.step(currentEpoch, exampleDataSets);
         }
         // ParetoPlotter.plot();
     }
@@ -81,6 +76,7 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
      * Simulates the population by simulating each individual chromosome for the specified number of ticks.
      * @param population instance of {@link Population} to be simulated
      * @param numOfTicks number of ticks to simulate each chromosome
+     * @param scenarioPath the path of the scenario to simulate
      */
     public void simulatePopulation(Population population, int numOfTicks, String scenarioPath) {
         logger.info("Simulating population.");
@@ -91,15 +87,24 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
             Task btree = population.get(i).getBtree();
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
 
-            if (!scenarioPath.equals(SystemStatus.currentScenario)) {
-                // TODO Let UnitLogger write before writers are reset
-//                sleepSeconds(5);
-                SimController.getInstance().loadScenario(scenarioPath);
-//                sleepSeconds(5);
-            } else {
-                SimController.getInstance().rewind();
-            }
+            SimController.getInstance().loadScenario(scenarioPath);
             runSimulationForNTicks(numOfTicks);
+
+            sleepMilliseconds(250);
+        }
+    }
+
+    /**
+     * Simulates the population for each {@link DataSet} in {@code exampleDataSets} by simulating each individual
+     * chromosome for the specified number of ticks.
+     * @param population instance of {@link Population} to be simulated
+     * @param exampleDataSets the example {@link DataSet}s to simulate
+     */
+    public void simulatePopulation(Population population, List<DataSet> exampleDataSets) {
+        SystemStatus.currentTrainingExampleDataSetIndex = 0;
+        for (DataSet exampleDataSet : exampleDataSets) {
+            simulatePopulation(population, exampleDataSet.getNumOfTicks(), exampleDataSet.getScenarioPath());
+            SystemStatus.currentTrainingExampleDataSetIndex++;
         }
     }
 

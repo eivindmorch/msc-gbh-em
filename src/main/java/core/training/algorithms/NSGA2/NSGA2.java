@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import static core.training.algorithms.NSGA2.NSGA2Chromosome.nonDominationRankAndCrowdingDistanceComparator;
@@ -64,15 +65,12 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
     }
 
     @Override
-    public void step(int epoch, int exampleNumber, DataSet<D> exampleDataSet) {
+    public void step(int epoch, List<DataSet<D>> exampleDataSets) {
 
-        if (exampleDataSet != lastExample) {
-            lastExample = exampleDataSet;
-
-            trainer.simulatePopulation(population, exampleDataSet.getNumOfTicks(), exampleDataSet.getScenarioPath());
-            setFitness(population, epoch, exampleNumber, exampleDataSet);
+        if (epoch == 0) {
+            trainer.simulatePopulation(population, exampleDataSets);
+            setFitness(population, epoch, exampleDataSets);
             rankPopulationByNonDomination(population);
-
             outputInitialPopulation(population);
         }
 
@@ -80,8 +78,8 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
         // Create, evaluate and add offspring
         Population<NSGA2Chromosome> offspring = createOffspringPopulation(population);
-        trainer.simulatePopulation(offspring, exampleDataSet.getNumOfTicks(), exampleDataSet.getScenarioPath());
-        setFitness(offspring, epoch, exampleNumber, exampleDataSet);
+        trainer.simulatePopulation(offspring, exampleDataSets);
+        setFitness(offspring, epoch, exampleDataSets);
         population.addAll(offspring);
 
         // Rank population
@@ -100,25 +98,6 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             toStringBuilder.addListedElement(rank.size() + " " + rank.toString());
         }
         return toStringBuilder.toString();
-    }
-
-    private void setFitness(Population<NSGA2Chromosome> population, int epoch, int exampleNumber, DataSet<D> exampleDataSet) {
-        for (int chromosomeIndex = 0; chromosomeIndex < population.getSize(); chromosomeIndex++) {
-            String intraResourcesScenarioLogsPath = SystemUtil.getDataFileIntraResourcesFolderPath(epoch, exampleNumber, chromosomeIndex);
-            DataSet<D> chromosomeDataSet = new DataSet<>(
-                    evaluationDataRowClass,
-                    intraResourcesScenarioLogsPath
-                            + exampleDataSet.getUnitMarking()
-                            + "/" + exampleDataSet.getDataSetName()
-                            + ".csv"
-            );
-            ArrayList<Double> chromosomeFitness = evaluate(exampleDataSet, chromosomeDataSet);
-
-            int size = BehaviorTreeUtil.getSize(population.get(chromosomeIndex).getBtree());
-            chromosomeFitness.add((double) size);
-
-            population.get(chromosomeIndex).setFitness(chromosomeFitness);
-        }
     }
 
     @Override
@@ -228,25 +207,6 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             }
         }
     }
-//    private void assignCrowdingDistance(ArrayList<NSGA2Chromosome> rank) {
-//        for (NSGA2Chromosome chromosome : rank) chromosome.crowdingDistance = 0;
-//        if (Settings.useOverallDeviation) assignCrowdingDistancePerObjective(rank, 0);
-//        if (Settings.useEdgeValue) assignCrowdingDistancePerObjective(rank, 1);
-//        if (Settings.useConnectivity) assignCrowdingDistancePerObjective(rank, 2);
-//    }
-
-//    private void assignCrowdingDistancePerObjective(ArrayList<NSGA2Chromosome> rank, int index) {
-//        if (index == 0) rank.sort(NSGA2Chromosome.overallDeviationComparator());
-//        else if (index == 1) rank.sort(NSGA2Chromosome.edgeValueComparator());
-//        else if (index == 2) rank.sort(NSGA2Chromosome.connectivityComparator());
-//
-//        rank.get(0).crowdingDistance = Double.POSITIVE_INFINITY;
-//        rank.get(rank.size() - 1).crowdingDistance = Double.POSITIVE_INFINITY;
-//        double span = Math.abs(rank.get(0).cost[index] - rank.get(rank.size() - 1).cost[index]);
-//        for (int i = 1; i < rank.size() - 1; i++) {
-//            rank.get(i).crowdingDistance += Math.abs(rank.get(i-1).cost[index] - rank.get(i+1).cost[index]) / span;
-//        }
-//    }
 
     private void outputInitialPopulation(Population<NSGA2Chromosome> population) {
 
