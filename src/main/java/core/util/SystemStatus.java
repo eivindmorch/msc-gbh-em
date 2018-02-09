@@ -2,16 +2,15 @@ package core.util;
 
 import core.SystemSettings;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public abstract class SystemStatus {
 
-    public static String startTime = SystemSettings.DATE_FORMAT.format(new Date());
-    public static String currentScenario;
-    public static SystemMode systemMode = SystemMode.UNSPECIFIED; // Overwritten by main classes
+    public static Date START_TIME = new Date();
+    public static String START_TIME_STRING = SystemSettings.DATE_FORMAT.format(START_TIME);
 
-    // TODO Not compatible with multiple trainers (for writing)
-    public static int currentTrainingEpoch = 0;
-    public static int currentTrainingExampleDataSetIndex = 0;
-    public static int currentTrainingChromosome = 0;
+    public static double getRuntimeInSeconds() {
+        return TimeUnit.MILLISECONDS.toSeconds(new Date().getTime() - START_TIME.getTime());
+    }
 
 }

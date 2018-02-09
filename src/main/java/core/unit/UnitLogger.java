@@ -1,7 +1,7 @@
 package core.unit;
 
 import core.data.rows.DataRow;
-import core.util.SystemUtil;
+import core.simulation.SimController;
 import hla.rti1516e.ObjectInstanceHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +19,8 @@ public abstract class UnitLogger {
 
     private static volatile HashMap<ObjectInstanceHandle, UnitDataWriter> unitDataWriters = new HashMap<>();
 
+    private static String intraResourcesWritingDirectory;
+
     static void register(Unit unit) {
         unitDataWriters.put(unit.getHandle(), new UnitDataWriter(unit));
         logger.info("Unit registered for logging: " + unit);
@@ -33,6 +35,10 @@ public abstract class UnitLogger {
         for (UnitDataWriter unitDataWriter : unitDataWriters.values()) {
             unitDataWriter.writeDataToFile();
         }
+    }
+
+    public static void setIntraResourcesWritingDirectory(String path) {
+        intraResourcesWritingDirectory = path;
     }
 
     public static void reset() {
@@ -54,11 +60,7 @@ public abstract class UnitLogger {
             dataWriters = new ArrayList<>();
             for (DataRow dataRow : unit.getDataRows()) {
                 dataWriters.add(new Writer(
-                        SystemUtil.getDataFileIntraResourcesFolderPath(
-                                SystemStatus.currentTrainingEpoch,
-                                SystemStatus.currentTrainingExampleDataSetIndex,
-                                SystemStatus.currentTrainingChromosome
-                        ) + unit.getMarking() + "/",
+                        intraResourcesWritingDirectory + unit.getMarking() + "/",
                         dataRow.getDataSetName() + ".csv"
                 ));
             }
@@ -67,10 +69,9 @@ public abstract class UnitLogger {
         }
 
         void writeMetaDataToFile() {
-            for (int i = 0; i < dataWriters.size(); i++) {
-                Writer dataWriter = dataWriters.get(i);
-                dataWriter.writeLine("# System start time: " + SystemStatus.startTime);
-                dataWriter.writeLine("# Scenario path: " + SystemStatus.currentScenario);
+            for (Writer dataWriter : dataWriters) {
+                dataWriter.writeLine("# System start time: " + SystemStatus.START_TIME_STRING);
+                dataWriter.writeLine("# Scenario path: " + SimController.getInstance().getCurrentScenario());
                 dataWriter.writeLine("# Unit marking: " + unit.getMarking());
             }
         }

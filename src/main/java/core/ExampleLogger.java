@@ -5,7 +5,7 @@ import core.simulation.SimController;
 import core.simulation.federate.Federate;
 import core.unit.ControlledUnit;
 import core.unit.UnitHandler;
-import core.util.SystemMode;
+import core.unit.UnitLogger;
 import core.util.SystemStatus;
 import experiments.experiment1.unit.Experiment1AddUnitMethod;
 import experiments.experiment1.unit.Experiment1UnitInfo;
@@ -16,8 +16,6 @@ import static core.util.SystemUtil.sleepSeconds;
 public class ExampleLogger {
 
     public ExampleLogger() {
-        SystemStatus.systemMode = SystemMode.EXAMPLE_LOGGING;
-
         Federate.getInstance().start();
 
         Federate.getInstance().addTickListener(SimController.getInstance());
@@ -27,6 +25,8 @@ public class ExampleLogger {
         UnitHandler.setAddUnitMethod(new Experiment1AddUnitMethod());
 
         ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, BehaviorTreeUtil.generateTestTree());
+
+        UnitLogger.setIntraResourcesWritingDirectory("example_logging/" + SystemStatus.START_TIME_STRING);
     }
 
     public void run() {

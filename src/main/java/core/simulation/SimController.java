@@ -10,7 +10,6 @@ import core.simulation.federate.PhysicalEntityUpdatedListener;
 import core.simulation.federate.TickListener;
 import core.unit.UnitHandler;
 import core.unit.UnitLogger;
-import core.util.SystemStatus;
 
 import static core.util.SystemUtil.sleepMilliseconds;
 
@@ -24,6 +23,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     private SimEngine simEngine;
     private SimGui simGui;
 
+    private String currentScenario;
     private int ticksToPlay;
     private SimulationEndedListener simulationEndedListener;
 
@@ -37,6 +37,10 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
             instance = new SimController();
         }
         return instance;
+    }
+
+    public String getCurrentScenario() {
+        return currentScenario;
     }
 
     @Override
@@ -95,7 +99,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
             sleepMilliseconds(500);
             if (System.currentTimeMillis() - startTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
                 logger.warn("Not all units discovered. Reloading scenario.");
-                loadScenario(SystemStatus.currentScenario);
+                loadScenario(currentScenario);
             }
         }
         logger.info("All units discovered -> continuing.");
@@ -124,7 +128,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         UnitHandler.reset();
         UnitLogger.reset();
         Federate.getInstance().sendCgfLoadScenarioInteraction(scenarioPath);
-        SystemStatus.currentScenario = scenarioPath;
+        currentScenario = scenarioPath;
     }
 
     public void startSimEngine() {

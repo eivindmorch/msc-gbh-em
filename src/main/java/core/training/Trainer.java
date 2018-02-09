@@ -5,13 +5,13 @@ import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.simulation.SimulationEndedListener;
 import core.unit.Unit;
+import core.unit.UnitLogger;
+import core.util.SystemStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import core.simulation.SimController;
 import core.training.algorithms.Algorithm;
 import core.unit.ControlledUnit;
-import core.util.SystemMode;
-import core.util.SystemStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +34,17 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
 
     private Class<U> unitToTrainClass;
     private Class<D> evaluationDataRowClass;
+    private FitnessEvaluator fitnessEvaluator;
 
     private int currentEpoch = 0;
 
     private volatile boolean simulationRunning;
     private final Object SIMULATION_ENDED_LOCK = new Object();
 
-    public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass, Algorithm<D, ?> algorithm, String[] exampleFileNames) {
-        SystemStatus.systemMode = SystemMode.TRAINING;
-
+    public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator, Algorithm<D, ?> algorithm, String[] exampleFileNames) {
         this.unitToTrainClass = unitToTrainClass;
         this.evaluationDataRowClass = evaluationDataRowClass;
+        this.fitnessEvaluator = fitnessEvaluator;
 
         this.algorithm = algorithm;
         this.algorithm.setTrainer(this);
@@ -57,11 +57,8 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
         for (;currentEpoch < currentEpoch + epochs; currentEpoch++) {
             logger.info("================ EPOCH " + currentEpoch  + " ================");
             // TODO Not working when calling train twice (overwrites)
-            SystemStatus.currentTrainingEpoch = currentEpoch;
-//            logger.info("Example number " + exampleDataSetIndex + ": " + exampleDataSet);
             algorithm.step(currentEpoch, exampleDataSets);
         }
-        // ParetoPlotter.plot();
     }
 
     private ArrayList<DataSet<D>> loadExampleDataSets(String[] exampleFileNames) {
@@ -78,13 +75,14 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
      * @param numOfTicks number of ticks to simulate each chromosome
      * @param scenarioPath the path of the scenario to simulate
      */
-    public void simulatePopulation(Population population, int numOfTicks, String scenarioPath) {
+    public void simulatePopulation(Population population, int numOfTicks, int exampleIndex, String scenarioPath) {
         logger.info("Simulating population.");
-        for (int i = 0; i < population.getSize(); i++) {
-            logger.info("Simulating chromosome " + i + ": " + population.get(i));
-            SystemStatus.currentTrainingChromosome = i;
+        for (int chromosomeIndex = 0; chromosomeIndex < population.getSize(); chromosomeIndex++) {
+            logger.info("Simulating chromosome " + chromosomeIndex + ": " + population.get(chromosomeIndex));
 
-            Task btree = population.get(i).getBtree();
+            UnitLogger.setIntraResourcesWritingDirectory(getChromosomeFileDirectory(currentEpoch, exampleIndex, chromosomeIndex));
+
+            Task btree = population.get(chromosomeIndex).getBtree();
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
 
             SimController.getInstance().loadScenario(scenarioPath);
@@ -101,10 +99,9 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
      * @param exampleDataSets the example {@link DataSet}s to simulate
      */
     public void simulatePopulation(Population population, List<DataSet> exampleDataSets) {
-        SystemStatus.currentTrainingExampleDataSetIndex = 0;
-        for (DataSet exampleDataSet : exampleDataSets) {
-            simulatePopulation(population, exampleDataSet.getNumOfTicks(), exampleDataSet.getScenarioPath());
-            SystemStatus.currentTrainingExampleDataSetIndex++;
+        for (int exampleIndex = 0; exampleIndex < exampleDataSets.size(); exampleIndex++) {
+            DataSet exampleDataSet = exampleDataSets.get(exampleIndex);
+            simulatePopulation(population, exampleDataSet.getNumOfTicks(), exampleIndex, exampleDataSet.getScenarioPath());
         }
     }
 
@@ -137,4 +134,53 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
     public Population getPopulation() {
         return algorithm.getPopulation();
     }
+
+    public void setFitness(Population population, int epoch) {
+        for (int chromosomeIndex = 0; chromosomeIndex < population.getSize(); chromosomeIndex++) {
+
+            List<DataSet<D>> chromosomeDataSets = new ArrayList<>();
+
+            for (int exampleNumber = 0; exampleNumber <exampleDataSets.size() ; exampleNumber++) {
+
+                DataSet<D> exampleDataSet = exampleDataSets.get(exampleNumber);
+
+                String chromosomeFileDirectory = getChromosomeFileDirectory(epoch, exampleNumber, chromosomeIndex);
+                DataSet<D> chromosomeDataSet = new DataSet<>(
+                        evaluationDataRowClass,
+                        chromosomeFileDirectory
+                                + exampleDataSet.getUnitMarking()
+                                + "/" + exampleDataSet.getDataSetName()
+                                + ".csv"
+                );
+                chromosomeDataSets.add(chromosomeDataSet);
+            }
+
+            Chromosome chromosome = population.get(chromosomeIndex);
+            ArrayList<Double> chromosomeFitness = evaluate(chromosome, exampleDataSets, chromosomeDataSets);
+            chromosome.setFitness(chromosomeFitness);
+        }
+    }
+
+    private ArrayList<Double> evaluate(
+            Chromosome chromosome,
+            List<DataSet<D>> exampleDataSets,
+            List<DataSet<D>> chromosomeDataSets
+    ) {
+        try {
+            return fitnessEvaluator.evaluate(chromosome, exampleDataSets, chromosomeDataSets);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+            return null;
+        }
+    }
+
+    private static String getChromosomeFileDirectory(int epoch, int example, int chromosome) {
+        return "data/training/" +
+                SystemStatus.START_TIME_STRING + "/" +
+                "epoch" + epoch + "/" +
+                "example" + example + "/" +
+                "chromosome" + chromosome + "/";
+    }
+
 }

@@ -43,8 +43,6 @@ public class Experiment1 {
 
         // TODO Population size as argument?
         Algorithm<FollowerEvaluationDataRow, NSGA2Chromosome> algorithm = new NSGA2<>(
-                FollowerEvaluationDataRow.class,
-                new Experiment1FitnessEvaluator(2),
                 10,
                 0.5,
                 0.8,
@@ -60,6 +58,7 @@ public class Experiment1 {
         Trainer trainer = new Trainer<>(
                 FollowerUnit.class,
                 FollowerEvaluationDataRow.class,
+                new Experiment1FitnessEvaluator(2),
                 algorithm,
                 exampleFileNames
         );

@@ -30,17 +30,13 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     private final Logger logger = LoggerFactory.getLogger(NSGA2.class);
 
-    private DataSet<D> lastExample;
-
     private final int POPULATION_SIZE;
     private final double CROSSOVER_RATE;
     private final double MUTATION_RATE;
     private final int MINIMUM_TREE_SIZE;
     private final int MAXIMUM_TREE_SIZE;
 
-    public NSGA2(Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator, int populationSize,
-                 double crossoverRate, double mutationRate, int minimumTreeSize, int maximumTreeSize) {
-        super(evaluationDataRowClass, fitnessEvaluator);
+    public NSGA2(int populationSize, double crossoverRate, double mutationRate, int minimumTreeSize, int maximumTreeSize) {
         this.POPULATION_SIZE = populationSize;
         this.CROSSOVER_RATE = crossoverRate;
         this.MUTATION_RATE = mutationRate;
@@ -50,7 +46,6 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     @Override
     public void setup() {
-        //noinspection unchecked
         try {
             population = Population.generateRandomPopulation(
                     trainer.getUnitToTrainClass(),
@@ -69,7 +64,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
         if (epoch == 0) {
             trainer.simulatePopulation(population, exampleDataSets);
-            setFitness(population, epoch, exampleDataSets);
+            trainer.setFitness(population, epoch);
             rankPopulationByNonDomination(population);
             outputInitialPopulation(population);
         }
@@ -79,7 +74,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         // Create, evaluate and add offspring
         Population<NSGA2Chromosome> offspring = createOffspringPopulation(population);
         trainer.simulatePopulation(offspring, exampleDataSets);
-        setFitness(offspring, epoch, exampleDataSets);
+        trainer.setFitness(offspring, epoch);
         population.addAll(offspring);
 
         // Rank population
