@@ -11,9 +11,9 @@ import java.util.ArrayList;
 
 import static core.util.SystemUtil.random;
 
-public class SwitchRandomSiblingsMutation extends Mutation {
+public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
 
-    public SwitchRandomSiblingsMutation(double weight) {
+    public SwitchPositionsOfRandomSiblingTasksMutation(double weight) {
         super(weight);
     }
 

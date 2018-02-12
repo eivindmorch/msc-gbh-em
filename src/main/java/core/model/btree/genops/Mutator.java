@@ -19,10 +19,10 @@ public abstract class Mutator {
         mutations.add(new AddRandomSubtreeMutation(1, true));
         mutations.add(new AddRandomSubtreeMutation(1, false));
         mutations.add(new RemoveRandomSubtreeMutation(1));
-        mutations.add(new SwitchRandomSiblingsMutation(1));
-        mutations.add(new ReplaceTreeWithSubtreeMutation(1));
-        mutations.add(new ReplaceWithTaskOfSameTypeMutation(1));
-        mutations.add(new RandomiseTaskVariablesMutation(1));
+        mutations.add(new SwitchPositionsOfRandomSiblingTasksMutation(1));
+        mutations.add(new ReplaceTreeWithSubtreeMutation(1)); // TODO Too big change for a mutation?
+        mutations.add(new ReplaceRandomTaskWithTaskOfSameTypeMutation(1));
+        mutations.add(new RandomiseVariablesOfRandomVariableTaskMutation(1));
     }
 
     public static Task mutate(Task root, Class<? extends Unit> unitClass) {

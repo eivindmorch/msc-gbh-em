@@ -7,9 +7,9 @@ import core.model.btree.task.VariableLeafTask;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
 
-public class RandomiseTaskVariablesMutation extends Mutation {
+public class RandomiseVariablesOfRandomVariableTaskMutation extends Mutation {
 
-    public RandomiseTaskVariablesMutation(double weight) {
+    public RandomiseVariablesOfRandomVariableTaskMutation(double weight) {
         super(weight);
     }
 

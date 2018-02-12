@@ -8,9 +8,9 @@ import core.util.exceptions.NoAvailableTaskClassException;
 import core.util.exceptions.NoSuchTaskFoundException;
 
 
-public class ReplaceWithTaskOfSameTypeMutation extends Mutation {
+public class ReplaceRandomTaskWithTaskOfSameTypeMutation extends Mutation {
 
-    public ReplaceWithTaskOfSameTypeMutation(double weight) {
+    public ReplaceRandomTaskWithTaskOfSameTypeMutation(double weight) {
         super(weight);
     }
 

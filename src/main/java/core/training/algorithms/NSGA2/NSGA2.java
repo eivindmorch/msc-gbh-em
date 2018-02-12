@@ -7,7 +7,6 @@ import core.data.rows.DataRow;
 import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Crossover;
 import core.model.btree.genops.Mutator;
-import core.training.FitnessEvaluator;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
 import core.util.ToStringBuilder;
@@ -118,7 +117,8 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             }
             if (!population.containsChromosomeWithEqualTree(newRoot)
                     && !offspringPopulation.containsChromosomeWithEqualTree(newRoot)
-                    && BehaviorTreeUtil.getSize(newRoot) <= MAXIMUM_TREE_SIZE) {
+                    && BehaviorTreeUtil.getSize(newRoot) <= MAXIMUM_TREE_SIZE
+                    && BehaviorTreeUtil.getSize(newRoot) >= MINIMUM_TREE_SIZE) {
                 offspringPopulation.add(new NSGA2Chromosome(newRoot));
             }
         }

@@ -26,7 +26,7 @@ public class ExampleLogger {
 
         ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, BehaviorTreeUtil.generateTestTree());
 
-        UnitLogger.setIntraResourcesWritingDirectory("example_logging/" + SystemStatus.START_TIME_STRING);
+        UnitLogger.setIntraResourcesWritingDirectory("example_logging/" + SystemStatus.START_TIME_STRING + "/");
     }
 
     public void run() {
