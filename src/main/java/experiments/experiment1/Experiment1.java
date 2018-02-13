@@ -47,7 +47,7 @@ public class Experiment1 {
                 0.5,
                 0.8,
                 3,
-                20
+                12
         );
 
         String[] exampleFileNames = new String[]{

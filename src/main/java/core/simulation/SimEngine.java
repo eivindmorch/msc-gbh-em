@@ -16,11 +16,18 @@ public class SimEngine implements Runnable {
     private Logger logger = LoggerFactory.getLogger(SimEngine.class);
 
     private CountDownLatch latch;
+    private ProcessLoggerThread processLoggerThread;
+
+    public static String SUCCESSFULLY_LOADED_SCENARIO_OUTPUT_LINE = "Successfully loaded scenario.";
 
      public void start() {
          latch = new CountDownLatch(1);
          Thread thread = new Thread(this);
          thread.start();
+    }
+
+    public ProcessLoggerThread getProcessLoggerThread() {
+        return processLoggerThread;
     }
 
     @Override
@@ -59,7 +66,7 @@ public class SimEngine implements Runnable {
             processBuilder.directory(new File(vrfBin64Dir));
             Process process = processBuilder.start();
 
-            ProcessLoggerThread processLoggerThread = new ProcessLoggerThread(process, logger);
+            processLoggerThread = new ProcessLoggerThread(process, logger);
             processLoggerThread.start();
 
             try {

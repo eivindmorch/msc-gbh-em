@@ -1,6 +1,7 @@
 package core.simulation;
 
 
+import core.util.ProcessLoggerThread;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
@@ -12,9 +13,10 @@ import core.unit.UnitHandler;
 import core.unit.UnitLogger;
 
 import static core.util.SystemUtil.sleepMilliseconds;
+import static core.util.SystemUtil.sleepSeconds;
 
 
-public class SimController implements TickListener, PhysicalEntityUpdatedListener {
+public class SimController implements TickListener, PhysicalEntityUpdatedListener, ProcessLoggerThread.LineListener {
 
     private static SimController instance;
 
@@ -29,6 +31,9 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     private int totalTicks;
     long startTime;
+
+    private volatile boolean scenarioLoading;
+    private final Object SCENARIO_LOADING_LOCK = new Object();
 
     private SimController() {}
 
@@ -80,6 +85,32 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     }
 
     public void play() {
+
+        synchronized (SCENARIO_LOADING_LOCK) {
+            while(scenarioLoading) {
+                logger.info("Waiting for scenario to be loaded.");
+                try {
+                    SCENARIO_LOADING_LOCK.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        logger.info("Scenario successfully loaded -> continuing.");
+        sleepMilliseconds(500);
+
+//        startTime = System.currentTimeMillis();
+//        logger.info("Waiting for all units to be discovered.");
+//        while (Federate.getInstance().unitsDiscovered < 2) {
+//            sleepMilliseconds(500);
+//            if (System.currentTimeMillis() - startTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
+//                startTime = System.currentTimeMillis();
+//                logger.warn("Not all units discovered. Reloading scenario.");
+//                loadScenario(currentScenario);
+//            }
+//        }
+//        logger.info("All units discovered -> continuing.");
+
         totalTicks = 0;
         logger.info("Playing scenario.");
         startTime = System.currentTimeMillis();
@@ -93,17 +124,6 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
      * @param simulationEndedListener
      */
     public void play(int numOfTicks, SimulationEndedListener simulationEndedListener) {
-        logger.info("Waiting for all units to be discovered.");
-        startTime = System.currentTimeMillis();
-        while (Federate.getInstance().unitsDiscovered < 2) {
-            sleepMilliseconds(500);
-            if (System.currentTimeMillis() - startTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
-                logger.warn("Not all units discovered. Reloading scenario.");
-                loadScenario(currentScenario);
-            }
-        }
-        logger.info("All units discovered -> continuing.");
-        sleepMilliseconds(250);
         ticksToPlay = numOfTicks;
         this.simulationEndedListener = simulationEndedListener;
         play();
@@ -124,6 +144,13 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     public void loadScenario(String scenarioPath) {
         logger.info("Loading scenario " + scenarioPath + ".");
+
+        scenarioLoading = true;
+        simEngine.getProcessLoggerThread().registerLineListener(
+                SimEngine.SUCCESSFULLY_LOADED_SCENARIO_OUTPUT_LINE,
+                this
+        );
+
         Federate.getInstance().holdTimeAdvancement();
         UnitHandler.reset();
         UnitLogger.reset();
@@ -141,5 +168,15 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         logger.info("Starting SimGui.");
         simGui = new SimGui();
         simGui.start();
+    }
+
+    @Override
+    public void onLineOutput(String line) {
+        if (line.equals(SimEngine.SUCCESSFULLY_LOADED_SCENARIO_OUTPUT_LINE)) {
+            scenarioLoading = false;
+            synchronized (SCENARIO_LOADING_LOCK) {
+                SCENARIO_LOADING_LOCK.notifyAll();
+            }
+        }
     }
 }

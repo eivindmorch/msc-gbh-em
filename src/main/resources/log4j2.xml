@@ -90,7 +90,7 @@
 
         <Logger name="core.simulation.SimEngine" level="debug" additivity="false">
             <AppenderRef ref="SimEngine"/>
-            <!--<AppenderRef ref="ConsoleSimEngine"/>-->
+            <AppenderRef ref="ConsoleSimEngine"/>
         </Logger>
 
         <Logger name="core.simulation.SimGui" level="debug" additivity="false">
