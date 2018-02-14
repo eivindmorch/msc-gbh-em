@@ -3,7 +3,6 @@ package core.training;
 import com.badlogic.gdx.ai.btree.Task;
 import core.data.DataSet;
 import core.data.rows.DataRow;
-import core.simulation.SimulationEndedListener;
 import core.unit.Unit;
 import core.unit.UnitLogger;
 import core.util.SystemStatus;
@@ -25,7 +24,7 @@ import static core.util.SystemUtil.sleepMilliseconds;
  * @param <U> unit to be trained. Has to extend {@link Unit}.
  * @param <D> data type to be used for evaluation. Has to extend {@link DataRow}.
  */
-public class Trainer<U extends Unit, D extends DataRow> implements SimulationEndedListener{
+public class Trainer<U extends Unit, D extends DataRow> {
 
     private final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
@@ -37,9 +36,6 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
     private FitnessEvaluator fitnessEvaluator;
 
     private int currentEpoch = 0;
-
-    private volatile boolean simulationRunning;
-    private final Object SIMULATION_ENDED_LOCK = new Object();
 
     public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator, Algorithm<D, ?> algorithm, String[] exampleFileNames) {
         this.unitToTrainClass = unitToTrainClass;
@@ -106,12 +102,12 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
     }
 
     private void runSimulationForNTicks(int ticks){
-        simulationRunning = true;
-        SimController.getInstance().play(ticks, this);
-        synchronized (SIMULATION_ENDED_LOCK) {
-            while(simulationRunning) {
+        SimController.getInstance().play(ticks);
+
+        synchronized (SimController.getInstance().SIMULATION_RUNNING_LOCK) {
+            while(SimController.getInstance().simulationRunning) {
                 try {
-                    SIMULATION_ENDED_LOCK.wait();
+                    SimController.getInstance().SIMULATION_RUNNING_LOCK.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -121,14 +117,6 @@ public class Trainer<U extends Unit, D extends DataRow> implements SimulationEnd
 
     public Class<U> getUnitToTrainClass() {
         return unitToTrainClass;
-    }
-
-    @Override
-    public void onSimulationEnd() {
-        simulationRunning = false;
-        synchronized (SIMULATION_ENDED_LOCK) {
-            SIMULATION_ENDED_LOCK.notifyAll();
-        }
     }
 
     public Population getPopulation() {

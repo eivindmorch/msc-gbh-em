@@ -12,8 +12,9 @@ import core.simulation.federate.TickListener;
 import core.unit.UnitHandler;
 import core.unit.UnitLogger;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import static core.util.SystemUtil.sleepMilliseconds;
-import static core.util.SystemUtil.sleepSeconds;
 
 
 public class SimController implements TickListener, PhysicalEntityUpdatedListener, ProcessLoggerThread.LineListener {
@@ -27,13 +28,15 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     private String currentScenario;
     private int ticksToPlay;
-    private SimulationEndedListener simulationEndedListener;
 
     private int totalTicks;
     long startTime;
 
-    private volatile boolean scenarioLoading;
-    private final Object SCENARIO_LOADING_LOCK = new Object();
+    public volatile boolean simulationRunning;
+    public final ReentrantLock SIMULATION_RUNNING_LOCK = new ReentrantLock();
+
+    public volatile boolean scenarioLoading;
+    public final ReentrantLock SCENARIO_LOADING_LOCK = new ReentrantLock();
 
     private SimController() {}
 
@@ -69,7 +72,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
             ticksToPlay--;
             if (ticksToPlay == 0) {
                 pause();
-                simulationEndedListener.onSimulationEnd();
+                onSimulationEnd();
             }
         }
     }
@@ -85,6 +88,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     }
 
     public void play() {
+        simulationRunning = true;
 
         synchronized (SCENARIO_LOADING_LOCK) {
             while(scenarioLoading) {
@@ -121,11 +125,9 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     /**
      * Runs a specified number of ticks before pausing the simulation and notifying the listener.
      * @param numOfTicks the number of ticks to run
-     * @param simulationEndedListener
      */
-    public void play(int numOfTicks, SimulationEndedListener simulationEndedListener) {
+    public void play(int numOfTicks) {
         ticksToPlay = numOfTicks;
-        this.simulationEndedListener = simulationEndedListener;
         play();
     }
 
@@ -168,6 +170,13 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         logger.info("Starting SimGui.");
         simGui = new SimGui();
         simGui.start();
+    }
+
+    private void onSimulationEnd() {
+        simulationRunning = false;
+        synchronized (SIMULATION_RUNNING_LOCK) {
+            SIMULATION_RUNNING_LOCK.notifyAll();
+        }
     }
 
     @Override
