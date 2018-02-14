@@ -3,9 +3,11 @@ package core.model.btree;
 import com.badlogic.gdx.ai.btree.*;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
+import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.sun.javaws.exceptions.InvalidArgumentException;
+import core.model.btree.task.AlwaysSuccessfulTask;
 import core.model.btree.task.VariableLeafTask;
 import core.unit.UnitTypeInfo;
 import core.util.exceptions.NoAvailableTaskClassException;
@@ -335,19 +337,32 @@ public abstract class BehaviorTreeUtil {
         if (!taskSet.contains(taskToRemove)) {
             throw new NoSuchTaskFoundException();
         }
+        HashSet<Task> tasksToRemoveSet = new HashSet<>();
+        tasksToRemoveSet.add(taskToRemove);
 
-        return removeTaskHelper(root, taskToRemove);
+        return removeTasksHelper(root, tasksToRemoveSet);
     }
 
-    private static Task removeTaskHelper(Task root, Task taskToRemove) {
+    /**
+     * Removes multiple subtrees from an already existing behavior tree.
+     * @param root the root {@link Task} of the complete behavior tree that is to be edited
+     * @param tasksToRemove a {@link Collection} of the root {@link Task}s of the behavior trees to be removed. Can not be the same as {@code root}.
+     * @return the root {@link Task} of the resulting behavior tree
+     */
+    public static Task removeTasks(Task root, Collection<Task> tasksToRemove) {
+        HashSet<Task> tasksToRemoveSet = new HashSet<>(tasksToRemove);
+        return removeTasksHelper(root, tasksToRemoveSet);
+    }
+
+    private static Task removeTasksHelper(Task root, HashSet<Task> tasksToRemove) {
         Task newRoot;
-        if (root == taskToRemove) {
+        if (tasksToRemove.contains(root)) {
             return null;
         } else {
             newRoot = cloneIndividualTask(root);
         }
         for (int i = 0; i < root.getChildCount(); i++) {
-            Task newChild = removeTaskHelper(root.getChild(i), taskToRemove);
+            Task newChild = removeTasksHelper(root.getChild(i), tasksToRemove);
             if (newChild != null) {
                 newRoot.addChild(newChild);
             }
@@ -517,5 +532,40 @@ public abstract class BehaviorTreeUtil {
         }
         return false;
 
+    }
+
+
+//    -----------------------------------------------------------------------------------------------------------------
+//    ----- CLEANING --------------------------------------------------------------------------------------------------
+//    -----------------------------------------------------------------------------------------------------------------
+
+    // TODO One method calling all other helpers (private)
+    public static Task clean(Task root) {
+        int lastSize;
+        do {
+            lastSize = getSize(root);
+            root = removeFollowingTasksOfAlwaysTrueTasks(root);
+            root = removeEmptyAndSingleChildCompositeTasks(root);
+        } while (getSize(root) < lastSize);
+        return root;
+    }
+
+    public static Task removeFollowingTasksOfAlwaysTrueTasks(Task root) {
+        ArrayList<Selector> selectors = getTasks(root, true, Selector.class);
+        HashSet<Task> tasksToRemove = new HashSet<>();
+
+        for (Selector selector : selectors) {
+            for (int i = 0; i < selector.getChildCount() - 1; i++) {
+                Task child = selector.getChild(i);
+
+                if (child instanceof AlwaysSuccessfulTask || child instanceof AlwaysSucceed) {
+                    for (int j = i + 1; j < selector.getChildCount(); j++) {
+                        tasksToRemove.add(selector.getChild(j));
+                    }
+                    break;
+                }
+            }
+        }
+        return removeTasks(root, tasksToRemove);
     }
 }

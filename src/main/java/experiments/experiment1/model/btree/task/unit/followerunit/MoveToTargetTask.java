@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.Lla;
 import core.model.btree.Blackboard;
+import core.model.btree.task.AlwaysSuccessfulTask;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
@@ -11,7 +12,7 @@ import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveTo
 import experiments.experiment1.unit.FollowerUnit;
 
 
-public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, AlwaysSuccessfulTask {
 
     String name = "Move to target";
     private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);

@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.Lla;
 import core.model.btree.Blackboard;
+import core.model.btree.task.AlwaysSuccessfulTask;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
@@ -14,7 +15,7 @@ import core.util.Geometer;
 import core.util.exceptions.IllegalArgumentCombinationException;
 
 
-public class MoveInTargetDirectionTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class MoveInTargetDirectionTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, AlwaysSuccessfulTask {
 
     private String name = "Move in target direction";
     private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);

@@ -8,7 +8,11 @@ import com.badlogic.gdx.utils.Array;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.model.btree.task.VariableLeafTask;
 import core.model.btree.task.unit.WaitTask;
+import core.training.Chromosome;
 import core.util.exceptions.NoSuchTaskFoundException;
+import core.util.graphing.GraphFrame;
+import core.util.graphing.GraphTab;
+import core.util.graphing.Grapher;
 import experiments.experiment1.model.btree.task.unit.followerunit.*;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import static core.util.SystemUtil.random;
+import static core.util.SystemUtil.sleepSeconds;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BehaviorTreeUtilTest {
@@ -438,5 +443,39 @@ class BehaviorTreeUtilTest {
     void getDepth() {
         assertEquals(3, BehaviorTreeUtil.getDepth(generateTree1()));
         assertEquals(1, BehaviorTreeUtil.getDepth(new Sequence()));
+    }
+
+    @Test
+    void removeFollowingTasksOfAlwaysTrueTasks() {
+        Task root = new Selector(
+                new Selector<>(
+                        new MoveToTargetTask(), new MoveToTargetTask(), new IsWithinTask(20)
+                ),
+                new Selector<>(
+                        new IsWithinTask(10), new IsApproachingTask(20), new MoveToTargetTask(), new FollowTargetTask()
+                ),
+                new Sequence(
+                        new MoveToTargetTask(), new MoveToTargetTask(), new IsWithinTask(20)
+                )
+        );
+
+        Task newRoot = BehaviorTreeUtil.clean(root);
+        assertEquals(2, BehaviorTreeUtil.getSize(newRoot));
+
+
+        Task root2 = new Sequence(
+                new Selector<>(
+                        new MoveToTargetTask(), new MoveToTargetTask(), new IsWithinTask(20)
+                ),
+                new Selector<>(
+                        new IsWithinTask(10), new IsApproachingTask(20), new MoveToTargetTask(), new FollowTargetTask()
+                ),
+                new Sequence(
+                        new MoveToTargetTask(), new MoveToTargetTask(), new IsWithinTask(20)
+                )
+        );
+
+        Task newRoot2 = BehaviorTreeUtil.clean(root2);
+        assertEquals(10, BehaviorTreeUtil.getSize(newRoot2));
     }
 }

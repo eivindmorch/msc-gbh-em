@@ -3,6 +3,7 @@ package experiments.experiment1.model.btree.task.unit.followerunit;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
+import core.model.btree.task.AlwaysSuccessfulTask;
 import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
@@ -13,7 +14,7 @@ import core.util.LlbmlUtil;
 import core.util.exceptions.IllegalArgumentCombinationException;
 
 
-public class TurnToTargetTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class TurnToTargetTask extends LeafTask<Blackboard<FollowerUnit>> implements NamedTask, AlwaysSuccessfulTask {
 
     private final String name = "Turn to target";
     private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
