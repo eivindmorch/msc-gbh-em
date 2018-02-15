@@ -41,6 +41,11 @@ public class TempIsApproachingTask extends TempVariableLeafTask {
     }
 
     @Override
+    public boolean structurallyEquals(Object o) {
+        return (o instanceof TempIsApproachingTask && this.degreeLimit == ((TempIsApproachingTask) o).degreeLimit);
+    }
+
+    @Override
     public TempTask cloneTask() {
         return new TempIsApproachingTask(degreeLimit);
     }

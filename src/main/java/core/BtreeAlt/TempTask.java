@@ -115,12 +115,17 @@ public abstract class TempTask {
         return selectionTasks.get(random.nextInt(selectionTasks.size()));
     }
 
-    public boolean isFunctionallyEqual(TempTask o) {
-        if (!this.getClass().equals(o.getClass()) || this.getChildCount() != o.getChildCount()) {
+    public boolean structurallyEquals(Object o) {
+        if (!(o instanceof TempTask)) {
+            return false;
+        }
+        TempTask other = (TempTask) o;
+
+        if (!this.getClass().equals(other.getClass()) || this.getChildCount() != other.getChildCount()) {
             return false;
         }
         for (int i = 0; i < this.getChildCount(); i++) {
-            if (!this.getChild(i).isFunctionallyEqual(o.getChild(i))) {
+            if (!this.getChild(i).structurallyEquals(other.getChild(i))) {
                 return false;
             }
         }

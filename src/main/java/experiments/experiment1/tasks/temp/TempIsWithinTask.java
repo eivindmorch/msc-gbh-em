@@ -41,6 +41,11 @@ public class TempIsWithinTask extends TempVariableLeafTask {
     }
 
     @Override
+    public boolean structurallyEquals(Object o) {
+        return (o instanceof TempIsWithinTask && this.distanceLimit == ((TempIsWithinTask) o).distanceLimit);
+    }
+
+    @Override
     public TempTask cloneTask() {
         return new TempIsWithinTask(distanceLimit);
     }

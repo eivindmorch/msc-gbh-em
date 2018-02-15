@@ -1,6 +1,5 @@
 package core.training;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.TempTask;
 import core.model.btree.BehaviorTreeUtil;
@@ -124,7 +123,7 @@ public class Population<C extends Chromosome> {
 
     public boolean containsChromosomeWithEqualTree(TempTask root) {
         for (Chromosome chromosome : chromosomes) {
-            if (chromosome.getBtree().isFunctionallyEqual(root)) {
+            if (chromosome.getBtree().structurallyEquals(root)) {
                 return true;
             }
         }

@@ -1,28 +1,13 @@
 package core.model.btree;
 
-import com.badlogic.gdx.ai.btree.BranchTask;
-import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.btree.branch.Selector;
-import com.badlogic.gdx.ai.btree.branch.Sequence;
-import com.badlogic.gdx.utils.Array;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.CompositeTasks.TempSelector;
 import core.BtreeAlt.CompositeTasks.TempSequence;
 import core.BtreeAlt.LeafTasks.TempVariableLeafTask;
 import core.BtreeAlt.TempTask;
-import core.model.btree.genops.Mutator;
-import core.model.btree.genops.mutations.AddRandomSubtreeMutation;
-import core.model.btree.genops.mutations.RandomiseVariablesOfRandomVariableTaskMutation;
-import core.model.btree.genops.mutations.SwitchPositionsOfRandomSiblingTasksMutation;
-import core.model.btree.task.unit.WaitTask;
 import core.model.btree.task.unit.temp.TempWaitTask;
-import core.training.Chromosome;
 import core.util.exceptions.NoSuchTaskFoundException;
-import core.util.graphing.GraphFrame;
-import core.util.graphing.GraphPanel;
-import core.util.graphing.GraphTab;
-import core.util.graphing.Grapher;
 import experiments.experiment1.tasks.temp.TempIsApproachingTask;
 import experiments.experiment1.tasks.temp.TempIsWithinTask;
 import experiments.experiment1.tasks.temp.TempMoveToTargetTask;
@@ -38,100 +23,78 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import static core.util.SystemUtil.random;
-import static core.util.SystemUtil.sleepSeconds;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BehaviorTreeUtilTest {
 
-    @Test
-    void createTree() {
-        Experiment1UnitInfo.init();
-        try {
-            TempTask root = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 5, 5);
-//            GraphFrame graphFrame = Grapher.createNewFrame("Asd");
-//            GraphTab graphTab = new GraphTab("sdk");
-//            graphTab.add(new Chromosome(root));
-
-//            graphTab.add(new Chromosome(root.cloneTask()));
-            TempTask newRoot = root.cloneTask();
-
-            new AddRandomSubtreeMutation(1, true).mutate(newRoot, FollowerUnit.class);
-//            graphTab.add(new Chromosome(newRoot));
-
-//            graphFrame.addTab(graphTab);
-//            graphFrame.display();
-//            sleepSeconds(20);
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();
-        }
-    }
+    // TODO Test instantiateTask()
+    // TODO Test generateRandomTree
+    // TODO More thorough testing of all add/remove/insert/swap methods of TempTask
 
     @Test
     void getSize() {
-        assertEquals(9, generateTree1().getSize());
-        assertEquals(7, generateTree2().getSize());
         assertEquals(1, new TempMoveToTargetTask().getSize());
+        assertEquals(7, generateTree1().getSize());
+        assertEquals(9, generateTree2().getSize());
+        assertEquals(14, generateTree3().getSize());
+        assertEquals(14, generateTree4().getSize());
     }
 
-//    @Test
-//    void getTasksIncludingRoot() {
-//        Task waitTask = new WaitTask();
-//        Task moveToTargetTask1 = new MoveToTargetTask();
-//        Task moveToTargetTask2 = new MoveToTargetTask();
-//        Task isApproachingTask = new IsApproachingTask();
-//        Task followTargetTask = new FollowTargetTask();
-//        Task isWithinTask = new IsWithinTask();
-//
-//        Sequence sequence = new Sequence<>(moveToTargetTask1, isApproachingTask);
-//        Selector selector = new Selector<>(followTargetTask, isWithinTask, waitTask);
-//        Sequence rootSequence = new Sequence(selector, sequence, moveToTargetTask2);
-//
-//        HashSet<Task> taskSet = new HashSet<>();
-//        taskSet.add(waitTask);
-//        taskSet.add(moveToTargetTask1);
-//        taskSet.add(moveToTargetTask2);
-//        taskSet.add(isApproachingTask);
-//        taskSet.add(followTargetTask);
-//        taskSet.add(isWithinTask);
-//        taskSet.add(sequence);
-//        taskSet.add(selector);
-//        taskSet.add(rootSequence);
-//
-//        ArrayList<Task> utilTaskList = new ArrayList<>(BehaviorTreeUtil.getTasks(rootSequence, true, Task.class));
-//
-//        assertEquals(9, utilTaskList.size());
-//        assertEquals(taskSet, new HashSet<>(utilTaskList));
-//    }
-//
-//    @Test
-//    void getTasksExcludingRoot() {
-//        Task waitTask = new WaitTask();
-//        Task moveToTargetTask1 = new MoveToTargetTask();
-//        Task moveToTargetTask2 = new MoveToTargetTask();
-//        Task isApproachingTask = new IsApproachingTask();
-//        Task followTargetTask = new FollowTargetTask();
-//        Task isWithinTask = new IsWithinTask();
-//
-//        Sequence sequence = new Sequence<>(moveToTargetTask1, isApproachingTask);
-//        Selector selector = new Selector<>(followTargetTask, isWithinTask, waitTask);
-//        Sequence rootSequence = new Sequence(selector, sequence, moveToTargetTask2);
-//
-//        HashSet<Task> taskSet = new HashSet<>();
-//        taskSet.add(waitTask);
-//        taskSet.add(moveToTargetTask1);
-//        taskSet.add(moveToTargetTask2);
-//        taskSet.add(isApproachingTask);
-//        taskSet.add(followTargetTask);
-//        taskSet.add(isWithinTask);
-//        taskSet.add(sequence);
-//        taskSet.add(selector);
-//
-//        ArrayList<Task> utilTaskList = new ArrayList<>(BehaviorTreeUtil.getTasks(rootSequence, false, Task.class));
-//
-//        assertEquals(8, utilTaskList.size());
-//        assertEquals(taskSet, new HashSet<>(utilTaskList));
-//    }
-//
+    @Test
+    void getTasksIncludingRoot() {
+        TempTask waitTask = new TempWaitTask();
+        TempTask moveToTargetTask1 = new TempMoveToTargetTask();
+        TempTask moveToTargetTask2 = new TempMoveToTargetTask();
+        TempTask isApproachingTask = new TempIsApproachingTask();
+        TempTask isWithinTask = new TempIsWithinTask();
+
+        TempSequence sequence = new TempSequence(moveToTargetTask1, isApproachingTask);
+        TempSelector selector = new TempSelector(isWithinTask, waitTask);
+        TempSequence rootSequence = new TempSequence(selector, sequence, moveToTargetTask2);
+
+        HashSet<TempTask> taskSet = new HashSet<>();
+        taskSet.add(waitTask);
+        taskSet.add(moveToTargetTask1);
+        taskSet.add(moveToTargetTask2);
+        taskSet.add(isApproachingTask);
+        taskSet.add(isWithinTask);
+        taskSet.add(sequence);
+        taskSet.add(selector);
+        taskSet.add(rootSequence);
+
+        ArrayList<TempTask> taskList = new ArrayList<>(rootSequence.getTasks(true, TempTask.class));
+
+        assertEquals(8, taskList.size());
+        assertEquals(taskSet, new HashSet<>(taskList));
+    }
+
+    @Test
+    void getTasksExcludingRoot() {
+        TempTask waitTask = new TempWaitTask();
+        TempTask moveToTargetTask1 = new TempMoveToTargetTask();
+        TempTask moveToTargetTask2 = new TempMoveToTargetTask();
+        TempTask isApproachingTask = new TempIsApproachingTask();
+        TempTask isWithinTask = new TempIsWithinTask();
+
+        TempSequence sequence = new TempSequence(moveToTargetTask1, isApproachingTask);
+        TempSelector selector = new TempSelector(isWithinTask, waitTask);
+        TempSequence rootSequence = new TempSequence(selector, sequence, moveToTargetTask2);
+
+        HashSet<TempTask> taskSet = new HashSet<>();
+        taskSet.add(waitTask);
+        taskSet.add(moveToTargetTask1);
+        taskSet.add(moveToTargetTask2);
+        taskSet.add(isApproachingTask);
+        taskSet.add(isWithinTask);
+        taskSet.add(sequence);
+        taskSet.add(selector);
+
+        ArrayList<TempTask> taskList = new ArrayList<>(rootSequence.getTasks(false, TempTask.class));
+
+        assertEquals(7, taskList.size());
+        assertEquals(taskSet, new HashSet<>(taskList));
+    }
+
     @Test
     void getCompositeTasks() {
         TempTask waitTask = new TempWaitTask();
@@ -232,7 +195,7 @@ class BehaviorTreeUtilTest {
         taskArray.add(index, selectorToInsert);
         TempTask rootOfManuallyInsertedTree = new TempSequence(selector, new TempSequence(taskArray), moveToTargetTask2, turnToTargetTask);
 
-        assertTrue(rootOfMethodInsertedTree.isFunctionallyEqual(rootOfManuallyInsertedTree));
+        assertTrue(rootOfMethodInsertedTree.equals(rootOfManuallyInsertedTree));
 
         assertTrue(treeDoesNotContainDuplicateTasks(rootOfMethodInsertedTree));
     }
@@ -254,229 +217,222 @@ class BehaviorTreeUtilTest {
         TempSelector selectorWithRemovedTask = new TempSelector(isWithinTask, waitTask);
         TempTask rootOfTreeWithManualRemove1 = new TempSequence(selectorWithRemovedTask, moveToTargetTask2, turnToTargetTask);
 
-        assertTrue(rootOfOriginalTree.isFunctionallyEqual(rootOfTreeWithManualRemove1));
+        assertTrue(rootOfOriginalTree.equals(rootOfTreeWithManualRemove1));
 
         assertTrue(treeDoesNotContainDuplicateTasks(rootOfTreeWithManualRemove1));
 
     }
-//
+
 //    @Test
 //    void replaceTask() {
-//        Task waitTask = new WaitTask();
-//        Task moveToTargetTask1 = new MoveToTargetTask();
-//        Task moveToTargetTask2 = new MoveToTargetTask();
-//        Task isApproachingTask = new IsApproachingTask(20);
-//        Task followTargetTask = new FollowTargetTask();
-//        Task isWithinTask = new IsWithinTask(42);
-//        Task turnToTargetTask = new TurnToTargetTask();
-//        Sequence sequence = new Sequence<>(moveToTargetTask1, isApproachingTask);
-//        Selector selector = new Selector<>(followTargetTask, isWithinTask, waitTask);
-//        Task rootOfOriginalTree = new Sequence<>(selector, sequence, moveToTargetTask2, turnToTargetTask);
+//        TempTask waitTask = new TempWaitTask();
+//        TempTask moveToTargetTask1 = new TempMoveToTargetTask();
+//        TempTask moveToTargetTask2 = new TempMoveToTargetTask();
+//        TempTask isApproachingTask = new TempIsApproachingTask(20);
+//        TempTask isWithinTask = new TempIsWithinTask(42);
+//        TempTask turnToTargetTask = new TempTurnToTargetTask();
+//        TempSequence sequence = new TempSequence(moveToTargetTask1, isApproachingTask);
+//        TempSelector selector = new TempSelector(isWithinTask, waitTask);
+//        TempTask rootOfOriginalTree = new TempSequence(selector, sequence, moveToTargetTask2, turnToTargetTask);
 //
-//        Task rootOfTreeWithMethodReplace = BehaviorTreeUtil.replaceTask(rootOfOriginalTree, sequence, generateTree2());
+//        sequence.getParent().replaceChild(sequence, new TempWaitTask());
 //
-//        Task waitTaskClone = new WaitTask();
-//        Task moveToTargetTask2Clone = new MoveToTargetTask();
-//        Task followTargetTaskClone = new FollowTargetTask();
-//        Task isWithinTaskClone = new IsWithinTask(42);
-//        Task turnToTargetTaskClone = new TurnToTargetTask();
-//        Selector selectorClone = new Selector<>(followTargetTaskClone, isWithinTaskClone, waitTaskClone);
-//        Task rootOfTreeWithManualReplace = new Sequence<>(selectorClone, generateTree2(), moveToTargetTask2Clone, turnToTargetTaskClone);
+//        TempSelector selectorWithRemovedTask = new TempSelector(isWithinTask, waitTask);
+//        TempTask rootOfTreeWithManualRemove1 = new TempSequence(selectorWithRemovedTask, moveToTargetTask2, turnToTargetTask);
 //
-//        assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfTreeWithManualReplace, rootOfTreeWithMethodReplace));
-//        assertFalse(BehaviorTreeUtil.areEqualTrees(rootOfOriginalTree, rootOfTreeWithManualReplace));
+//        assertTrue(rootOfOriginalTree.equals(rootOfTreeWithManualRemove1));
 //
+//        assertTrue(treeDoesNotContainDuplicateTasks(rootOfTreeWithManualRemove1));
 //
 //        assertTrue(treeDoesNotContainDuplicateTasks(rootOfTreeWithMethodReplace));
 //    }
-//
-//    @Test
-//    void switchTasks() {
-//        Task waitTask = new WaitTask();
-//        Task moveToTargetTask1 = new MoveToTargetTask();
-//        Task moveToTargetTask2 = new MoveToTargetTask();
-//        Task isApproachingTask = new IsApproachingTask(20);
-//        Task followTargetTask = new FollowTargetTask();
-//        Task isWithinTask = new IsWithinTask(42);
-//        Task turnToTargetTask = new TurnToTargetTask();
-//        Sequence sequence = new Sequence<>(moveToTargetTask1, isApproachingTask);
-//        Selector selector = new Selector<>(followTargetTask, isWithinTask, waitTask);
-//        Task rootOfOriginalTree = new Sequence<>(selector, sequence, moveToTargetTask2, turnToTargetTask);
-//
-//        Task rootOfMethodSwitchedTree1 = BehaviorTreeUtil.switchTasks(rootOfOriginalTree, sequence, turnToTargetTask);
-//        Task rootOfMethodSwitchedTree2 = BehaviorTreeUtil.switchTasks(rootOfOriginalTree, turnToTargetTask, sequence);
-//
-//        assertFalse(BehaviorTreeUtil.areEqualTrees(rootOfOriginalTree, rootOfMethodSwitchedTree1));
-//        assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfMethodSwitchedTree1, rootOfMethodSwitchedTree2));
-//
-//        Task waitTaskClone = new WaitTask();
-//        Task moveToTargetTask1Clone = new MoveToTargetTask();
-//        Task moveToTargetTask2Clone = new MoveToTargetTask();
-//        Task isApproachingTaskClone = new IsApproachingTask(20);
-//        Task followTargetTaskClone = new FollowTargetTask();
-//        Task isWithinTaskClone = new IsWithinTask(42);
-//        Task turnToTargetTaskClone = new TurnToTargetTask();
-//        Sequence sequenceClone = new Sequence<>(moveToTargetTask1Clone, isApproachingTaskClone);
-//        Selector selectorClone = new Selector<>(followTargetTaskClone, isWithinTaskClone, waitTaskClone);
-//        Task rootOfManuallySwitchedTree = new Sequence<>(selectorClone, turnToTargetTaskClone, moveToTargetTask2Clone, sequenceClone);
-//
-//        assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfMethodSwitchedTree1, rootOfManuallySwitchedTree));
-//
-//
-//        assertTrue(treeDoesNotContainDuplicateTasks(rootOfMethodSwitchedTree1));
-//    }
-//
-//    @Test
-//    void randomiseIndividualTask() {
-//        // TODO
-//    }
-//
-//    @Test
-//    void removeEmptyAndSingleChildCompositeTasks() {
-//        Task waitTask = new WaitTask();
-//        Task moveToTargetTask1 = new MoveToTargetTask();
-//        Task moveToTargetTask2 = new MoveToTargetTask();
-//        Task isApproachingTask = new IsApproachingTask(20);
-//        Task followTargetTask = new FollowTargetTask();
-//        Task isWithinTask = new IsWithinTask(42);
-//        Task turnToTargetTask = new TurnToTargetTask();
-//        Sequence sequence1 = new Sequence<>(moveToTargetTask1, isApproachingTask);
-//        Selector selector1 = new Selector<>(isWithinTask, followTargetTask, waitTask);
-//        Selector selector2 = new Selector(selector1);
-//        Sequence sequence2 = new Sequence(selector2, sequence1, moveToTargetTask2, turnToTargetTask);
-//        Task rootOfOriginalTree = new Sequence<>(sequence2);
-//
-//        Task rootOfMethodCleanedTree = BehaviorTreeUtil.removeEmptyAndSingleChildCompositeTasks(rootOfOriginalTree);
-//
-//        Task rootOfManuallyCleanedTree = new Sequence(selector1, sequence1, moveToTargetTask2, turnToTargetTask);
-//
-//        assertFalse(BehaviorTreeUtil.areEqualTrees(rootOfManuallyCleanedTree, rootOfOriginalTree));
-//        assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfManuallyCleanedTree, rootOfMethodCleanedTree));
-//
-//
-//        assertTrue(treeDoesNotContainDuplicateTasks(rootOfMethodCleanedTree));
-//    }
-//
-//    @Test
-//    void cloneTree() {
-//        Task rootOfOriginal = generateTree1();
-//        Task rootOfClone = BehaviorTreeUtil.cloneTree(rootOfOriginal);
-//        assertTrue(BehaviorTreeUtil.areEqualTrees(rootOfOriginal, rootOfClone));
-//
-//
-//        assertTrue(treeDoesNotContainDuplicateTasks(rootOfClone));
-//    }
-//
-//    @Test
-//    void areEqualTrees() {
-//        assertTrue(BehaviorTreeUtil.areEqualTrees(generateTree1(), generateTree1()));
-//        assertFalse(BehaviorTreeUtil.areEqualTrees(generateTree1(), generateTree2()));
-//
-//        assertTrue(BehaviorTreeUtil.areEqualTrees(new IsApproachingTask(10), new IsApproachingTask(10)));
-//        assertFalse(BehaviorTreeUtil.areEqualTrees(new IsApproachingTask(10), new IsApproachingTask(12)));
-//    }
-//
-//    @RepeatedTest(1000)
-//    void insertAndRemoveThoroughTest() {
-//        Experiment1UnitInfo.init();
-//        try {
-//            Task root = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 3, 20);
-//            Task randomCompositeTask = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class);
-//
-//            Task insertionRoot = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 3, 20);
-//
-//            Task rootWithInsertion = BehaviorTreeUtil.insertTask(root, randomCompositeTask, random.nextInt(randomCompositeTask.getChildCount()), insertionRoot);
-//            Task rootWithRemovedInsertion = BehaviorTreeUtil.removeTask(rootWithInsertion, insertionRoot);
-//
-//            assertTrue(BehaviorTreeUtil.areEqualTrees(root, rootWithRemovedInsertion));
-//
-//
-//            assertTrue(treeDoesNotContainDuplicateTasks(rootWithRemovedInsertion));
-//
-//        } catch (NoSuchTaskFoundException | InvalidArgumentException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//
+
+    @Test
+    void switchTasks() {
+
+        TempSelector selectorToBeSwitched = new TempSelector(new TempMoveToTargetTask(), new TempWaitTask(), new TempIsWithinTask(15));
+
+        TempTask methodSwitchedRoot = new TempSelector(
+                selectorToBeSwitched,
+                new TempSequence(
+                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(43.4)
+                ),
+                new TempSelector(
+                        new TempIsWithinTask(10.2), new TempIsApproachingTask(20), new TempMoveToTargetTask(), new TempWaitTask()
+                )
+        );
+
+        TempTask originalRoot = methodSwitchedRoot.cloneTask();
+
+        selectorToBeSwitched.swapChildrenPositions(0, 2);
+
+        TempTask manuallySwitchedRoot = new TempSelector(
+                new TempSelector(
+                        new TempIsWithinTask(15), new TempWaitTask(), new TempMoveToTargetTask()
+                        ),
+                new TempSequence(
+                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(43.4)
+                ),
+                new TempSelector(
+                        new TempIsWithinTask(10.2), new TempIsApproachingTask(20), new TempMoveToTargetTask(), new TempWaitTask()
+                )
+        );
+
+        assertFalse(originalRoot.structurallyEquals(methodSwitchedRoot));
+        assertTrue(methodSwitchedRoot.structurallyEquals(manuallySwitchedRoot));
+
+        assertTrue(treeDoesNotContainDuplicateTasks(methodSwitchedRoot));
+    }
+
+    @Test
+    void randomiseIndividualTask() {
+        // TODO
+    }
+
+
+    @Test
+    void cloneTask() {
+        TempTask rootOfOriginal = generateTree1();
+        TempTask rootOfClone = rootOfOriginal.cloneTask();
+        assertTrue(rootOfOriginal.structurallyEquals(rootOfClone));
+        assertFalse(rootOfOriginal.equals(rootOfClone));
+
+        assertTrue(treeDoesNotContainDuplicateTasks(rootOfClone));
+    }
+
+    @Test
+    void structurallyEquals() {
+        assertTrue(generateTree1().structurallyEquals(generateTree1()));
+        assertFalse(generateTree1().structurallyEquals(generateTree2()));
+
+        assertTrue(new TempIsApproachingTask(10).structurallyEquals(new TempIsApproachingTask(10)));
+        assertFalse(new TempIsApproachingTask(10).structurallyEquals(new TempIsApproachingTask(12)));
+    }
+
+    @RepeatedTest(1000)
+    void insertAndRemoveThoroughTest() {
+        Experiment1UnitInfo.init();
+        try {
+            TempTask originalRoot = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 3, 20);
+
+            TempTask editedRoot = originalRoot.cloneTask();
+            TempCompositeTask randomCompositeTask = editedRoot.getRandomTask(true, TempCompositeTask.class);
+
+            TempTask insertionRoot = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 3, 20);
+
+            randomCompositeTask.insertChild(random.nextInt(randomCompositeTask.getChildCount()), insertionRoot);
+            insertionRoot.removeFromParent();
+
+            assertTrue(originalRoot.structurallyEquals(editedRoot));
+            assertTrue(treeDoesNotContainDuplicateTasks(editedRoot));
+
+        } catch (NoSuchTaskFoundException | InvalidArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void removeFollowingTasksOfAlwaysSuccessfulTasks() {
+        TempTask root1Method = generateTree3();
+        root1Method.removeFollowingTasksOfAlwaysSuccessfulTasks();
+
+        TempTask root1Manual = new TempSelector(
+                new TempSelector(
+                        new TempMoveToTargetTask()
+                ),
+                new TempSelector(
+                        new TempIsWithinTask(10.2), new TempIsApproachingTask(20), new TempMoveToTargetTask()
+                ),
+                new TempSequence(
+                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(43.4)
+                )
+        );
+        assertTrue(root1Method.structurallyEquals(root1Manual));
+
+
+        TempTask root2Method = generateTree4();
+        root2Method.removeFollowingTasksOfAlwaysSuccessfulTasks();
+
+        TempTask root2Manual = new TempSequence(
+                new TempSelector(
+                        new TempMoveToTargetTask()
+                ),
+                new TempSelector(
+                        new TempIsWithinTask(10.2), new TempIsApproachingTask(20), new TempMoveToTargetTask()
+                ),
+                new TempSequence(
+                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(43.4)
+                )
+        );
+        assertTrue(root2Method.structurallyEquals(root2Manual));
+    }
+
+
+
+//  ----------------- HELPERS --------------------------------
+
+    // Size 7
     private TempTask generateTree1() {
-        TempTask waitTask = new TempWaitTask();
-        TempTask moveToTargetTask1 = new TempMoveToTargetTask();
-        TempTask moveToTargetTask2 = new TempMoveToTargetTask();
-        TempTask isApproachingTask = new TempIsApproachingTask(20);
-        TempTask isWithinTask = new TempIsWithinTask(42);
-        TempTask turnToTargetTask = new TempTurnToTargetTask();
-
-        TempSequence sequence = new TempSequence(moveToTargetTask1, isApproachingTask);
-        TempSelector selector = new TempSelector(isWithinTask, waitTask);
-        return new TempSequence(selector, sequence, moveToTargetTask2, turnToTargetTask);
+        return new TempSequence(
+                new TempSelector(
+                        new TempMoveToTargetTask()
+                ),
+                new TempSelector(
+                        new TempIsWithinTask(60), new TempWaitTask()
+                ),
+                new TempTurnToTargetTask()
+        );
     }
 
+    // Size 9
     private TempTask generateTree2() {
-        TempTask waitTask = new TempWaitTask();
-        TempTask moveToTargetTask = new TempMoveToTargetTask();
-        TempTask isWithinTask = new TempIsWithinTask(60);
-        TempTask turnToTargetTask = new TempTurnToTargetTask();
-
-        TempSelector selector1= new TempSelector(moveToTargetTask);
-        TempSelector selector2 = new TempSelector(isWithinTask, waitTask);
-        return new TempSequence(selector1, selector2, turnToTargetTask);
+        return new TempSequence(
+                new TempSelector(
+                        new TempIsWithinTask(42), new TempWaitTask()
+                ),
+                new TempSequence(
+                        new TempMoveToTargetTask(), new TempIsApproachingTask(20)
+                ),
+                new TempMoveToTargetTask(),
+                new TempTurnToTargetTask()
+        );
     }
-//
+
+    // Size 14
+    private TempTask generateTree3() {
+        return new TempSelector(
+                new TempSelector(
+                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(15)
+                ),
+                new TempSelector(
+                        new TempIsWithinTask(10.2), new TempIsApproachingTask(20), new TempMoveToTargetTask(), new TempWaitTask()
+                ),
+                new TempSequence(
+                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(43.4)
+                )
+        );
+    }
+
+    // Size 14
+    private TempTask generateTree4() {
+        return new TempSequence(
+                new TempSelector(
+                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(15)
+                ),
+                new TempSelector(
+                        new TempIsWithinTask(10.2), new TempIsApproachingTask(20), new TempMoveToTargetTask(), new TempWaitTask()
+                ),
+                new TempSequence(
+                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(43.4)
+                )
+        );
+    }
+
     private boolean treeDoesNotContainDuplicateTasks(TempTask root) {
         ArrayList<TempTask> taskList = root.getTasks(true, TempTask.class);
         HashSet<TempTask> taskSet = new HashSet<>(taskList);
         return taskList.size() == taskSet.size();
     }
 
-    @Test
-    void removeFollowingTasksOfAlwaysSuccessfulTasks() {
-        TempTask root = new TempSelector(
-                new TempSelector(
-                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(20)
-                ),
-                new TempSelector(
-                        new TempIsWithinTask(10), new TempIsApproachingTask(20), new TempMoveToTargetTask(), new TempWaitTask()
-                ),
-                new TempSequence(
-                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(20)
-                )
-        );
 
-//        GraphFrame graphFrame = Grapher.createNewFrame("asd");
-//        GraphTab graphTab = new GraphTab("asd");
-
-//        graphTab.add(root);
-
-        root.removeFollowingTasksOfAlwaysSuccessfulTasks();
-//        graphTab.add(root);
-        assertEquals(11, root.getSize());
-
-        root.clean();
-//        graphTab.add(root);
-        assertEquals(2, root.getSize());
-
-//        graphFrame.addTab(graphTab);
-//        graphFrame.display();
-//        sleepSeconds(20);
-
-
-        TempTask root2 = new TempSequence(
-                new TempSelector(
-                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(20)
-                ),
-                new TempSelector(
-                        new TempIsWithinTask(10), new TempIsApproachingTask(20), new TempMoveToTargetTask(), new TempWaitTask()
-                ),
-                new TempSequence(
-                        new TempMoveToTargetTask(), new TempMoveToTargetTask(), new TempIsWithinTask(20)
-                )
-        );
-
-        root2.removeFollowingTasksOfAlwaysSuccessfulTasks();
-        assertEquals(11, root2.getSize());
-
-        root2.clean();
-        assertEquals(10, root2.getSize());
-    }
 }

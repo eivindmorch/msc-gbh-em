@@ -2,11 +2,8 @@ package experiments.experiment1.tasks;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import core.BtreeAlt.LeafTasks.TempLeafTask;
 import core.model.btree.Blackboard;
 import experiments.experiment1.unit.FollowerUnit;
-
-import static core.util.SystemUtil.random;
 
 public class IsApproachingTask extends LeafTask<Blackboard<FollowerUnit>> {
 
@@ -36,10 +33,4 @@ public class IsApproachingTask extends LeafTask<Blackboard<FollowerUnit>> {
         isApproachingTask.degreeLimit = this.degreeLimit;
         return isApproachingTask;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof IsApproachingTask && this.degreeLimit == ((IsApproachingTask) obj).degreeLimit;
-    }
-
 }
