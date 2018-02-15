@@ -1,13 +1,11 @@
 package core.model.btree.genops.mutations;
 
-import com.badlogic.gdx.ai.btree.BranchTask;
-import com.badlogic.gdx.ai.btree.Task;
+import core.BtreeAlt.CompositeTasks.TempCompositeTask;
+import core.BtreeAlt.TempTask;
 import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
-
-import java.util.ArrayList;
 
 import static core.util.SystemUtil.random;
 
@@ -18,9 +16,9 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
     }
 
     @Override
-    public boolean canBePerformed(Task root) {
+    public boolean canBePerformed(TempTask root) {
         try {
-            BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class, 2);
+            BehaviorTreeUtil.getRandomTask(root, true, TempCompositeTask.class, 2);
         } catch (NoSuchTaskFoundException e) {
             return false;
         }
@@ -28,24 +26,21 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
     }
 
     @Override
-    public Task mutate(Task root, Class<? extends Unit> unitClass) {
+    public void mutate(TempTask root, Class<? extends Unit> unitClass) {
         try {
-            Task randomRoot = BehaviorTreeUtil.getRandomTask(root, true, BranchTask.class, 2);
-            int numberOfChildren = randomRoot.getChildCount();
-            ArrayList<Task> childList = new ArrayList<>(numberOfChildren);
-            for (int i = 0; i < numberOfChildren; i++) {
-                childList.add(randomRoot.getChild(i));
-            }
+            TempCompositeTask randomRoot = BehaviorTreeUtil.getRandomTask(root, true, TempCompositeTask.class, 2);
 
-            Task child1 = childList.remove(random.nextInt(childList.size()));
-            Task child2 = childList.remove(random.nextInt(childList.size()));
+            int childIndex1 = random.nextInt(randomRoot.getChildCount());
+            int childIndex2;
+            do {
+                childIndex2 = random.nextInt(randomRoot.getChildCount());
+            } while (childIndex1 == childIndex2);
 
-            return BehaviorTreeUtil.switchTasks(root, child1, child2);
+            randomRoot.swapChildrenPositions(childIndex1, childIndex2);
 
         } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
-            return null;
         }
     }
 }

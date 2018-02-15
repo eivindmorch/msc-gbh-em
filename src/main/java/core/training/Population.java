@@ -2,6 +2,7 @@ package core.training;
 
 import com.badlogic.gdx.ai.btree.Task;
 import com.sun.javaws.exceptions.InvalidArgumentException;
+import core.BtreeAlt.TempTask;
 import core.model.btree.BehaviorTreeUtil;
 import core.unit.Unit;
 import core.util.ToStringBuilder;
@@ -49,10 +50,10 @@ public class Population<C extends Chromosome> {
 
         while (population.getSize() < numberOfChromosomes) {
             try {
-                Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(Task.class);
+                Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(TempTask.class);
 
                 int numberOfAttempts = 0;
-                Task randomTree;
+                TempTask randomTree;
                 do {
                     if (numberOfAttempts == 1000) {
                         throw new TimeoutException(
@@ -121,9 +122,9 @@ public class Population<C extends Chromosome> {
         return Collections.min(listOfContenders, comparator);
     }
 
-    public boolean containsChromosomeWithEqualTree(Task root) {
+    public boolean containsChromosomeWithEqualTree(TempTask root) {
         for (Chromosome chromosome : chromosomes) {
-            if (BehaviorTreeUtil.areEqualTrees(chromosome.getBtree(), root)) {
+            if (chromosome.getBtree().isFunctionallyEqual(root)) {
                 return true;
             }
         }

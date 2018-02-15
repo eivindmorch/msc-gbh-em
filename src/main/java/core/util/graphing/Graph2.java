@@ -1,24 +1,27 @@
 package core.util.graphing;
 
+import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.branch.Selector;
+import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import core.BtreeAlt.TempTask;
+import core.model.btree.BehaviorTreeUtil;
 
 import java.util.ArrayList;
 
-class  Graph {
+class  Graph2 {
 
-    private TempTask root;
+    private Task root;
     private ArrayList<Object> vertices;
     private com.mxgraph.view.mxGraph mxGraph;
     private Object graphParent;
     private mxGraphComponent component;
 
-    Graph(TempTask root) {
+    Graph2(Task root) {
         this.root = root;
 
         this.vertices = new ArrayList<>();
@@ -30,12 +33,11 @@ class  Graph {
     }
 
     private mxGraphComponent createGraphComponent() {
-        TempTask rootClone = root.cloneTask();
 
         mxGraph.getModel().beginUpdate();
         try {
-            Object vertex = addVertex(rootClone.getDisplayName());
-            graphSubtree(rootClone, vertex);
+            Object vertex = addVertex(getTaskName(root));
+            graphSubtree(root, vertex);
         } finally {
             mxGraph.getModel().endUpdate();
         }
@@ -71,13 +73,26 @@ class  Graph {
         return this.component;
     }
 
-    private void graphSubtree(TempTask root, Object rootVertex) {
+    private void graphSubtree(Task root, Object rootVertex) {
 
-        for (TempTask child : root.getChildren()) {
-            Object childVertex = addVertex(child.getDisplayName());
+        for (int i = 0; i < root.getChildCount(); i++) {
+            Task child = root.getChild(i);
+            String childName = getTaskName(child);
+
+            Object childVertex = addVertex(childName);
             addEdge(rootVertex, childVertex);
 
             graphSubtree(child, childVertex);
+        }
+    }
+
+    private String getTaskName(Task task) {
+        if (task instanceof Selector) {
+            return "?";
+        } else if (task instanceof Sequence) {
+            return "->";
+        } else {
+            return task.getClass().getSimpleName();
         }
     }
 

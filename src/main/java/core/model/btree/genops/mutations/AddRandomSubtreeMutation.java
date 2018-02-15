@@ -1,8 +1,9 @@
 package core.model.btree.genops.mutations;
 
-import com.badlogic.gdx.ai.btree.BranchTask;
-import com.badlogic.gdx.ai.btree.Task;
 import com.sun.javaws.exceptions.InvalidArgumentException;
+import core.BtreeAlt.CompositeTasks.TempCompositeTask;
+import core.BtreeAlt.LeafTasks.TempLeafTask;
+import core.BtreeAlt.TempTask;
 import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.unit.Unit;
@@ -22,45 +23,43 @@ public class AddRandomSubtreeMutation extends Mutation {
     }
 
     @Override
-    public boolean canBePerformed(Task root) {
+    public boolean canBePerformed(TempTask root) {
         return BehaviorTreeUtil.getSize(root) > 0;
     }
 
     @Override
-    public Task mutate(Task root, Class<? extends Unit> unitClass) {
+    public void mutate(TempTask root, Class<? extends Unit> unitClass) {
         try {
 
-            Task randomSubtree;
+            TempTask randomSubtree;
             if (onlyAddSingleLeafTask) {
-                List<Class<? extends Task>> availableLeafTasks = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableLeafTasks();
+                List<Class<? extends TempLeafTask>> availableLeafTasks = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableLeafTasks();
                 randomSubtree = availableLeafTasks.get(random.nextInt(availableLeafTasks.size())).newInstance();
             } else {
                 randomSubtree = BehaviorTreeUtil.generateRandomTree(unitClass, 3, 5);
             }
 
-            Task randomTaskInTree = BehaviorTreeUtil.getRandomTask(root, true, Task.class);
+            TempTask randomTaskInTree = BehaviorTreeUtil.getRandomTask(root, true, TempTask.class);
 
-            if (randomTaskInTree instanceof BranchTask) {
-                return BehaviorTreeUtil.insertTask(root, randomTaskInTree, random.nextInt(randomTaskInTree.getChildCount() + 1), randomSubtree);
+            if (randomTaskInTree instanceof TempCompositeTask) {
+                ((TempCompositeTask) randomTaskInTree).insertChild(random.nextInt(randomTaskInTree.getChildCount() + 1), randomSubtree);
 
             } else {
-                List<Class<? extends BranchTask>> availableCompositeTasks = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks();
-                BranchTask randomComposite = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).newInstance();
+                List<Class<? extends TempCompositeTask>> availableCompositeTasks = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks();
+                TempCompositeTask randomComposite = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).newInstance();
 
                 if (random.nextBoolean()) {
-                    randomComposite.addChild(randomTaskInTree);
+                    randomComposite.addChild(randomTaskInTree.cloneTask());
                     randomComposite.addChild(randomSubtree);
                 } else {
                     randomComposite.addChild(randomSubtree);
-                    randomComposite.addChild(randomTaskInTree);
+                    randomComposite.addChild(randomTaskInTree.cloneTask());
                 }
-                return BehaviorTreeUtil.replaceTask(root, randomTaskInTree, randomComposite);
+                randomTaskInTree.getParent().replaceChild(randomTaskInTree, randomComposite);
             }
-
         } catch (InvalidArgumentException | IllegalAccessException | InstantiationException | NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
-            return null;
         }
     }
 }

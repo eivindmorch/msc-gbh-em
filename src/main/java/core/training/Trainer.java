@@ -1,6 +1,6 @@
 package core.training;
 
-import com.badlogic.gdx.ai.btree.Task;
+import core.BtreeAlt.TempTask;
 import core.data.DataSet;
 import core.data.rows.DataRow;
 import core.unit.Unit;
@@ -78,7 +78,7 @@ public class Trainer<U extends Unit, D extends DataRow> {
 
             UnitLogger.setIntraResourcesWritingDirectory(getChromosomeFileDirectory(currentEpoch, exampleIndex, chromosomeIndex));
 
-            Task btree = population.get(chromosomeIndex).getBtree();
+            TempTask btree = population.get(chromosomeIndex).getBtree();
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
 
             SimController.getInstance().loadScenario(scenarioPath);

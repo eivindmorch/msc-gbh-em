@@ -1,6 +1,6 @@
 package core.model.btree.genops;
 
-import com.badlogic.gdx.ai.btree.Task;
+import core.BtreeAlt.TempTask;
 import core.unit.Unit;
 
 public abstract class Mutation {
@@ -15,7 +15,7 @@ public abstract class Mutation {
         return weight;
     }
 
-    public abstract boolean canBePerformed(Task root);
+    public abstract boolean canBePerformed(TempTask root);
 
-    public abstract Task mutate(Task root, Class<? extends Unit> unitClass);
+    public abstract void mutate(TempTask root, Class<? extends Unit> unitClass);
 }

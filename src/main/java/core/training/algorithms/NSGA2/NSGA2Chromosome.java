@@ -1,6 +1,6 @@
 package core.training.algorithms.NSGA2;
 
-import com.badlogic.gdx.ai.btree.Task;
+import core.BtreeAlt.TempTask;
 import core.training.Chromosome;
 
 import java.util.Comparator;
@@ -13,7 +13,7 @@ public class NSGA2Chromosome extends Chromosome {
     int rank;
     double crowdingDistance;
 
-    public NSGA2Chromosome(Task btree) {
+    public NSGA2Chromosome(TempTask btree) {
         super(btree);
     }
 

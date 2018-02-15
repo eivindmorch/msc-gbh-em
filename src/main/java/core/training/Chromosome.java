@@ -1,6 +1,7 @@
 package core.training;
 
 import com.badlogic.gdx.ai.btree.Task;
+import core.BtreeAlt.TempTask;
 import core.model.btree.BehaviorTreeUtil;
 import core.util.ToStringBuilder;
 
@@ -12,15 +13,15 @@ import java.util.ArrayList;
 public class Chromosome {
 
     // TODO Rename to behaviorTreeRoot
-    private Task btree;
+    private TempTask btree;
     // TODO Change fitness to map?
     private ArrayList<Double> fitness;
 
-    public Chromosome(Task btree) {
+    public Chromosome(TempTask btree) {
         this.btree = btree;
     }
 
-    public Task getBtree() {
+    public TempTask getBtree() {
         return btree;
     }
 
@@ -32,12 +33,12 @@ public class Chromosome {
         this.fitness = new ArrayList<>(fitness);
     }
 
-    @Override
-    public Chromosome clone(){
-        Chromosome newEvalBtree = new Chromosome(BehaviorTreeUtil.cloneTree(btree));
-        newEvalBtree.setFitness(fitness);
-        return newEvalBtree;
-    }
+//    @Override
+//    public Chromosome clone(){
+//        Chromosome newEvalBtree = new Chromosome(BehaviorTreeUtil.cloneTree(btree));
+//        newEvalBtree.setFitness(fitness);
+//        return newEvalBtree;
+//    }
 
     @Override
     public String toString() {

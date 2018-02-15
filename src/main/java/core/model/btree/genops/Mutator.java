@@ -1,6 +1,6 @@
 package core.model.btree.genops;
 
-import com.badlogic.gdx.ai.btree.Task;
+import core.BtreeAlt.TempTask;
 import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.mutations.*;
 import core.unit.Unit;
@@ -18,14 +18,14 @@ public abstract class Mutator {
     static {
         mutations.add(new AddRandomSubtreeMutation(1, true));
         mutations.add(new AddRandomSubtreeMutation(1, false));
-        mutations.add(new RemoveRandomSubtreeMutation(1));
+//        mutations.add(new RemoveRandomSubtreeMutation(1));
         mutations.add(new SwitchPositionsOfRandomSiblingTasksMutation(1));
-        mutations.add(new ReplaceTreeWithSubtreeMutation(1)); // TODO Too big change for a mutation?
-        mutations.add(new ReplaceRandomTaskWithTaskOfSameTypeMutation(1));
+//        mutations.add(new ReplaceTreeWithSubtreeMutation(1)); // TODO Too big change for a mutation?
+//        mutations.add(new ReplaceRandomTaskWithTaskOfSameTypeMutation(1));
         mutations.add(new RandomiseVariablesOfRandomVariableTaskMutation(1));
     }
 
-    public static Task mutate(Task root, Class<? extends Unit> unitClass) {
+    public static void mutate(TempTask root, Class<? extends Unit> unitClass) {
 
         double totalWeight = 0;
         NavigableMap<Double, Mutation> selectionMap = new TreeMap<>();
@@ -40,7 +40,7 @@ public abstract class Mutator {
         double randomValue = random.nextDouble() * totalWeight;
         Mutation selectedMutation = selectionMap.higherEntry(randomValue).getValue();
 
-        Task mutatedTree = selectedMutation.mutate(root, unitClass);
-        return BehaviorTreeUtil.clean(mutatedTree);
+        selectedMutation.mutate(root, unitClass);
+        BehaviorTreeUtil.clean(root);
     }
 }

@@ -3,19 +3,13 @@ package core.model.btree.task.unit;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
-import core.model.btree.task.AlwaysSuccessfulTask;
-import core.model.btree.task.NamedTask;
 import core.model.btree.task.TaskTickTracker;
-import core.model.btree.task.VariableLeafTask;
 import core.unit.Unit;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
-import static core.util.SystemUtil.random;
 
+public class WaitTask extends LeafTask<Blackboard<Unit>> {
 
-public class WaitTask extends LeafTask<Blackboard<Unit>> implements NamedTask, AlwaysSuccessfulTask {
-
-    private String name = "Wait";
     private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
 
     @Override
@@ -45,10 +39,5 @@ public class WaitTask extends LeafTask<Blackboard<Unit>> implements NamedTask, A
     @Override
     protected Task<Blackboard<Unit>> copyTo(Task<Blackboard<Unit>> task) {
         return task;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
     }
 }

@@ -1,28 +1,19 @@
-package experiments.experiment1.model.btree.task.unit.followerunit;
+package experiments.experiment1.tasks;
 
+import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
+import core.BtreeAlt.LeafTasks.TempLeafTask;
 import core.model.btree.Blackboard;
-import core.model.btree.task.NamedTask;
-import core.model.btree.task.VariableLeafTask;
 import experiments.experiment1.unit.FollowerUnit;
 
 import static core.util.SystemUtil.random;
 
-public class IsApproachingTask extends VariableLeafTask<Blackboard<FollowerUnit>> implements NamedTask {
+public class IsApproachingTask extends LeafTask<Blackboard<FollowerUnit>> {
 
     private double degreeLimit;
-    private String name;
-
-    public IsApproachingTask() {
-        randomiseDegreeLimit();
-    }
 
     public IsApproachingTask(double degreeLimit) {
-        setDegreeLimit(degreeLimit);
-    }
-
-    public IsApproachingTask(IsApproachingTask isApproachingTaskTask) {
-        this(isApproachingTaskTask.degreeLimit);
+        this.degreeLimit = degreeLimit;
     }
 
     @Override
@@ -41,17 +32,9 @@ public class IsApproachingTask extends VariableLeafTask<Blackboard<FollowerUnit>
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        return new IsApproachingTask(this);
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void randomiseVariables() {
-        randomiseDegreeLimit();
+        IsApproachingTask isApproachingTask = (IsApproachingTask) task;
+        isApproachingTask.degreeLimit = this.degreeLimit;
+        return isApproachingTask;
     }
 
     @Override
@@ -59,12 +42,4 @@ public class IsApproachingTask extends VariableLeafTask<Blackboard<FollowerUnit>
         return obj instanceof IsApproachingTask && this.degreeLimit == ((IsApproachingTask) obj).degreeLimit;
     }
 
-    private void randomiseDegreeLimit() {
-        setDegreeLimit(1 + (random.nextDouble() * 44));
-    }
-
-    private void setDegreeLimit(double degreeLimit) {
-        this.degreeLimit = degreeLimit;
-        this.name = "Is approaching [" + String.format("%.2f", degreeLimit) + "°]";
-    }
 }

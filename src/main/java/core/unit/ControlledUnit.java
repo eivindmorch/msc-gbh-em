@@ -2,7 +2,7 @@ package core.unit;
 
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
-import core.model.btree.BehaviorTreeUtil;
+import core.BtreeAlt.TempTask;
 import core.model.btree.Blackboard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,16 +34,16 @@ public class ControlledUnit<U extends Unit> {
         btree.step();
     }
 
-    private static HashMap<Class<? extends Unit>, Task> controlledUnitBtreeMap = new HashMap<>();
+    private static HashMap<Class<? extends Unit>, TempTask> controlledUnitBtreeMap = new HashMap<>();
 
-    public static void setControlledUnitBtreeMap(Class<? extends Unit> unitClass, Task rootTask) {
-        HashMap<Class<? extends Unit>, Task> controlledUnitBtreeMap = new HashMap<>();
+    public static void setControlledUnitBtreeMap(Class<? extends Unit> unitClass, TempTask rootTask) {
+        HashMap<Class<? extends Unit>, TempTask> controlledUnitBtreeMap = new HashMap<>();
         controlledUnitBtreeMap.put(unitClass, rootTask);
         ControlledUnit.controlledUnitBtreeMap = controlledUnitBtreeMap;
     }
 
     @SuppressWarnings("unchecked")
     private static <U extends Unit> Task<Blackboard<U>> getControlledUnitBtree(U unit) {
-        return ControlledUnit.controlledUnitBtreeMap.get(unit.getClass());
+        return ControlledUnit.controlledUnitBtreeMap.get(unit.getClass()).instantiateTask();
     }
 }

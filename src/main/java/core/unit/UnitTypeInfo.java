@@ -1,9 +1,7 @@
 package core.unit;
 
-import com.badlogic.gdx.ai.btree.BranchTask;
-import com.badlogic.gdx.ai.btree.Task;
-import com.sun.istack.internal.NotNull;
-import core.model.btree.Blackboard;
+import core.BtreeAlt.CompositeTasks.TempCompositeTask;
+import core.BtreeAlt.LeafTasks.TempLeafTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +13,12 @@ public class UnitTypeInfo {
     private String name;
     private String symbol;
     private Class<? extends Unit> unitClass;
-    private List<Class<? extends Task>> availableLeafTasks;
-    private List<Class<? extends BranchTask>> availableCompositeTasks;
+    private List<Class<? extends TempLeafTask>> availableLeafTasks;
+    private List<Class<? extends TempCompositeTask>> availableCompositeTasks;
 
     public static void add(String name, String symbol, Class<? extends Unit> unitClass,
-                           List<Class<? extends Task>> availableLeafTasks,
-                           List<Class<? extends BranchTask>> availableCompositeTasks) {
+                           List<Class<? extends TempLeafTask>> availableLeafTasks,
+                           List<Class<? extends TempCompositeTask>> availableCompositeTasks) {
 
         UnitTypeInfo unitTypeInfo = new UnitTypeInfo(name, symbol, unitClass, availableLeafTasks, availableCompositeTasks);
         UnitTypeInfo.symbolToUnitInfoMap.put(symbol, unitTypeInfo);
@@ -28,8 +26,8 @@ public class UnitTypeInfo {
     }
 
     private UnitTypeInfo(String name, String symbol, Class<? extends Unit> unitClass,
-                         List<Class<? extends Task>> availableLeafTasks,
-                         List<Class<? extends BranchTask>> availableCompositeTasks) {
+                         List<Class<? extends TempLeafTask>> availableLeafTasks,
+                         List<Class<? extends TempCompositeTask>> availableCompositeTasks) {
         this.name = name;
         this.symbol = symbol;
         this.unitClass = unitClass;
@@ -49,11 +47,11 @@ public class UnitTypeInfo {
         return unitClass;
     }
 
-    public List<Class<? extends Task>> getAvailableLeafTasks() {
+    public List<Class<? extends TempLeafTask>> getAvailableLeafTasks() {
         return availableLeafTasks;
     }
 
-    public List<Class<? extends BranchTask>> getAvailableCompositeTasks() {
+    public List<Class<? extends TempCompositeTask>> getAvailableCompositeTasks() {
         return availableCompositeTasks;
     }
 
