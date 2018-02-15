@@ -40,7 +40,6 @@ public abstract class Mutator {
         Mutation selectedMutation = selectionMap.higherEntry(randomValue).getValue();
 
         TempTask newRoot = selectedMutation.mutate(root.cloneTask(), unitClass);
-        newRoot.clean();
-        return newRoot;
+        return newRoot.getCleanVersion();
     }
 }

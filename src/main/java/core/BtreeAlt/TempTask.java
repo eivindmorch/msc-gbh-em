@@ -123,30 +123,42 @@ public abstract class TempTask {
     }
 
     // TODO One method calling all other helpers (private)
-    public void clean() {
+    public TempTask getCleanVersion() {
+        TempTask cleanTask = this.cloneTask();
         int lastSize;
         do {
-            lastSize = getSize();
-            removeFollowingTasksOfAlwaysSuccessfulTasks();
-            removeEmptyAndSingleChildCompositeTasks();
-        } while (getSize() < lastSize);
+            lastSize = cleanTask.getSize();
+            cleanTask = removeFollowingTasksOfAlwaysSuccessfulTasks(cleanTask);
+            cleanTask = removeEmptyAndSingleChildCompositeTasks(cleanTask);
+        } while (cleanTask.getSize() < lastSize);
+        return cleanTask;
     }
 
-    public void removeEmptyAndSingleChildCompositeTasks() {
+    public static TempTask removeEmptyAndSingleChildCompositeTasks(TempTask root) {
         // TODO Fix (does not check root, needs to replace root if root has too frew children)
-        ArrayList<TempCompositeTask> compositeTasks = getTasks(false, TempCompositeTask.class);
+        TempTask cleanTask = root.cloneTask();
 
+        ArrayList<TempCompositeTask> compositeTasks = cleanTask.getTasks(false, TempCompositeTask.class);
         for (TempCompositeTask compositeTask : compositeTasks) {
-            if (compositeTask.getChildCount() < 2) {
+            if (compositeTask.getChildCount() == 1) {
                 TempCompositeTask parent = compositeTask.getParent();
                 ArrayList<TempTask> children = compositeTask.getChildren();
                 parent.replaceChild(compositeTask, children);
+
+            } else if (compositeTask.getChildCount() == 0) {
+                compositeTask.removeFromParent();
             }
         }
+        // Remove root if it has only one child
+        if (cleanTask.getChildCount() == 1) {
+            return cleanTask.getChild(0);
+        }
+        return cleanTask;
     }
 
-    public void removeFollowingTasksOfAlwaysSuccessfulTasks() {
-        ArrayList<TempSelector> selectors = getTasks(true, TempSelector.class);
+    public static TempTask removeFollowingTasksOfAlwaysSuccessfulTasks(TempTask root) {
+        TempTask cleanTask = root.cloneTask();
+        ArrayList<TempSelector> selectors = cleanTask.getTasks(true, TempSelector.class);
 
         for (TempSelector selector : selectors) {
             ArrayList<TempTask> uncheckedChildren = new ArrayList<>(selector.getChildren());
@@ -157,7 +169,9 @@ public abstract class TempTask {
                 }
             }
         }
+        return cleanTask;
     }
+
     public abstract String getDisplayName();
 
     // TODO Rename?

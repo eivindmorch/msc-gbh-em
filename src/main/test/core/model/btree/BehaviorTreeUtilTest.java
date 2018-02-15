@@ -373,7 +373,7 @@ class BehaviorTreeUtilTest {
     @Test
     void removeFollowingTasksOfAlwaysSuccessfulTasks() {
         TempTask root1Method = generateTree3();
-        root1Method.removeFollowingTasksOfAlwaysSuccessfulTasks();
+        root1Method = TempTask.removeFollowingTasksOfAlwaysSuccessfulTasks(root1Method);
 
         TempTask root1Manual = new TempSelector(
                 new TempSelector(
@@ -390,7 +390,7 @@ class BehaviorTreeUtilTest {
 
 
         TempTask root2Method = generateTree4();
-        root2Method.removeFollowingTasksOfAlwaysSuccessfulTasks();
+        root2Method = TempTask.removeFollowingTasksOfAlwaysSuccessfulTasks(root2Method);
 
         TempTask root2Manual = new TempSequence(
                 new TempSelector(

@@ -12,10 +12,9 @@ public abstract class Crossover {
             TempTask parent2RandomSubtreeRoot = parent2Root.getRandomTask(true, TempTask.class).cloneTask();
 
             childRandomSubtreeRoot.getParent().replaceChild(childRandomSubtreeRoot, parent2RandomSubtreeRoot);
-            child.clean();
         } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
         }
-        return child;
+        return child.getCleanVersion();
     }
 }

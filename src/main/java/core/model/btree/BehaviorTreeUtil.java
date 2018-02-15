@@ -41,7 +41,7 @@ public abstract class BehaviorTreeUtil {
         TempTask root;
         do {
             root = generateRandomTreeWithSpecificNumberOfTasks(unitClass, numberOfCompositeTasks, numberOfLeafTasks);
-            root.clean();
+            root = root.getCleanVersion();
         } while (root.getSize() < minimumTasks || root.getSize() > maximumTasks);
         return root;
     }

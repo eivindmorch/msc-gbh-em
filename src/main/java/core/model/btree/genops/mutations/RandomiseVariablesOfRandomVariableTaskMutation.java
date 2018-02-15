@@ -18,7 +18,6 @@ public class RandomiseVariablesOfRandomVariableTaskMutation extends Mutation {
             root.getRandomTask(true, TempVariableLeafTask.class);
             return true;
         } catch (NoSuchTaskFoundException e) {
-            e.printStackTrace();
             return false;
         }
     }
