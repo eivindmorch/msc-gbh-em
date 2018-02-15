@@ -128,8 +128,13 @@ public abstract class TempTask {
         int lastSize;
         do {
             lastSize = cleanTask.getSize();
+
             cleanTask = removeFollowingTasksOfAlwaysSuccessfulTasks(cleanTask);
             cleanTask = removeEmptyAndSingleChildCompositeTasks(cleanTask);
+
+            cleanTask = combineNestedCompositesOfSameType(cleanTask);
+            cleanTask = removeEmptyAndSingleChildCompositeTasks(cleanTask);
+
         } while (cleanTask.getSize() < lastSize);
         return cleanTask;
     }
@@ -166,6 +171,21 @@ public abstract class TempTask {
                 if (uncheckedChildren.remove(0) instanceof TempAlwaysSuccessfulTask) {
                     selector.removeChildren(uncheckedChildren);
                     break;
+                }
+            }
+        }
+        return cleanTask;
+    }
+
+    public static TempTask combineNestedCompositesOfSameType(TempTask root) {
+        TempTask cleanTask = root.cloneTask();
+        ArrayList<TempCompositeTask> compositeTasks = cleanTask.getTasks(true, TempCompositeTask.class);
+
+        for (TempCompositeTask compositeTask : compositeTasks) {
+            for (TempTask child : compositeTask.getChildren()) {
+                if (compositeTask.getClass().equals(child.getClass())) {
+                    compositeTask.replaceChild(child, child.getChildren());
+                    ((TempCompositeTask) child).removeAllChildren();
                 }
             }
         }

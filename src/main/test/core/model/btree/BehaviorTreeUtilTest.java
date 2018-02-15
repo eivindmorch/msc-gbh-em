@@ -406,6 +406,33 @@ class BehaviorTreeUtilTest {
         assertTrue(root2Method.structurallyEquals(root2Manual));
     }
 
+    @Test
+    void combineNestedCompositesOfSameType() {
+        TempTask root1 = new TempSequence(
+                new TempSelector(
+                        new TempSelector(
+                                new TempMoveToTargetTask()
+                        )
+                ),
+                new TempSequence(
+                        new TempIsWithinTask(60), new TempWaitTask()
+                ),
+                new TempTurnToTargetTask()
+        );
+
+        TempTask root2 = new TempSequence(
+                new TempSelector(
+                        new TempMoveToTargetTask()
+                ),
+                new TempIsWithinTask(60), new TempWaitTask(),
+                new TempTurnToTargetTask()
+        );
+
+        assertTrue(TempTask.combineNestedCompositesOfSameType(root1).structurallyEquals(root2));
+
+
+    }
+
 
 
 //  ----------------- HELPERS --------------------------------
