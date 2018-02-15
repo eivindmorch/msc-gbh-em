@@ -9,8 +9,8 @@ import java.util.List;
 
 public class TempSelector extends TempCompositeTask {
 
+    // For .newInstance()
     public TempSelector() {
-        super("?");
     }
 
     public TempSelector(TempTask... children) {
@@ -18,8 +18,12 @@ public class TempSelector extends TempCompositeTask {
     }
 
     public TempSelector(List<TempTask> children) {
-        this();
         addChildren(children);
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "?";
     }
 
     @Override

@@ -8,8 +8,9 @@ import experiments.experiment1.tasks.MoveToTargetTask;
 
 public class TempMoveToTargetTask extends TempLeafTask implements TempAlwaysSuccessfulTask {
 
-    public TempMoveToTargetTask() {
-        super("Move to target");
+    @Override
+    public String getDisplayName() {
+        return "Move to target";
     }
 
     @Override

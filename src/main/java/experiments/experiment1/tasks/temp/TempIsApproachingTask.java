@@ -12,22 +12,15 @@ public class TempIsApproachingTask extends TempVariableLeafTask {
     private double degreeLimit;
 
     public TempIsApproachingTask() {
-        super("Is approaching");
         randomiseDegreeLimit();
     }
 
     public TempIsApproachingTask(double degreeLimit) {
-        super("Is approaching");
-        setDegreeLimit(degreeLimit);
+        this.degreeLimit = degreeLimit;
     }
 
     private void randomiseDegreeLimit() {
-        setDegreeLimit(1 + (random.nextDouble() * 44));
-    }
-
-    private void setDegreeLimit(double degreeLimit) {
-        this.degreeLimit = degreeLimit;
-        this.setDisplayName("Is approaching [" + String.format("%.2f", degreeLimit) + "°]");
+        this.degreeLimit = 1 + (random.nextDouble() * 44);
     }
 
     @Override
@@ -43,6 +36,11 @@ public class TempIsApproachingTask extends TempVariableLeafTask {
     @Override
     public boolean structurallyEquals(Object o) {
         return (o instanceof TempIsApproachingTask && this.degreeLimit == ((TempIsApproachingTask) o).degreeLimit);
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Is approaching [" + String.format("%.2f", degreeLimit) + "°]";
     }
 
     @Override

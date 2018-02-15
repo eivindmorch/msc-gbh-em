@@ -8,10 +8,6 @@ import java.util.*;
 
 public abstract class TempCompositeTask extends TempTask {
 
-    public TempCompositeTask(String displayName) {
-        super(displayName);
-    }
-
     public void addChild(TempTask child) {
         this.children.add(child);
         setThisAsParentFor(child);

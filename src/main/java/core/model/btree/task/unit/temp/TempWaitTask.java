@@ -8,9 +8,9 @@ import core.model.btree.task.unit.WaitTask;
 
 public class TempWaitTask extends TempLeafTask implements TempAlwaysSuccessfulTask {
 
-
-    public TempWaitTask() {
-        super("Wait");
+    @Override
+    public String getDisplayName() {
+        return "Wait";
     }
 
     @Override

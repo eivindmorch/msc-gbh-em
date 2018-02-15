@@ -12,21 +12,11 @@ import static core.util.SystemUtil.random;
 
 public abstract class TempTask {
 
-    private String displayName;
     protected ArrayList<TempTask> children;
     private TempCompositeTask parent;
 
-    public TempTask(String displayName) {
-        this.displayName = displayName;
+    public TempTask() {
         this.children = new ArrayList<>();
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    protected void setDisplayName(String displayName) {
-        this.displayName = displayName;
     }
 
     public ArrayList<TempTask> getChildren() {
@@ -143,6 +133,7 @@ public abstract class TempTask {
     }
 
     public void removeEmptyAndSingleChildCompositeTasks() {
+        // TODO Fix (does not check root, needs to replace root if root has too frew children)
         ArrayList<TempCompositeTask> compositeTasks = getTasks(false, TempCompositeTask.class);
 
         for (TempCompositeTask compositeTask : compositeTasks) {
@@ -167,6 +158,7 @@ public abstract class TempTask {
             }
         }
     }
+    public abstract String getDisplayName();
 
     // TODO Rename?
     public abstract TempTask cloneTask();

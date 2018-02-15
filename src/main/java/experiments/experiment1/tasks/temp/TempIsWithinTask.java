@@ -12,22 +12,15 @@ public class TempIsWithinTask extends TempVariableLeafTask {
     private double distanceLimit;
 
     public TempIsWithinTask() {
-        super("Is within");
         randomiseDistanceLimit();
     }
 
     public TempIsWithinTask(double distanceLimit) {
-        super("Is within");
-        setDistanceLimit(distanceLimit);
+        this.distanceLimit = distanceLimit;
     }
 
     private void randomiseDistanceLimit() {
-        setDistanceLimit(1 + (random.nextDouble() * 44));
-    }
-
-    private void setDistanceLimit(double distanceLimit) {
-        this.distanceLimit = distanceLimit;
-        this.setDisplayName("Is within [" + String.format("%.2f", distanceLimit) + "°]");
+        this.distanceLimit = 1 + (random.nextDouble() * 44);
     }
 
     @Override
@@ -43,6 +36,11 @@ public class TempIsWithinTask extends TempVariableLeafTask {
     @Override
     public boolean structurallyEquals(Object o) {
         return (o instanceof TempIsWithinTask && this.distanceLimit == ((TempIsWithinTask) o).distanceLimit);
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Is within [" + String.format("%.2f", distanceLimit) + "°]";
     }
 
     @Override

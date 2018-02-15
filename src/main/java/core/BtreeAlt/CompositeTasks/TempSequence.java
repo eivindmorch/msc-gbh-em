@@ -9,8 +9,8 @@ import java.util.List;
 
 public class TempSequence extends TempCompositeTask {
 
+    // For .newInstance()
     public TempSequence() {
-        super("->");
     }
 
     public TempSequence(TempTask... children) {
@@ -18,8 +18,12 @@ public class TempSequence extends TempCompositeTask {
     }
 
     public TempSequence(List<TempTask> children) {
-        this();
         addChildren(children);
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "->";
     }
 
     @Override
