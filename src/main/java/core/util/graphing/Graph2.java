@@ -92,7 +92,7 @@ class  Graph2 {
         } else if (task instanceof Sequence) {
             return "->";
         } else {
-            return task.getClass().getSimpleName();
+            return task.toString();
         }
     }
 

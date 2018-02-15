@@ -53,14 +53,14 @@ public abstract class TempCompositeTask extends TempTask {
         setThisAsParentFor(newChild);
     }
 
-    public void replaceChild(TempTask childToReplace, List<TempTask> children) {
+    public void replaceChild(TempTask childToReplace, List<TempTask> newChildren) {
         int index = this.children.indexOf(childToReplace);
 
         removeChild(childToReplace);
-        insertChildren(index, children);
+        insertChildren(index, newChildren);
 
         removeThisAsParentFor(childToReplace);
-        setThisAsParentFor(children);
+        setThisAsParentFor(newChildren);
     }
 
     public void swapChildrenPositions(int index1, int index2) {

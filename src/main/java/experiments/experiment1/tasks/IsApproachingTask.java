@@ -33,4 +33,9 @@ public class IsApproachingTask extends LeafTask<Blackboard<FollowerUnit>> {
         isApproachingTask.degreeLimit = this.degreeLimit;
         return isApproachingTask;
     }
+
+    @Override
+    public String toString() {
+        return "Is Approaching " + degreeLimit;
+    }
 }

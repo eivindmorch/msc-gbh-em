@@ -3,8 +3,11 @@ package core.unit;
 import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.LeafTasks.TempLeafTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static core.util.SystemUtil.random;
 
 
 // Needed for searching available tasks and to register unit in UnitHandler
@@ -47,14 +50,31 @@ public class UnitTypeInfo {
         return unitClass;
     }
 
-    public List<Class<? extends TempLeafTask>> getAvailableLeafTasks() {
-        return availableLeafTasks;
+    public List<Class<? extends TempLeafTask>> getAvailableLeafTaskClasses() {
+        return new ArrayList<>(availableLeafTasks);
+    }
+    
+    public TempLeafTask getRandomAvailableLeafTask() {
+        try {
+            return availableLeafTasks.get(random.nextInt(availableLeafTasks.size())).newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public List<Class<? extends TempCompositeTask>> getAvailableCompositeTasks() {
-        return availableCompositeTasks;
+    public List<Class<? extends TempCompositeTask>> getAvailableCompositeTaskClasses() {
+        return new ArrayList<>(availableCompositeTasks);
     }
 
+    public TempCompositeTask getRandomAvailableCompositeTask() {
+        try {
+            return availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     // STATIC
     private static HashMap<String, UnitTypeInfo> symbolToUnitInfoMap = new HashMap<>();

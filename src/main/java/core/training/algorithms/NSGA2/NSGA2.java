@@ -113,8 +113,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             if (SystemUtil.random.nextDouble() < CROSSOVER_RATE) {
                 newRoot = Crossover.crossover(parent1.getBtree(), parent2.getBtree());
             } else {
-                newRoot = parent1.getBtree().cloneTask();
-                Mutator.mutate(newRoot, trainer.getUnitToTrainClass());
+                newRoot = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
             }
             if (!population.containsChromosomeWithEqualTree(newRoot)
                     && !offspringPopulation.containsChromosomeWithEqualTree(newRoot)

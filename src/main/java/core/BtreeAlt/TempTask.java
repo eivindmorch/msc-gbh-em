@@ -30,7 +30,7 @@ public abstract class TempTask {
     }
 
     public ArrayList<TempTask> getChildren() {
-        return children;
+        return new ArrayList<>(children);
     }
 
     public int getChildCount() {
@@ -147,7 +147,9 @@ public abstract class TempTask {
 
         for (TempCompositeTask compositeTask : compositeTasks) {
             if (compositeTask.getChildCount() < 2) {
-                compositeTask.getParent().replaceChild(compositeTask, compositeTask.getChildren());
+                TempCompositeTask parent = compositeTask.getParent();
+                ArrayList<TempTask> children = compositeTask.getChildren();
+                parent.replaceChild(compositeTask, children);
             }
         }
     }

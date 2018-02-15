@@ -11,11 +11,11 @@ public abstract class Mutation {
         this.weight = weight;
     }
 
-    public double getWeight() {
+    double getWeight() {
         return weight;
     }
 
-    public abstract boolean canBePerformed(TempTask root);
+    protected abstract boolean canBePerformed(TempTask root);
 
-    public abstract void mutate(TempTask root, Class<? extends Unit> unitClass);
+    protected abstract TempTask mutate(TempTask root, Class<? extends Unit> unitClass);
 }

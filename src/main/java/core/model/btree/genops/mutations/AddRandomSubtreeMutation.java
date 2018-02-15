@@ -15,7 +15,7 @@ import static core.util.SystemUtil.random;
 
 public class AddRandomSubtreeMutation extends Mutation {
 
-     private boolean onlyAddSingleLeafTask;
+    private boolean onlyAddSingleLeafTask;
 
     public AddRandomSubtreeMutation(double weight, boolean onlyAddSingleLeafTask) {
         super(weight);
@@ -23,30 +23,29 @@ public class AddRandomSubtreeMutation extends Mutation {
     }
 
     @Override
-    public boolean canBePerformed(TempTask root) {
+    protected boolean canBePerformed(TempTask root) {
         return root.getSize() > 0;
     }
 
     @Override
-    public void mutate(TempTask root, Class<? extends Unit> unitClass) {
-        try {
+    protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
+        TempTask newRoot = root.cloneTask();
 
+        try {
             TempTask randomSubtree;
             if (onlyAddSingleLeafTask) {
-                List<Class<? extends TempLeafTask>> availableLeafTasks = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableLeafTasks();
-                randomSubtree = availableLeafTasks.get(random.nextInt(availableLeafTasks.size())).newInstance();
+                randomSubtree = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getRandomAvailableLeafTask();
             } else {
                 randomSubtree = BehaviorTreeUtil.generateRandomTree(unitClass, 3, 5);
             }
 
-            TempTask randomTaskInTree = root.getRandomTask(true, TempTask.class);
+            TempTask randomTaskInTree = newRoot.getRandomTask(true, TempTask.class);
 
             if (randomTaskInTree instanceof TempCompositeTask) {
                 ((TempCompositeTask) randomTaskInTree).insertChild(random.nextInt(randomTaskInTree.getChildCount() + 1), randomSubtree);
 
             } else {
-                List<Class<? extends TempCompositeTask>> availableCompositeTasks = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getAvailableCompositeTasks();
-                TempCompositeTask randomComposite = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).newInstance();
+                TempCompositeTask randomComposite = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getRandomAvailableCompositeTask();
 
                 if (random.nextBoolean()) {
                     randomComposite.addChild(randomTaskInTree.cloneTask());
@@ -57,9 +56,11 @@ public class AddRandomSubtreeMutation extends Mutation {
                 }
                 randomTaskInTree.getParent().replaceChild(randomTaskInTree, randomComposite);
             }
-        } catch (InvalidArgumentException | IllegalAccessException | InstantiationException | NoSuchTaskFoundException e) {
+            return newRoot;
+        } catch (InvalidArgumentException | NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
+            return null;
         }
     }
 }

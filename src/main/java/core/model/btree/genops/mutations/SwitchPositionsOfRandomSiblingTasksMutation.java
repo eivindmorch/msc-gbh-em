@@ -15,7 +15,7 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
     }
 
     @Override
-    public boolean canBePerformed(TempTask root) {
+    protected boolean canBePerformed(TempTask root) {
         try {
             root.getRandomTask(true, TempCompositeTask.class, 2);
         } catch (NoSuchTaskFoundException e) {
@@ -25,9 +25,10 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
     }
 
     @Override
-    public void mutate(TempTask root, Class<? extends Unit> unitClass) {
+    protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
+        TempTask newRoot = root.cloneTask();
         try {
-            TempCompositeTask randomRoot = root.getRandomTask(true, TempCompositeTask.class, 2);
+            TempCompositeTask randomRoot = newRoot.getRandomTask(true, TempCompositeTask.class, 2);
 
             int childIndex1 = random.nextInt(randomRoot.getChildCount());
             int childIndex2;
@@ -37,9 +38,12 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
 
             randomRoot.swapChildrenPositions(childIndex1, childIndex2);
 
+            return newRoot;
+
         } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
+            return null;
         }
     }
 }

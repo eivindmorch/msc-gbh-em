@@ -54,31 +54,17 @@ public abstract class BehaviorTreeUtil {
         }
 
         UnitTypeInfo unitTypeInfo = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass);
-        List<Class<? extends TempCompositeTask>> availableCompositeTasks = unitTypeInfo.getAvailableCompositeTasks();
-        List<Class<? extends TempLeafTask>> availableLeafTasks = unitTypeInfo.getAvailableLeafTasks();
 
         // Create pool of random composite tasks
         ArrayList<TempCompositeTask> unassignedCompositeTasks = new ArrayList<>(numberOfCompositeTasks);
         for (int i = 0; i < numberOfCompositeTasks; i++) {
-
-            Class<? extends TempCompositeTask> randomCompositeTaskClass = availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size()));
-            try {
-                unassignedCompositeTasks.add(randomCompositeTaskClass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            unassignedCompositeTasks.add(unitTypeInfo.getRandomAvailableCompositeTask());
         }
 
         // Create pool of random leaf tasks
         ArrayList<TempLeafTask> unassignedLeafTasks = new ArrayList<>(numberOfLeafTasks);
         for (int i = 0; i < numberOfLeafTasks; i++) {
-
-            Class<? extends TempLeafTask> randomLeafTaskClass = availableLeafTasks.get(random.nextInt(availableLeafTasks.size()));
-            try {
-                unassignedLeafTasks.add(randomLeafTaskClass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            unassignedLeafTasks.add(unitTypeInfo.getRandomAvailableLeafTask());
         }
 
         // Contains list of all composites added to the tree

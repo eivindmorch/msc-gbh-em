@@ -1,5 +1,6 @@
 package core.util.graphing;
 
+import com.badlogic.gdx.ai.btree.Task;
 import core.BtreeAlt.TempTask;
 
 import java.util.ArrayList;
@@ -21,11 +22,21 @@ public abstract class Grapher {
         }
     }
 
-    public static void quickGraph(TempTask... tempTasks) {
-        GraphFrame graphFrame = Grapher.createNewFrame("Asd");
-        GraphTab graphTab = new GraphTab("sdk");
+    public static void quickGraph(String title, TempTask... tempTasks) {
+        GraphFrame graphFrame = Grapher.createNewFrame(title);
+        GraphTab graphTab = new GraphTab(title);
         for (TempTask tempTask : tempTasks) {
             graphTab.add(tempTask);
+        }
+        graphFrame.addTab(graphTab);
+        graphFrame.display();
+    }
+
+    public static void quickGraph(String title, Task... tasks) {
+        GraphFrame graphFrame = Grapher.createNewFrame(title);
+        GraphTab graphTab = new GraphTab(title);
+        for (Task task : tasks) {
+            graphTab.add(task);
         }
         graphFrame.addTab(graphTab);
         graphFrame.display();

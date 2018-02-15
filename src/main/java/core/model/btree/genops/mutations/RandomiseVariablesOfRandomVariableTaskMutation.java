@@ -13,18 +13,27 @@ public class RandomiseVariablesOfRandomVariableTaskMutation extends Mutation {
     }
 
     @Override
-    public boolean canBePerformed(TempTask root) {
-        return !root.getTasks(true, TempVariableLeafTask.class).isEmpty();
+    protected boolean canBePerformed(TempTask root) {
+        try {
+            root.getRandomTask(true, TempVariableLeafTask.class);
+            return true;
+        } catch (NoSuchTaskFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
-    public void mutate(TempTask root, Class<? extends Unit> unitClass) {
+    protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
+        TempTask newRoot = root.cloneTask();
         try {
-            TempVariableLeafTask randomTask  = root.getRandomTask(true, TempVariableLeafTask.class);
+            TempVariableLeafTask randomTask  = newRoot.getRandomTask(true, TempVariableLeafTask.class);
             randomTask.randomiseVariables();
+            return newRoot;
         } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
+            return null;
         }
     }
 }

@@ -29,4 +29,9 @@ public class IsWithinTask extends LeafTask<Blackboard<FollowerUnit>> {
         isWithinTask.distanceLimit = this.distanceLimit;
         return isWithinTask;
     }
+
+    @Override
+    public String toString() {
+        return "Is within " + distanceLimit;
+    }
 }

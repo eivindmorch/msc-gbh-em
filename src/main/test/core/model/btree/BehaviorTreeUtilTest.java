@@ -1,13 +1,22 @@
 package core.model.btree;
 
+import com.badlogic.gdx.ai.btree.Task;
+import com.badlogic.gdx.ai.btree.branch.Selector;
+import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.CompositeTasks.TempSelector;
 import core.BtreeAlt.CompositeTasks.TempSequence;
 import core.BtreeAlt.LeafTasks.TempVariableLeafTask;
 import core.BtreeAlt.TempTask;
+import core.model.btree.task.unit.WaitTask;
 import core.model.btree.task.unit.temp.TempWaitTask;
 import core.util.exceptions.NoSuchTaskFoundException;
+import core.util.graphing.GraphTab;
+import core.util.graphing.Grapher;
+import experiments.experiment1.tasks.IsWithinTask;
+import experiments.experiment1.tasks.MoveToTargetTask;
+import experiments.experiment1.tasks.TurnToTargetTask;
 import experiments.experiment1.tasks.temp.TempIsApproachingTask;
 import experiments.experiment1.tasks.temp.TempIsWithinTask;
 import experiments.experiment1.tasks.temp.TempMoveToTargetTask;
@@ -23,9 +32,38 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import static core.util.SystemUtil.random;
+import static core.util.SystemUtil.sleepSeconds;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BehaviorTreeUtilTest {
+
+//    @Test
+//    void asd() {
+//        TempTask tempRoot = new TempSequence(
+//                new TempSelector(
+//                        new TempMoveToTargetTask()
+//                ),
+//                new TempSelector(
+//                        new TempIsWithinTask(35.2), new TempWaitTask()
+//                ),
+//                new TempTurnToTargetTask()
+//        );
+//
+//        Task manual = new Sequence(
+//                new Selector(
+//                        new MoveToTargetTask()
+//                ),
+//                new Selector(
+//                        new IsWithinTask(35.2), new WaitTask()
+//                ),
+//                new TurnToTargetTask()
+//        );
+//
+//        Grapher.quickGraph("Original", tempRoot);
+//        Grapher.quickGraph("Instantiated", tempRoot.instantiateTask());
+//        Grapher.quickGraph("Manual", manual);
+//        sleepSeconds(100);
+//    }
 
     // TODO Test instantiateTask()
     // TODO Test generateRandomTree
@@ -195,7 +233,8 @@ class BehaviorTreeUtilTest {
         taskArray.add(index, selectorToInsert);
         TempTask rootOfManuallyInsertedTree = new TempSequence(selector, new TempSequence(taskArray), moveToTargetTask2, turnToTargetTask);
 
-        assertTrue(rootOfMethodInsertedTree.equals(rootOfManuallyInsertedTree));
+        assertTrue(rootOfMethodInsertedTree.structurallyEquals(rootOfManuallyInsertedTree));
+
 
         assertTrue(treeDoesNotContainDuplicateTasks(rootOfMethodInsertedTree));
     }
@@ -217,10 +256,10 @@ class BehaviorTreeUtilTest {
         TempSelector selectorWithRemovedTask = new TempSelector(isWithinTask, waitTask);
         TempTask rootOfTreeWithManualRemove1 = new TempSequence(selectorWithRemovedTask, moveToTargetTask2, turnToTargetTask);
 
-        assertTrue(rootOfOriginalTree.equals(rootOfTreeWithManualRemove1));
+        assertTrue(rootOfOriginalTree.structurallyEquals(rootOfTreeWithManualRemove1));
+
 
         assertTrue(treeDoesNotContainDuplicateTasks(rootOfTreeWithManualRemove1));
-
     }
 
 //    @Test
