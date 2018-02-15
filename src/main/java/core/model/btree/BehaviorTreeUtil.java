@@ -38,12 +38,12 @@ public abstract class BehaviorTreeUtil {
         int numberOfCompositeTasks = randomOfHalf;
         int numberOfLeafTasks = numberOfTasks - randomOfHalf;
 
-        try {
-            return generateRandomTreeWithSpecificNumberOfTasks(unitClass, numberOfCompositeTasks, numberOfLeafTasks);
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();
-        }
-        return null;
+        TempTask root;
+        do {
+            root = generateRandomTreeWithSpecificNumberOfTasks(unitClass, numberOfCompositeTasks, numberOfLeafTasks);
+            root.clean();
+        } while (root.getSize() < minimumTasks || root.getSize() > maximumTasks);
+        return root;
     }
 
     private static TempTask generateRandomTreeWithSpecificNumberOfTasks(Class<? extends Unit> unitClass, int numberOfCompositeTasks, int numberOfLeafTasks)
