@@ -41,6 +41,6 @@ public abstract class Mutator {
         Mutation selectedMutation = selectionMap.higherEntry(randomValue).getValue();
 
         selectedMutation.mutate(root, unitClass);
-        BehaviorTreeUtil.clean(root);
+        root.clean();
     }
 }

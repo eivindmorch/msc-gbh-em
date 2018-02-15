@@ -40,7 +40,7 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
         }
 
         // Add tree size
-        fitness.add((double) BehaviorTreeUtil.getSize(chromosome.getBtree()));
+        fitness.add((double) chromosome.getBtree().getSize());
 
         return fitness;
     }

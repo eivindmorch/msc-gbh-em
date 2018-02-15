@@ -24,7 +24,7 @@ public class AddRandomSubtreeMutation extends Mutation {
 
     @Override
     public boolean canBePerformed(TempTask root) {
-        return BehaviorTreeUtil.getSize(root) > 0;
+        return root.getSize() > 0;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class AddRandomSubtreeMutation extends Mutation {
                 randomSubtree = BehaviorTreeUtil.generateRandomTree(unitClass, 3, 5);
             }
 
-            TempTask randomTaskInTree = BehaviorTreeUtil.getRandomTask(root, true, TempTask.class);
+            TempTask randomTaskInTree = root.getRandomTask(true, TempTask.class);
 
             if (randomTaskInTree instanceof TempCompositeTask) {
                 ((TempCompositeTask) randomTaskInTree).insertChild(random.nextInt(randomTaskInTree.getChildCount() + 1), randomSubtree);

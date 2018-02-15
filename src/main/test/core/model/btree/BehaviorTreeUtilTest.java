@@ -68,9 +68,9 @@ class BehaviorTreeUtilTest {
 
     @Test
     void getSize() {
-        assertEquals(9, BehaviorTreeUtil.getSize(generateTree1()));
-        assertEquals(7, BehaviorTreeUtil.getSize(generateTree2()));
-        assertEquals(1, BehaviorTreeUtil.getSize(new TempMoveToTargetTask()));
+        assertEquals(9, generateTree1().getSize());
+        assertEquals(7, generateTree2().getSize());
+        assertEquals(1, new TempMoveToTargetTask().getSize());
     }
 
 //    @Test
@@ -149,7 +149,7 @@ class BehaviorTreeUtilTest {
         taskSet.add(selector);
         taskSet.add(rootSequence);
 
-        ArrayList<TempTask> utilTaskList = new ArrayList<>(BehaviorTreeUtil.getTasks(rootSequence, true, TempCompositeTask.class));
+        ArrayList<TempTask> utilTaskList = new ArrayList<>(rootSequence.getTasks(true, TempCompositeTask.class));
 
         assertEquals(3, utilTaskList.size());
         assertEquals(taskSet, new HashSet<>(utilTaskList));
@@ -171,7 +171,7 @@ class BehaviorTreeUtilTest {
         taskSet.add(isApproachingTask);
         taskSet.add(isWithinTask);
 
-        ArrayList<TempTask> utilTaskList = new ArrayList<>(BehaviorTreeUtil.getTasks(rootSequence, true, TempVariableLeafTask.class));
+        ArrayList<TempTask> utilTaskList = new ArrayList<>(rootSequence.getTasks(true, TempVariableLeafTask.class));
 
         assertEquals(taskSet.size(), utilTaskList.size());
         assertEquals(taskSet, new HashSet<>(utilTaskList));
@@ -186,14 +186,14 @@ class BehaviorTreeUtilTest {
         try {
 
             rootOfRandomTree = BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 3, 20);
-            TempTask randomTask = BehaviorTreeUtil.getRandomTask(rootOfRandomTree, true, TempTask.class, minimumNumOfChildren);
+            TempTask randomTask = rootOfRandomTree.getRandomTask(true, TempTask.class, minimumNumOfChildren);
 
             assertTrue(randomTask.getChildCount() >= minimumNumOfChildren);
 
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
         } catch (NoSuchTaskFoundException e) {
-            ArrayList<TempTask> taskList = BehaviorTreeUtil.getTasks(rootOfRandomTree, true, TempTask.class);
+            ArrayList<TempTask> taskList = rootOfRandomTree.getTasks(true, TempTask.class);
             ArrayList<TempTask> tasksWithEnoughChildren = new ArrayList<>();
             for (TempTask task : taskList) {
                 if (task.getChildCount() >= minimumNumOfChildren) {
@@ -424,7 +424,7 @@ class BehaviorTreeUtilTest {
     }
 //
     private boolean treeDoesNotContainDuplicateTasks(TempTask root) {
-        ArrayList<TempTask> taskList = BehaviorTreeUtil.getTasks(root, true, TempTask.class);
+        ArrayList<TempTask> taskList = root.getTasks(true, TempTask.class);
         HashSet<TempTask> taskSet = new HashSet<>(taskList);
         return taskList.size() == taskSet.size();
     }
@@ -448,13 +448,13 @@ class BehaviorTreeUtilTest {
 
 //        graphTab.add(root);
 
-        BehaviorTreeUtil.removeFollowingTasksOfAlwaysSuccessfulTasks(root);
+        root.removeFollowingTasksOfAlwaysSuccessfulTasks();
 //        graphTab.add(root);
-        assertEquals(11, BehaviorTreeUtil.getSize(root));
+        assertEquals(11, root.getSize());
 
-        BehaviorTreeUtil.clean(root);
+        root.clean();
 //        graphTab.add(root);
-        assertEquals(2, BehaviorTreeUtil.getSize(root));
+        assertEquals(2, root.getSize());
 
 //        graphFrame.addTab(graphTab);
 //        graphFrame.display();
@@ -473,10 +473,10 @@ class BehaviorTreeUtilTest {
                 )
         );
 
-        BehaviorTreeUtil.removeFollowingTasksOfAlwaysSuccessfulTasks(root2);
-        assertEquals(11, BehaviorTreeUtil.getSize(root2));
+        root2.removeFollowingTasksOfAlwaysSuccessfulTasks();
+        assertEquals(11, root2.getSize());
 
-        BehaviorTreeUtil.clean(root2);
-        assertEquals(10, BehaviorTreeUtil.getSize(root2));
+        root2.clean();
+        assertEquals(10, root2.getSize());
     }
 }

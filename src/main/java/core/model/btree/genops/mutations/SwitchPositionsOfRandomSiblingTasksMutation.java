@@ -2,7 +2,6 @@ package core.model.btree.genops.mutations;
 
 import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.TempTask;
-import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
@@ -18,7 +17,7 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
     @Override
     public boolean canBePerformed(TempTask root) {
         try {
-            BehaviorTreeUtil.getRandomTask(root, true, TempCompositeTask.class, 2);
+            root.getRandomTask(true, TempCompositeTask.class, 2);
         } catch (NoSuchTaskFoundException e) {
             return false;
         }
@@ -28,7 +27,7 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
     @Override
     public void mutate(TempTask root, Class<? extends Unit> unitClass) {
         try {
-            TempCompositeTask randomRoot = BehaviorTreeUtil.getRandomTask(root, true, TempCompositeTask.class, 2);
+            TempCompositeTask randomRoot = root.getRandomTask(true, TempCompositeTask.class, 2);
 
             int childIndex1 = random.nextInt(randomRoot.getChildCount());
             int childIndex2;

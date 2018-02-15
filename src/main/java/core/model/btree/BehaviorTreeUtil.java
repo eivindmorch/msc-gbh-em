@@ -5,11 +5,9 @@ import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.CompositeTasks.TempSelector;
 import core.BtreeAlt.CompositeTasks.TempSequence;
 import core.BtreeAlt.LeafTasks.TempLeafTask;
-import core.BtreeAlt.TempAlwaysSuccessfulTask;
 import core.BtreeAlt.TempTask;
 import core.unit.Unit;
 import core.unit.UnitTypeInfo;
-import core.util.exceptions.NoSuchTaskFoundException;
 import experiments.experiment1.tasks.temp.TempIsApproachingTask;
 import experiments.experiment1.tasks.temp.TempIsWithinTask;
 import experiments.experiment1.tasks.temp.TempMoveToTargetTask;
@@ -19,10 +17,10 @@ import java.util.*;
 
 import static core.util.SystemUtil.random;
 
-// TODO Doc all methods
 @SuppressWarnings("WeakerAccess")
 public abstract class BehaviorTreeUtil {
 
+    // TODO Test
     @SuppressWarnings("UnnecessaryLocalVariable")
     public static TempTask generateRandomTree(Class<? extends Unit> unitClass, int minimumTasks, int maximumTasks) throws InvalidArgumentException {
 
@@ -150,142 +148,4 @@ public abstract class BehaviorTreeUtil {
         return new TempSelector(shouldNotMoveSequence, new TempMoveToTargetTask());
     }
 
-
-    public static int getSize(TempTask root) {
-        int size = 1;
-
-        for (TempTask child : root.getChildren()) {
-            size += getSize(child);
-        }
-        return size;
-    }
-
-    public static int getDepth(TempTask root) {
-        ArrayList<Integer> childDepths = new ArrayList<>();
-
-        for (TempTask child : root.getChildren()) {
-            childDepths.add(getDepth(child));
-        }
-        if (!childDepths.isEmpty()) {
-            return 1 + Collections.max(childDepths);
-        }
-        return 1;
-    }
-
-    /**
-     * Gets all tasks of the specified type.
-     * @param root the root {@link TempTask} of the behavior tree that is to be searched
-     * @param includeRoot whether to include the root in the selection process
-     * @param taskTypeToSelect the type of task to be selected
-     * @param <T> the type of {@code taskTypeToSelect}
-     * @return a {@link List} of all tasks of type {@code taskTypeToSelect}
-     */
-    public static <T extends TempTask> ArrayList<T> getTasks(TempTask root, boolean includeRoot, Class<T> taskTypeToSelect) {
-        ArrayList<T> tasks = new ArrayList<>();
-
-        if (includeRoot && taskTypeToSelect.isInstance(root)) {
-            tasks.add((T) root);
-        }
-
-        Stack<TempTask> stack = new Stack<>();
-        stack.add(root);
-
-        while (!stack.empty()) {
-            TempTask currentRoot = stack.pop();
-
-            stack.addAll(currentRoot.getChildren());
-
-            for (TempTask child : currentRoot.getChildren()) {
-                if (taskTypeToSelect.isInstance(child)) {
-                    tasks.add((T) child);
-                }
-            }
-        }
-        return tasks;
-    }
-
-    /**
-     * Selects a random {@link TempTask} of the specified type from an already existing behavior tree.
-     * @param root the root {@link TempTask} of the behavior tree that is to be searched
-     * @param includeRoot whether to include the root in the selection process
-     * @param taskTypeToSelect the type of task to be selected
-     * @return the randomly selected {@link TempTask}
-     * @param <T> the type of {@code taskTypeToSelect}
-     * @throws NoSuchTaskFoundException tree does not contain any tasks meeting the specified requirements
-     */
-    public static <T extends TempTask> T getRandomTask(TempTask root, boolean includeRoot, Class<T> taskTypeToSelect) throws NoSuchTaskFoundException {
-        ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
-
-        if (tasks.size() == 0) {
-            throw new NoSuchTaskFoundException();
-        }
-        return tasks.get(random.nextInt(tasks.size()));
-    }
-
-    /**
-     * Selects a random {@link TempTask} of the specified type and with the specified minimum number of children
-     * from an already existing behavior tree.
-     * existing behavior tree, excluding the root {@link TempTask}.
-     * @param root the root {@link TempTask} of the behavior tree that is to be searched
-     * @param includeRoot whether to include the root in the selection process
-     * @param taskTypeToSelect the type of task to be selected
-     * @param minimumNumberOfChildren the minimum number of children the selected composite task ({@link TempCompositeTask}) can have
-     * @param <T> the type of {@code taskTypeToSelect}
-     * @return the randomly selected composite task ({@link TempCompositeTask}). {@code Null} if none was found.
-     * @throws NoSuchTaskFoundException tree does not contain any tasks meeting the specified requirements
-     */
-    public static <T extends TempTask> T getRandomTask(TempTask root, boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTaskFoundException {
-        ArrayList<T> tasks = getTasks(root, includeRoot, taskTypeToSelect);
-        ArrayList<T> selectionTasks = new ArrayList<>();
-
-        for (T task : tasks) {
-            if (task.getChildCount() >= minimumNumberOfChildren) {
-                selectionTasks.add(task);
-            }
-        }
-        if (selectionTasks.size() == 0) {
-            throw new NoSuchTaskFoundException();
-        }
-        return selectionTasks.get(random.nextInt(selectionTasks.size()));
-    }
-
-    public static void removeEmptyAndSingleChildCompositeTasks(TempTask root) {
-        ArrayList<TempCompositeTask> compositeTasks = getTasks(root, false, TempCompositeTask.class);
-
-        for (TempCompositeTask compositeTask : compositeTasks) {
-            if (compositeTask.getChildCount() < 2) {
-                compositeTask.getParent().replaceChild(compositeTask, compositeTask.getChildren());
-            }
-        }
-    }
-
-
-
-//    -----------------------------------------------------------------------------------------------------------------
-//    ----- CLEANING --------------------------------------------------------------------------------------------------
-//    -----------------------------------------------------------------------------------------------------------------
-
-    // TODO One method calling all other helpers (private)
-    public static void clean(TempTask root) {
-        int lastSize;
-        do {
-            lastSize = getSize(root);
-            removeFollowingTasksOfAlwaysSuccessfulTasks(root);
-            removeEmptyAndSingleChildCompositeTasks(root);
-        } while (getSize(root) < lastSize);
-    }
-
-    public static void removeFollowingTasksOfAlwaysSuccessfulTasks(TempTask root) {
-        ArrayList<TempSelector> selectors = getTasks(root, true, TempSelector.class);
-
-        for (TempSelector selector : selectors) {
-            ArrayList<TempTask> uncheckedChildren = new ArrayList<>(selector.getChildren());
-            while (!uncheckedChildren.isEmpty()) {
-                if (uncheckedChildren.remove(0) instanceof TempAlwaysSuccessfulTask) {
-                    selector.removeChildren(uncheckedChildren);
-                    break;
-                }
-            }
-        }
-    }
 }
