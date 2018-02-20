@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class Algorithm<D extends DataRow, C extends Chromosome> {
 
-    protected Trainer trainer;
+    protected Trainer<?, D> trainer;
     protected Population<C> population;
 
     public void setTrainer(Trainer trainer) {

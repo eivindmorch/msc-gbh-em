@@ -7,6 +7,7 @@ import core.data.rows.DataRow;
 import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Crossover;
 import core.model.btree.genops.Mutator;
+import core.training.Chromosome;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
 import core.util.ToStringBuilder;
@@ -14,12 +15,14 @@ import core.util.graphing.GraphFrame;
 import core.util.graphing.GraphTab;
 import core.util.graphing.Grapher;
 import core.util.SystemUtil;
+import core.util.plotting.Plotter;
+import org.jfree.chart.ChartPanel;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 import static core.training.algorithms.NSGA2.NSGA2Chromosome.nonDominationRankAndCrowdingDistanceComparator;
@@ -66,6 +69,9 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             trainer.setFitness(population, epoch);
             rankPopulationByNonDomination(population);
             outputInitialPopulation(population);
+
+            trainer.updateFitnessHistory(population);
+            return;
         }
 
         Population<NSGA2Chromosome> oldPopulation = new Population<>(population);
@@ -81,6 +87,8 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
         // Select new population
         population = selectNewPopulationFromRankedPopulation(rankedPopulation);
+
+        trainer.updateFitnessHistory(population);
 
         // Output
         output(epoch, oldPopulation, offspring, rankedPopulation, population);
@@ -189,16 +197,17 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         for (NSGA2Chromosome chromosome : rank) {
             chromosome.crowdingDistance = 0;
         }
-        // TODO Replace hard coded fitness number
-        for (int fitnessIndex = 0; fitnessIndex < 2; fitnessIndex++) {
-            rank.sort(NSGA2Chromosome.singleObjectiveComparator(fitnessIndex));
+
+        for (String fitnessKey : rank.get(0).getFitness().keySet()) {
+
+            rank.sort(NSGA2Chromosome.singleObjectiveComparator(fitnessKey));
 
             rank.get(0).crowdingDistance = Double.POSITIVE_INFINITY;
             rank.get(rank.size() - 1).crowdingDistance = Double.POSITIVE_INFINITY;
 
-            double span = Math.abs(rank.get(rank.size() - 1).getFitness().get(fitnessIndex) - rank.get(0).getFitness().get(fitnessIndex));
+            double span = Math.abs(rank.get(rank.size() - 1).getFitness().get(fitnessKey) - rank.get(0).getFitness().get(fitnessKey));
             for (int i = 1; i < rank.size() - 1; i++) {
-                rank.get(i).crowdingDistance += Math.abs(rank.get(i+1).getFitness().get(fitnessIndex) - rank.get(i-1).getFitness().get(fitnessIndex)) / span;
+                rank.get(i).crowdingDistance += Math.abs(rank.get(i+1).getFitness().get(fitnessKey) - rank.get(i-1).getFitness().get(fitnessKey)) / span;
             }
         }
     }
@@ -206,7 +215,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
     private void outputInitialPopulation(Population<NSGA2Chromosome> population) {
 
         Population<NSGA2Chromosome> populationClone = new Population<>(population);
-        populationClone.sort(singleObjectiveComparator(0));
+        populationClone.sort(singleObjectiveComparator("Scenario 0"));
 
         logger.debug("INITIAL POPULATION\n" + populationClone);
 
@@ -229,9 +238,9 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulationClone = new ArrayList<>(rankedPopulation);
         Population<NSGA2Chromosome> newPopulationClone = new Population<>(newPopulation);
 
-        oldPopulationClone.sort(singleObjectiveComparator(0));
-        offspringClone.sort(singleObjectiveComparator(0));
-        newPopulationClone.sort(singleObjectiveComparator(0));
+        oldPopulationClone.sort(singleObjectiveComparator("Scenario 0"));
+        offspringClone.sort(singleObjectiveComparator("Scenario 0"));
+        newPopulationClone.sort(singleObjectiveComparator("Scenario 0"));
 
         logger.debug("OLD POPULATION\n" + oldPopulationClone);
         logger.debug("OFFSPRING\n" + offspringClone);
@@ -244,8 +253,14 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         graphFrame.addTab(new GraphTab("Offspring").add(offspringClone));
         graphFrame.addTab(new GraphTab("New population").add(newPopulationClone));
         graphFrame.addTab(new GraphTab("Non-dominated").add(rankedPopulation.get(0)));
+
+        GraphTab plotTab = new GraphTab("Plot");
+        for (String fitnessKey : trainer.fitnessHistoryCollections.keySet()) {
+            plotTab.add(Plotter.getPlot(fitnessKey, trainer.fitnessHistoryCollections.get(fitnessKey), "Epoch", "Fitness", true));
+        }
+        plotTab.add(trainer.getParetoPlot(rankedPopulation, "Size", "Scenario 0"));
+        graphFrame.addTab(plotTab);
+
         graphFrame.display();
     }
-
-
 }

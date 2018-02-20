@@ -30,6 +30,11 @@ public class GraphTab {
         return this;
     }
 
+    public GraphTab add(JPanel jPanel) {
+        this.jPanel.add(jPanel);
+        return this;
+    }
+
     public GraphTab add(Chromosome... chromosomes) {
         return add(Arrays.asList(chromosomes));
     }
