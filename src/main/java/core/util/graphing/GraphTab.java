@@ -1,5 +1,6 @@
 package core.util.graphing;
 
+import com.badlogic.gdx.ai.btree.Task;
 import core.training.Chromosome;
 import core.training.Population;
 
@@ -16,6 +17,16 @@ public class GraphTab {
     public GraphTab(String title) {
         this.title = title;
         this.jPanel = new JPanel();
+    }
+
+    public GraphTab add(Task root) {
+        jPanel.add(new GraphPanel(root));
+        return this;
+    }
+
+    public GraphTab add(JPanel jPanel) {
+        this.jPanel.add(jPanel);
+        return this;
     }
 
     public GraphTab add(Chromosome... chromosomes) {

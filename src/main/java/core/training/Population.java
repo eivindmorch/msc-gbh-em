@@ -97,7 +97,7 @@ public class Population<C extends Chromosome> {
         this.chromosomes.removeAll(chromosomes);
     }
 
-    public void sort(Comparator<C> comparator) {
+    public void sort(Comparator<? super C> comparator) {
         chromosomes.sort(comparator);
     }
 

@@ -4,7 +4,8 @@ import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.BehaviorTreeUtil;
 import core.util.ToStringBuilder;
 
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 
 /**
  * Wrapper for behavior tree and fitness
@@ -13,8 +14,7 @@ public class Chromosome {
 
     // TODO Rename to behaviorTreeRoot
     private Task btree;
-    // TODO Change fitness to map?
-    private ArrayList<Double> fitness;
+    private HashMap<String, Double> fitness;
 
     public Chromosome(Task btree) {
         this.btree = btree;
@@ -24,12 +24,12 @@ public class Chromosome {
         return btree;
     }
 
-    public ArrayList<Double> getFitness() {
-        return fitness;
+    public HashMap<String, Double> getFitness() {
+        return new HashMap<>(fitness);
     }
 
-    public void setFitness(ArrayList<Double> fitness) {
-        this.fitness = new ArrayList<>(fitness);
+    public void setFitness(HashMap<String, Double> fitness) {
+        this.fitness = new HashMap<>(fitness);
     }
 
     @Override
@@ -45,5 +45,13 @@ public class Chromosome {
                 .add("fitness", (fitness == null) ? "null" : fitness)
                 .add("btree", (btree == null) ? "null" : Integer.toHexString(btree.hashCode()))
                 .toString();
+    }
+
+    public static Comparator<Chromosome> singleObjectiveComparator(String key) {
+        return (o1, o2) -> {
+            if (o1.getFitness().get(key) < o2.getFitness().get(key)) return -1;
+            if (o1.getFitness().get(key) > o2.getFitness().get(key)) return 1;
+            return 0;
+        };
     }
 }
