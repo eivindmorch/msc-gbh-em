@@ -40,7 +40,7 @@ public class TempIsWithinTask extends TempVariableLeafTask {
 
     @Override
     public String getDisplayName() {
-        return "Is within [" + String.format("%.2f", distanceLimit) + "°]";
+        return "Is within [" + String.format("%.2f", distanceLimit) + "m]";
     }
 
     @Override
