@@ -256,10 +256,11 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
         GraphTab plotTab = new GraphTab("Plot");
         for (String fitnessKey : trainer.fitnessHistoryCollections.keySet()) {
+            System.out.println(fitnessKey);
             plotTab.add(Plotter.getPlot(fitnessKey, trainer.fitnessHistoryCollections.get(fitnessKey), "Epoch", "Fitness", true));
         }
-        plotTab.add(trainer.getParetoPlot(rankedPopulation, "Size", "Scenario 0"));
-        graphFrame.addTab(plotTab);
+//        plotTab.add(trainer.getParetoPlot(rankedPopulation, "Size", "Scenario 0"));
+        graphFrame.addTab(plotTab, true);
 
         graphFrame.display();
     }

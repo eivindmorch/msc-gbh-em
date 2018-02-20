@@ -8,7 +8,7 @@ import core.training.FitnessEvaluator;
 import core.training.FitnessFunctions;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Experiment1FitnessEvaluator implements FitnessEvaluator {
@@ -20,7 +20,7 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
     }
 
     @Override
-    public <D extends DataRow> HashMap<String, Double> evaluate(
+    public <D extends DataRow> LinkedHashMap<String, Double> evaluate(
             Chromosome chromosome,
             List<DataSet<D>> exampleDataSets,
             List<DataSet<D>> chromosomeDataSets)
@@ -31,7 +31,7 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
             throw new Exception("Uneven number of example and chromosome data sets");
         }
 
-        HashMap<String, Double> fitness = new HashMap<>();
+        LinkedHashMap<String, Double> fitness = new LinkedHashMap<>();
 
         for (int i = 0; i < exampleDataSets.size(); i++) {
             DataSet<D> exampleDataSet = exampleDataSets.get(i);
@@ -41,7 +41,6 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
 
         // Add tree size
         fitness.put("Size", (double) chromosome.getBtree().getSize());
-
         return fitness;
     }
 

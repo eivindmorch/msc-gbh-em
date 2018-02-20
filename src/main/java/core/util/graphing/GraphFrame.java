@@ -29,6 +29,13 @@ public class GraphFrame implements Runnable {
         tabbedPane.addTab(graphTab.getTitle(), graphTab.getPanel());
     }
 
+    public void addTab(GraphTab graphTab, boolean setAsDefaultTab) {
+        addTab(graphTab);
+        if (setAsDefaultTab) {
+            tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
+        }
+    }
+
     void close() {
         jFrame.setVisible(false);
         jFrame.dispose();

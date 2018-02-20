@@ -6,7 +6,7 @@ import core.model.btree.BehaviorTreeUtil;
 import core.util.ToStringBuilder;
 
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Wrapper for behavior tree and fitness
@@ -15,7 +15,7 @@ public class Chromosome {
 
     // TODO Rename to behaviorTreeRoot
     private TempTask btree;
-    private HashMap<String, Double> fitness;
+    private LinkedHashMap<String, Double> fitness;
 
     public Chromosome(TempTask btree) {
         this.btree = btree;
@@ -25,12 +25,12 @@ public class Chromosome {
         return btree;
     }
 
-    public HashMap<String, Double> getFitness() {
-        return new HashMap<>(fitness);
+    public LinkedHashMap<String, Double> getFitness() {
+        return new LinkedHashMap<>(fitness);
     }
 
-    public void setFitness(HashMap<String, Double> fitness) {
-        this.fitness = new HashMap<>(fitness);
+    public void setFitness(LinkedHashMap<String, Double> fitness) {
+        this.fitness = new LinkedHashMap<>(fitness);
     }
 
 //    @Override

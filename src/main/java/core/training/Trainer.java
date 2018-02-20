@@ -18,6 +18,7 @@ import core.unit.ControlledUnit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static core.SystemSettings.INTRA_RESOURCES_EXAMPLES_FOLDER_PATH;
@@ -43,7 +44,7 @@ public class Trainer<U extends Unit, D extends DataRow> {
 
     private int currentEpoch = 0;
 
-    public HashMap<String, XYSeriesCollection> fitnessHistoryCollections;
+    public LinkedHashMap<String, XYSeriesCollection> fitnessHistoryCollections;
 
     public Trainer(Class<U> unitToTrainClass, Class<D> evaluationDataRowClass, FitnessEvaluator fitnessEvaluator, Algorithm<D, ?> algorithm, String[] exampleFileNames) {
         this.unitToTrainClass = unitToTrainClass;
@@ -152,12 +153,12 @@ public class Trainer<U extends Unit, D extends DataRow> {
             }
 
             Chromosome chromosome = population.get(chromosomeIndex);
-            HashMap<String, Double> chromosomeFitness = evaluate(chromosome, exampleDataSets, chromosomeDataSets);
+            LinkedHashMap<String, Double> chromosomeFitness = evaluate(chromosome, exampleDataSets, chromosomeDataSets);
             chromosome.setFitness(chromosomeFitness);
         }
     }
 
-    private HashMap<String, Double> evaluate(
+    private LinkedHashMap<String, Double> evaluate(
             Chromosome chromosome,
             List<DataSet<D>> exampleDataSets,
             List<DataSet<D>> chromosomeDataSets
@@ -185,11 +186,12 @@ public class Trainer<U extends Unit, D extends DataRow> {
         ArrayList<String> fitnessKeys = new ArrayList<>(populationClone.getChromosomes().get(0).getFitness().keySet());
 
         if (fitnessHistoryCollections == null) {
-            fitnessHistoryCollections = new HashMap<>();
+            fitnessHistoryCollections = new LinkedHashMap<>();
             for (String fitnessKey : fitnessKeys) {
                 XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
-                xySeriesCollection.addSeries(new XYSeries("Best", false, true));
                 xySeriesCollection.addSeries(new XYSeries("Worst", false, true));
+                xySeriesCollection.addSeries(new XYSeries("Average", false, true));
+                xySeriesCollection.addSeries(new XYSeries("Best", false, true));
                 fitnessHistoryCollections.put(fitnessKey, xySeriesCollection);
             }
         }
@@ -197,11 +199,19 @@ public class Trainer<U extends Unit, D extends DataRow> {
         for (String fitnessKey : fitnessKeys) {
             populationClone.sort(singleObjectiveComparator(fitnessKey));
 
+            double worstFitness = populationClone.get(populationClone.getSize() - 1).getFitness().get(fitnessKey);
+            fitnessHistoryCollections.get(fitnessKey).getSeries("Worst").add(currentEpoch, worstFitness);
+
+            double averageFitness = 0;
+            for (Chromosome chromosome : population.getChromosomes()) {
+                averageFitness += chromosome.getFitness().get(fitnessKey);
+            }
+            averageFitness /= population.getSize();
+            fitnessHistoryCollections.get(fitnessKey).getSeries("Average").add(currentEpoch, averageFitness);
+
             double bestFitness = populationClone.get(0).getFitness().get(fitnessKey);
             fitnessHistoryCollections.get(fitnessKey).getSeries("Best").add(currentEpoch, bestFitness);
 
-            double worstFitness = populationClone.get(populationClone.getSize() - 1).getFitness().get(fitnessKey);
-            fitnessHistoryCollections.get(fitnessKey).getSeries("Worst").add(currentEpoch, worstFitness);
         }
     }
 
