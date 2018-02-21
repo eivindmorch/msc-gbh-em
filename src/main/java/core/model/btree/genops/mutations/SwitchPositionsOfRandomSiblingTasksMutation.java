@@ -10,8 +10,8 @@ import static core.util.SystemUtil.random;
 
 public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
 
-    public SwitchPositionsOfRandomSiblingTasksMutation(double weight) {
-        super(weight);
+    public SwitchPositionsOfRandomSiblingTasksMutation(double weight, double factor) {
+        super(weight, factor);
     }
 
     @Override

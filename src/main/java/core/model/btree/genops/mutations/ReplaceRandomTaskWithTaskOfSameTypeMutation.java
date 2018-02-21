@@ -16,8 +16,8 @@ import static core.util.SystemUtil.random;
 
 public class ReplaceRandomTaskWithTaskOfSameTypeMutation extends Mutation {
 
-    public ReplaceRandomTaskWithTaskOfSameTypeMutation(double weight) {
-        super(weight);
+    public ReplaceRandomTaskWithTaskOfSameTypeMutation(double weight, double factor) {
+        super(weight, factor);
     }
 
     @Override

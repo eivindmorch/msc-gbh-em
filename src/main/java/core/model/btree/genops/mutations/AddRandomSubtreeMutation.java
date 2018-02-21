@@ -17,8 +17,8 @@ public class AddRandomSubtreeMutation extends Mutation {
 
     private boolean onlyAddSingleLeafTask;
 
-    public AddRandomSubtreeMutation(double weight, boolean onlyAddSingleLeafTask) {
-        super(weight);
+    public AddRandomSubtreeMutation(double weight, double factor, boolean onlyAddSingleLeafTask) {
+        super(weight, factor);
         this.onlyAddSingleLeafTask = onlyAddSingleLeafTask;
     }
 

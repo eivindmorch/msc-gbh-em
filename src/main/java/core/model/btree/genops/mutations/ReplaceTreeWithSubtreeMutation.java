@@ -8,8 +8,8 @@ import core.util.exceptions.NoSuchTaskFoundException;
 
 public class ReplaceTreeWithSubtreeMutation extends Mutation{
 
-    public ReplaceTreeWithSubtreeMutation(double weight) {
-        super(weight);
+    public ReplaceTreeWithSubtreeMutation(double weight, double factor) {
+        super(weight, factor);
     }
 
     @Override

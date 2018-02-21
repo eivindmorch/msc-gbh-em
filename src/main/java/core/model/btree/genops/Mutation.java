@@ -6,13 +6,15 @@ import core.unit.Unit;
 public abstract class Mutation {
 
     private double weight;
+    private double factor;
 
-    public Mutation(double weight) {
+    public Mutation(double weight, double factor) {
         this.weight = weight;
+        this.factor = factor;
     }
 
-    double getWeight() {
-        return weight;
+    double getWeight(double factorPower) {
+        return weight * Math.pow(factor, factorPower);
     }
 
     protected abstract boolean canBePerformed(TempTask root);

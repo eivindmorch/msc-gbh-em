@@ -77,7 +77,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         Population<NSGA2Chromosome> oldPopulation = new Population<>(population);
 
         // Create, evaluate and add offspring
-        Population<NSGA2Chromosome> offspring = createOffspringPopulation(population);
+        Population<NSGA2Chromosome> offspring = createOffspringPopulation(population, epoch);
         trainer.simulatePopulation(offspring, exampleDataSets);
         trainer.setFitness(offspring, epoch);
         population.addAll(offspring);
@@ -107,7 +107,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     }
 
-    private Population<NSGA2Chromosome> createOffspringPopulation(Population<NSGA2Chromosome> population) {
+    private Population<NSGA2Chromosome> createOffspringPopulation(Population<NSGA2Chromosome> population, int epoch) {
 
         Population<NSGA2Chromosome> offspringPopulation = new Population<>();
         while (offspringPopulation.getSize() < population.getSize()) {
@@ -121,7 +121,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             if (SystemUtil.random.nextDouble() < CROSSOVER_RATE) {
                 newRoot = Crossover.crossover(parent1.getBtree(), parent2.getBtree());
             } else {
-                newRoot = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass());
+                newRoot = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass(), epoch);
             }
             if (!population.containsChromosomeWithEqualTree(newRoot)
                     && !offspringPopulation.containsChromosomeWithEqualTree(newRoot)
