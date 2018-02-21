@@ -3,6 +3,7 @@ package core.training;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.TempTask;
 import core.model.btree.BehaviorTreeUtil;
+import core.model.btree.task.unit.temp.TempWaitTask;
 import core.unit.Unit;
 import core.util.ToStringBuilder;
 
@@ -67,7 +68,7 @@ public class Population<C extends Chromosome> {
                     randomTree = BehaviorTreeUtil.generateRandomTree(unitClass, minimumTreeSize, maximumTreeSize);
                 } while (population.containsChromosomeWithEqualTree(randomTree));
 
-                C chromosome = chromosomeConstructor.newInstance(randomTree);
+                C chromosome = chromosomeConstructor.newInstance(new TempWaitTask());
                 population.add(chromosome);
 
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
