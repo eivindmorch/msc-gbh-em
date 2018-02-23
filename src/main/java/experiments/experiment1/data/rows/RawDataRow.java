@@ -27,7 +27,15 @@ public class RawDataRow extends DataRow {
 
     @Override
     public void setValues(List<String> csvElements) {
-
+        this.setTimestamp(Double.valueOf(csvElements.get(0)));
+        this.lla = new Lla(
+                Double.valueOf(csvElements.get(1)),
+                Double.valueOf(csvElements.get(2)),
+                Double.valueOf(csvElements.get(3))
+        );
+        if (!csvElements.get(4).equals("null")) {
+            this.movementAngle = Double.valueOf(csvElements.get(4));
+        }
     }
 
     public void setValues(double timestamp, WorldLocationStruct position, VelocityVectorStruct velocity) {
