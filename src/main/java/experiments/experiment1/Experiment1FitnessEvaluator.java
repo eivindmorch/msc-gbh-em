@@ -2,10 +2,9 @@ package experiments.experiment1;
 
 import core.data.DataSet;
 import core.data.rows.DataRow;
-import core.model.btree.BehaviorTreeUtil;
 import core.training.Chromosome;
 import core.training.FitnessEvaluator;
-import core.training.FitnessFunctions;
+import core.util.Geometer;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 
 import java.util.LinkedHashMap;
@@ -66,10 +65,8 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
             FollowerEvaluationDataRow exampleRow = followerEvaluationExampleDataSet.getDataRows().get(i);
             FollowerEvaluationDataRow chromosomeRow = followerEvaluationChromosomeDataSet.getDataRows().get(i);
 
-            value += FitnessFunctions.distanceFitness(
-                    exampleRow.getDistanceToTarget(),
-                    chromosomeRow.getDistanceToTarget(),
-                    DISTANCE_FITNESS_EXPONENT);
+//            value += Geometer.distance(exampleRow.getLla(), chromosomeRow.getLla());
+            value += Math.pow(Geometer.distance(exampleRow.getLla(), chromosomeRow.getLla()), DISTANCE_FITNESS_EXPONENT);
         }
         return value;
     }

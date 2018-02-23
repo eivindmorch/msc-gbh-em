@@ -1,7 +1,7 @@
 package experiments.experiment1.data.rows;
 
 import core.data.rows.DataRow;
-import core.util.Geometer;
+import core.model.Lla;
 import core.util.ToStringBuilder;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public class FollowerEvaluationDataRow extends DataRow {
 
     public static String dataSetName = "FollowerEvaluationData";
 
-    private double distanceToTarget;
+    private Lla lla;
 
     public FollowerEvaluationDataRow() {
     }
@@ -18,12 +18,20 @@ public class FollowerEvaluationDataRow extends DataRow {
     @Override
     public void setValues(List<String> csvElements) {
         this.setTimestamp(Double.valueOf(csvElements.get(0)));
-        this.distanceToTarget = Double.valueOf(csvElements.get(1));
+        this.lla = new Lla(
+                Double.valueOf(csvElements.get(1)),
+                Double.valueOf(csvElements.get(2)),
+                Double.valueOf(csvElements.get(3))
+        );
     }
 
-    public void setValues(double timestamp, RawDataRow rawDataRow1, RawDataRow rawDataRow) {
+    public void setValues(double timestamp, RawDataRow followerRawDataRow, RawDataRow targetRawDataRow) {
         this.setTimestamp(timestamp);
-        this.distanceToTarget = Geometer.distance(rawDataRow1.getLla(), rawDataRow.getLla());
+        this.lla = new Lla(
+                followerRawDataRow.getLla().getLatitude(),
+                followerRawDataRow.getLla().getLongitude(),
+                followerRawDataRow.getLla().getAltitude()
+        );
     }
 
     @Override
@@ -33,23 +41,23 @@ public class FollowerEvaluationDataRow extends DataRow {
 
     @Override
     public String getHeader() {
-        return "timestamp, distance to target";
+        return "timestamp, latitude, longitude, altitude";
     }
 
-    public double getDistanceToTarget() {
-        return distanceToTarget;
+    public Lla getLla() {
+        return lla;
     }
 
     @Override
     public String getValuesAsCsvString() {
-        return this.getTimestamp() + ", " + distanceToTarget;
+        return this.getTimestamp() + ", " + lla.getLatitude() + ", " + lla.getLongitude() + ", " + lla.getAltitude();
     }
 
     @Override
     public String toString() {
         return ToStringBuilder.toStringBuilder(this)
                 .add("timestamp", this.getTimestamp())
-                .add("distanceToTarget", this.getDistanceToTarget())
+                .add("position", lla)
                 .toString();
     }
 }
