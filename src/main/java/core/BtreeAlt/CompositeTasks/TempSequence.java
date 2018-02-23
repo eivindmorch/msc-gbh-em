@@ -23,7 +23,7 @@ public class TempSequence extends TempCompositeTask {
 
     @Override
     public String getDisplayName() {
-        return "->";
+        return "→";
     }
 
     @Override

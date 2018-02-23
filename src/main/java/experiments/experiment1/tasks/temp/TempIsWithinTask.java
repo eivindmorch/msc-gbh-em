@@ -1,13 +1,14 @@
 package experiments.experiment1.tasks.temp;
 
 import com.badlogic.gdx.ai.btree.Task;
+import core.BtreeAlt.LeafTasks.TempConditionTask;
 import core.BtreeAlt.LeafTasks.TempVariableLeafTask;
 import core.BtreeAlt.TempTask;
 import experiments.experiment1.tasks.IsWithinTask;
 
 import static core.util.SystemUtil.random;
 
-public class TempIsWithinTask extends TempVariableLeafTask {
+public class TempIsWithinTask extends TempVariableLeafTask implements TempConditionTask {
 
     private double distanceLimit;
 

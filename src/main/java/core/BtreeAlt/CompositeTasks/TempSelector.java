@@ -23,7 +23,7 @@ public class TempSelector extends TempCompositeTask {
 
     @Override
     public String getDisplayName() {
-        return "?";
+        return " ? ";
     }
 
     @Override
