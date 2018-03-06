@@ -71,6 +71,6 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
                     chromosomeRow.getDistanceToTarget(),
                     DISTANCE_FITNESS_EXPONENT);
         }
-        return value;
+        return value / numOfTicks;
     }
 }
