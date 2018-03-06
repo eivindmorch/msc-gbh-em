@@ -8,6 +8,7 @@ import core.model.btree.task.TaskTickTracker;
 import experiments.experiment1.unit.FollowerUnit;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
+import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
 
 public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
@@ -21,6 +22,7 @@ public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
         }
         taskTickTracker.tick();
         if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.DONE) {
+            sendLLBMLWaitTask();
             return Status.SUCCEEDED;
         }
         return Status.RUNNING;
@@ -44,6 +46,12 @@ public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
         );
 
         interaction.setDestination(geoLocationStruct);
+        interaction.setTaskee(getObject().getUnit().getMarking());
+        interaction.sendInteraction();
+    }
+
+    private void sendLLBMLWaitTask(){
+        WaitInteraction interaction = new WaitInteraction();
         interaction.setTaskee(getObject().getUnit().getMarking());
         interaction.sendInteraction();
     }
