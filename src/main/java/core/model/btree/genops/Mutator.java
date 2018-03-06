@@ -16,12 +16,12 @@ public abstract class Mutator {
     private static List<Mutation> mutations = new ArrayList<>();
     static {
         mutations.add(new AddRandomSubtreeMutation(                         1, 1, true));
-        mutations.add(new AddRandomSubtreeMutation(                         1, 0.85, false));
+        mutations.add(new AddRandomSubtreeMutation(                         1, 0.995, false));
         mutations.add(new RemoveRandomSubtreeMutation(                      1, 1));
         mutations.add(new SwitchPositionsOfRandomSiblingTasksMutation(      1, 1));
-        mutations.add(new ReplaceTreeWithSubtreeMutation(                   1, 0.9)); // TODO Too big change for a mutation?
+        mutations.add(new ReplaceTreeWithSubtreeMutation(                   1, 0.99)); // TODO Too big change for a mutation?
         mutations.add(new ReplaceRandomTaskWithTaskOfSameTypeMutation(      1, 1));
-        mutations.add(new RandomiseVariablesOfRandomVariableTaskMutation(   1, 1.1));
+        mutations.add(new RandomiseVariablesOfRandomVariableTaskMutation(   1, 1.02));
     }
 
     public static TempTask mutate(TempTask root, Class<? extends Unit> unitClass, double factorPower) {
