@@ -47,7 +47,7 @@ public abstract class UnitHandler {
         unitIdentifierToHandleMap.remove(unit.getIdentifier());
         UnitLogger.remove(unit);
         controlledUnits.remove(objectInstanceHandle);
-        logger.debug("Unit removed :" + unit);
+        logger.info("Unit removed: " + unit);
     }
 
     public static boolean putUnit(Unit unit) {

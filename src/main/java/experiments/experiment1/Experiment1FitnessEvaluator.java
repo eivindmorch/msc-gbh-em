@@ -7,11 +7,15 @@ import core.training.Chromosome;
 import core.training.FitnessEvaluator;
 import core.training.FitnessFunctions;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Experiment1FitnessEvaluator implements FitnessEvaluator {
+
+    private final Logger logger = LoggerFactory.getLogger(FitnessEvaluator.class);
 
     private final double DISTANCE_FITNESS_EXPONENT;
 
@@ -26,6 +30,8 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
             List<DataSet<D>> chromosomeDataSets)
             throws Exception
     {
+
+        logger.debug("Evaluating " + chromosome);
 
         if (exampleDataSets.size() != chromosomeDataSets.size()) {
             throw new Exception("Uneven number of example and chromosome data sets");
@@ -46,7 +52,7 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
 
     private <D extends DataRow> double evaluateDistanceFitness(DataSet<D> exampleDataSet, DataSet<D> chromosomeDataSet) throws Exception {
         if (exampleDataSet.getNumOfTicks() != chromosomeDataSet.getNumOfTicks()) {
-            // TODO Log warning
+            logger.warn("Example and chromosome data sets does not contain the same number of ticks.");
         }
         if (!exampleDataSet.getDataSetName().equals(FollowerEvaluationDataRow.dataSetName)
                 || !chromosomeDataSet.getDataSetName().equals(FollowerEvaluationDataRow.dataSetName)) {
@@ -71,6 +77,9 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
                     chromosomeRow.getDistanceToTarget(),
                     DISTANCE_FITNESS_EXPONENT);
         }
+
+        logger.debug("ticks=" + numOfTicks + ", fitness=" + value);
+
         return value / numOfTicks;
     }
 }
