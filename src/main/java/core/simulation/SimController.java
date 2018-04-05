@@ -30,7 +30,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     private int ticksToPlay;
 
     private int totalTicks;
-    long startTime;
+    private long simulationStartTime;
 
     public volatile boolean simulationRunning;
     public final ReentrantLock SIMULATION_RUNNING_LOCK = new ReentrantLock();
@@ -63,8 +63,8 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
             totalTicks++;
             if (totalTicks % 100 == 0) {
                 logger.debug("Ticks: " + String.format("%4d", totalTicks)
-                        + " | Average time per tick: " + ((System.currentTimeMillis() - startTime) / 100) + "ms");
-                startTime = System.currentTimeMillis();
+                        + " | Average time per tick: " + ((System.currentTimeMillis() - simulationStartTime) / 100) + "ms");
+                simulationStartTime = System.currentTimeMillis();
             } else if (totalTicks == 1) {
                 logger.debug("First tick");
             }
@@ -90,34 +90,42 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     public void play() {
         simulationRunning = true;
 
-        synchronized (SCENARIO_LOADING_LOCK) {
-            while(scenarioLoading) {
-                logger.info("Waiting for scenario to be loaded.");
-                try {
-                    SCENARIO_LOADING_LOCK.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        logger.info("Scenario successfully loaded -> continuing.");
-        sleepMilliseconds(500);
-
-//        startTime = System.currentTimeMillis();
-//        logger.info("Waiting for all units to be discovered.");
-//        while (Federate.getInstance().unitsDiscovered < 2) {
-//            sleepMilliseconds(500);
-//            if (System.currentTimeMillis() - startTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
-//                startTime = System.currentTimeMillis();
-//                logger.warn("Not all units discovered. Reloading scenario.");
-//                loadScenario(currentScenario);
+//        synchronized (SCENARIO_LOADING_LOCK) {
+//            double initialWaitingForScenarioToLoadTime = System.currentTimeMillis();
+//            while(scenarioLoading) {
+//                logger.info("Waiting for scenario to be loaded.");
+//                try {
+//                    SCENARIO_LOADING_LOCK.wait();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                if (System.currentTimeMillis() - initialWaitingForScenarioToLoadTime >= 30 * 1000) {
+//                    logger.info("Scenario not successfully loaded after 30 seconds.");
+//                    retryLoadScenario();
+//                    initialWaitingForScenarioToLoadTime = System.currentTimeMillis();
+//                }
 //            }
 //        }
-//        logger.info("All units discovered -> continuing.");
+//        logger.info("Scenario successfully loaded -> continuing.");
+//        sleepMilliseconds(500);
 
+        logger.info("Waiting for all units to be discovered.");
+        // TODO Include number of units in example file
+        while (Federate.getInstance().unitsDiscovered < 2) {
+            sleepMilliseconds(500);
+            if (System.currentTimeMillis() - simulationStartTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
+                simulationStartTime = System.currentTimeMillis();
+                logger.warn("Not all units discovered. Reloading scenario.");
+                loadScenario(currentScenario);
+            }
+        }
+        logger.info("All units discovered -> continuing.");
+        sleepMilliseconds(500);
+
+        simulationStartTime = System.currentTimeMillis();
         totalTicks = 0;
         logger.info("Playing scenario.");
-        startTime = System.currentTimeMillis();
+        simulationStartTime = System.currentTimeMillis();
         Federate.getInstance().enableTimeAdvancement();
         Federate.getInstance().sendCgfPlayInteraction();
     }
@@ -147,17 +155,22 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     public void loadScenario(String scenarioPath) {
         logger.info("Loading scenario " + scenarioPath + ".");
 
-        scenarioLoading = true;
-        simEngine.getProcessLoggerThread().registerLineListener(
-                SimEngine.SUCCESSFULLY_LOADED_SCENARIO_OUTPUT_LINE,
-                this
-        );
+//        scenarioLoading = true;
+//        simEngine.getProcessLoggerThread().registerLineListener(
+//                SimEngine.SUCCESSFULLY_LOADED_SCENARIO_OUTPUT_LINE,
+//                this
+//        );
 
         Federate.getInstance().holdTimeAdvancement();
         UnitHandler.reset();
         UnitLogger.reset();
         Federate.getInstance().sendCgfLoadScenarioInteraction(scenarioPath);
         currentScenario = scenarioPath;
+    }
+
+    private void retryLoadScenario() {
+        logger.info("Attempting new loading of scenario " + currentScenario + ".");
+        Federate.getInstance().sendCgfLoadScenarioInteraction(currentScenario);
     }
 
     public void startSimEngine() {
