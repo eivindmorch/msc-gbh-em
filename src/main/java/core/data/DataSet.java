@@ -4,6 +4,7 @@ import core.data.rows.DataRow;
 import core.util.Reader;
 import core.util.ToStringBuilder;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class DataSet<D extends DataRow> {
@@ -13,7 +14,7 @@ public class DataSet<D extends DataRow> {
     private String unitMarking;
     private int numOfTicks;
 
-    public DataSet(Class<D> dataRowClass, String intraResourcesFilePath) {
+    public DataSet(Class<D> dataRowClass, String intraResourcesFilePath) throws FileNotFoundException {
         dataRows = new ArrayList<>();
 
         Reader reader = new Reader(intraResourcesFilePath);

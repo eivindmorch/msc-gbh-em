@@ -16,6 +16,7 @@ import core.simulation.SimController;
 import core.training.algorithms.Algorithm;
 import core.unit.ControlledUnit;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -69,7 +70,12 @@ public class Trainer<U extends Unit, D extends DataRow> {
     private ArrayList<DataSet<D>> loadExampleDataSets(String[] exampleFileNames) {
         ArrayList<DataSet<D>> exampleDataSets = new ArrayList<>();
         for (String exampleName : exampleFileNames) {
-            exampleDataSets.add(new DataSet<>(evaluationDataRowClass, INTRA_RESOURCES_EXAMPLES_FOLDER_PATH + exampleName));
+            try {
+                exampleDataSets.add(new DataSet<>(evaluationDataRowClass, INTRA_RESOURCES_EXAMPLES_FOLDER_PATH + exampleName));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
         return exampleDataSets;
     }
@@ -142,13 +148,19 @@ public class Trainer<U extends Unit, D extends DataRow> {
                 DataSet<D> exampleDataSet = exampleDataSets.get(exampleNumber);
 
                 String chromosomeFileDirectory = getChromosomeFileDirectory(epoch, exampleNumber, chromosomeIndex);
-                DataSet<D> chromosomeDataSet = new DataSet<>(
-                        evaluationDataRowClass,
-                        chromosomeFileDirectory
-                                + exampleDataSet.getUnitMarking()
-                                + "/" + exampleDataSet.getDataSetName()
-                                + ".csv"
-                );
+                DataSet<D> chromosomeDataSet = null;
+                // TODO Fix cause of missing files -- federate does not get unit data after they have been discovered
+                try {
+                    chromosomeDataSet = new DataSet<>(
+                            evaluationDataRowClass,
+                            chromosomeFileDirectory
+                                    + exampleDataSet.getUnitMarking()
+                                    + "/" + exampleDataSet.getDataSetName()
+                                    + ".csv"
+                    );
+                } catch (FileNotFoundException e) {
+                    logger.warn("Could not find " + chromosomeFileDirectory + " -> skipping chromosome.");
+                }
                 chromosomeDataSets.add(chromosomeDataSet);
             }
 
