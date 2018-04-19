@@ -128,7 +128,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
                 }
             }
             try {
-                federateManager.requestTimeAdvanceAndBlock(federateManager.getTimestamp());
+                requestTimeAdvanceAndBlock();
                 tick(federateManager.getLogicalTime());
             } catch (InterruptedException | RTIexception saveInProgress) {
                 saveInProgress.printStackTrace();
@@ -137,6 +137,10 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
                 sleepMilliseconds(SimSettings.simulationTickDelayInMilliseconds);
             }
         }
+    }
+
+    public void requestTimeAdvanceAndBlock() throws RTIexception, InterruptedException {
+        federateManager.requestTimeAdvanceAndBlock(federateManager.getTimestamp());
     }
 
     private void tick(double timestamp) {
