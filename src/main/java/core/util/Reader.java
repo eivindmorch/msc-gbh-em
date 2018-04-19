@@ -1,9 +1,6 @@
 package core.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,13 +11,9 @@ public class Reader {
 
     private BufferedReader bufferedReader;
 
-    public Reader(String intraResourcesFilePath) {
-        try {
-            File dataFile = new File((RESOURCES_FILE_PATH + intraResourcesFilePath));
-            bufferedReader = new BufferedReader(new FileReader(dataFile));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Reader(String intraResourcesFilePath) throws FileNotFoundException {
+        File dataFile = new File((RESOURCES_FILE_PATH + intraResourcesFilePath));
+        bufferedReader = new BufferedReader(new FileReader(dataFile));
     }
 
     public String readLine() {
