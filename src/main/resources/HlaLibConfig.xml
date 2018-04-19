@@ -13,6 +13,12 @@
 	<federate>
 		<name>experiment1</name>
 		<type>no.ffi.msc.gbhem</type>
+
+        <callbackModel>
+            <scheme>Evoked</scheme>
+            <tickFrequency>10000</tickFrequency>
+        </callbackModel>
+
         <timeManagement>
             <scheme>TimeConstrainedAndTimeRegulated</scheme>
             <lookahead>1.0</lookahead>
@@ -36,5 +42,5 @@
             <interaction name="HLAinteractionRoot.StopFreeze" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.CgfControl" sharing="Publish"/>
         </interactions>
-	</federate>
+    </federate>
 </HlaLib>
