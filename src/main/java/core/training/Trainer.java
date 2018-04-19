@@ -89,9 +89,11 @@ public class Trainer<U extends Unit, D extends DataRow> {
     public void simulatePopulation(Population population, int numOfTicks, int exampleIndex, String scenarioPath) {
         logger.info("Simulating population.");
         for (int chromosomeIndex = 0; chromosomeIndex < population.getSize(); chromosomeIndex++) {
-            logger.info("Simulating chromosome " + chromosomeIndex + ": " + population.get(chromosomeIndex));
 
-            UnitLogger.setIntraResourcesWritingDirectory(getChromosomeFileDirectory(currentEpoch, exampleIndex, chromosomeIndex));
+            Chromosome chromosome = population.get(chromosomeIndex);
+            logger.info("Simulating chromosome " + chromosomeIndex + ": " + chromosome);
+
+            UnitLogger.setIntraResourcesWritingDirectory(getChromosomeFileDirectory(currentEpoch, exampleIndex, chromosome));
 
             TempTask btree = population.get(chromosomeIndex).getBtree();
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
@@ -140,15 +142,16 @@ public class Trainer<U extends Unit, D extends DataRow> {
 
     public void setFitness(Population population, int epoch) {
         for (int chromosomeIndex = 0; chromosomeIndex < population.getSize(); chromosomeIndex++) {
+            Chromosome chromosome = population.get(chromosomeIndex);
 
             List<DataSet<D>> chromosomeDataSets = new ArrayList<>();
 
-            for (int exampleNumber = 0; exampleNumber <exampleDataSets.size() ; exampleNumber++) {
+            for (int exampleNumber = 0; exampleNumber < exampleDataSets.size() ; exampleNumber++) {
 
                 DataSet<D> exampleDataSet = exampleDataSets.get(exampleNumber);
 
-                String chromosomeFileDirectory = getChromosomeFileDirectory(epoch, exampleNumber, chromosomeIndex);
-                DataSet<D> chromosomeDataSet = null;
+                String chromosomeFileDirectory = getChromosomeFileDirectory(epoch, exampleNumber, chromosome);
+                DataSet<D> chromosomeDataSet;
                 // TODO Fix cause of missing files -- federate does not get unit data after they have been discovered
                 try {
                     chromosomeDataSet = new DataSet<>(
@@ -158,15 +161,20 @@ public class Trainer<U extends Unit, D extends DataRow> {
                                     + "/" + exampleDataSet.getDataSetName()
                                     + ".csv"
                     );
+                    chromosomeDataSets.add(chromosomeDataSet);
                 } catch (FileNotFoundException e) {
                     logger.warn("Could not find " + chromosomeFileDirectory + " -> skipping chromosome.");
                 }
-                chromosomeDataSets.add(chromosomeDataSet);
             }
 
-            Chromosome chromosome = population.get(chromosomeIndex);
-            LinkedHashMap<String, Double> chromosomeFitness = evaluate(chromosome, exampleDataSets, chromosomeDataSets);
-            chromosome.setFitness(chromosomeFitness);
+            try {
+                LinkedHashMap<String, Double> chromosomeFitness = evaluate(chromosome, exampleDataSets, chromosomeDataSets);
+                chromosome.setFitness(chromosomeFitness);
+            } catch (Exception e) {
+                logger.warn("Could not calculate chromosome fitness -> removing chromosome.", e);
+                population.remove(chromosomeIndex);
+                chromosomeIndex--;
+            }
         }
     }
 
@@ -174,22 +182,16 @@ public class Trainer<U extends Unit, D extends DataRow> {
             Chromosome chromosome,
             List<DataSet<D>> exampleDataSets,
             List<DataSet<D>> chromosomeDataSets
-    ) {
-        try {
+    ) throws Exception {
             return fitnessEvaluator.evaluate(chromosome, exampleDataSets, chromosomeDataSets);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-            return null;
-        }
     }
 
-    private static String getChromosomeFileDirectory(int epoch, int example, int chromosome) {
+    private static String getChromosomeFileDirectory(int epoch, int example, Chromosome chromosome) {
         return "data/training/" +
                 SystemStatus.START_TIME_STRING + "/" +
                 "epoch" + epoch + "/" +
                 "example" + example + "/" +
-                "chromosome" + chromosome + "/";
+                "chromosome-" + Integer.toHexString(chromosome.hashCode()) + "/";
     }
 
     public void updateFitnessHistory(Population<? extends Chromosome> population) {
