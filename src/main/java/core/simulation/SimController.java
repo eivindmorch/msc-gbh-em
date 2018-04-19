@@ -3,6 +3,7 @@ package core.simulation;
 
 import core.util.ProcessLoggerThread;
 import hla.rti1516e.ObjectInstanceHandle;
+import hla.rti1516e.exceptions.RTIexception;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,8 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     private int ticksToPlay;
 
     private int totalTicks;
-    private long simulationStartTime;
+    private long lastPlayTimestamp;
+    private long lastNTicksTimestamp;
 
     public volatile boolean simulationRunning;
     public final ReentrantLock SIMULATION_RUNNING_LOCK = new ReentrantLock();
@@ -61,10 +63,11 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         if (ticksToPlay > 0) {
 
             totalTicks++;
-            if (totalTicks % 100 == 0) {
+            if (totalTicks % SimSettings.numberOfTicksToCalculateAverageTickTime == 0) {
                 logger.debug("Ticks: " + String.format("%4d", totalTicks)
-                        + " | Average time per tick: " + ((System.currentTimeMillis() - simulationStartTime) / 100) + "ms");
-                simulationStartTime = System.currentTimeMillis();
+                        + " | Average time per tick: " +
+                        ((System.currentTimeMillis() - lastNTicksTimestamp) / SimSettings.numberOfTicksToCalculateAverageTickTime) + "ms");
+                lastNTicksTimestamp = System.currentTimeMillis();
             } else if (totalTicks == 1) {
                 logger.debug("First tick");
             }
@@ -85,6 +88,19 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     @Override
     public void physicalEntityRemoved(ObjectInstanceHandle objectInstanceHandle) {
         UnitHandler.removeUnit(objectInstanceHandle);
+    }
+
+    private void requestDummyTicks(int numOfTicks) {
+        logger.info("Requesting " + numOfTicks + " dummy ticks.");
+        Federate.getInstance().sendCgfPlayInteraction();
+        try {
+            for (int i = 0; i < numOfTicks; i++) {
+                Federate.getInstance().requestTimeAdvanceAndBlock();
+            }
+        } catch (RTIexception | InterruptedException saveInProgress) {
+            saveInProgress.printStackTrace();
+        }
+        Federate.getInstance().sendCgfPauseInteraction();
     }
 
     public void play() {
@@ -111,21 +127,25 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
         logger.info("Waiting for all units to be discovered.");
         // TODO Include number of units in example file
+        long waitingForUnitsStartTime = System.currentTimeMillis();
         while (Federate.getInstance().unitsDiscovered < 2) {
             sleepMilliseconds(500);
-            if (System.currentTimeMillis() - simulationStartTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
-                simulationStartTime = System.currentTimeMillis();
+            if (System.currentTimeMillis() - waitingForUnitsStartTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
+                waitingForUnitsStartTime = System.currentTimeMillis();
                 logger.warn("Not all units discovered. Reloading scenario.");
+                requestDummyTicks(5);
                 loadScenario(currentScenario);
             }
         }
         logger.info("All units discovered -> continuing.");
         sleepMilliseconds(500);
 
-        simulationStartTime = System.currentTimeMillis();
+        requestDummyTicks(5);
+
         totalTicks = 0;
         logger.info("Playing scenario.");
-        simulationStartTime = System.currentTimeMillis();
+        lastPlayTimestamp = System.currentTimeMillis();
+        lastNTicksTimestamp = lastPlayTimestamp;
         Federate.getInstance().enableTimeAdvancement();
         Federate.getInstance().sendCgfPlayInteraction();
     }
