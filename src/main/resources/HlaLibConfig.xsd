@@ -1,25 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
-    <xs:simpleType name="NameReservationEnum">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="StrictNameReservation"/>
-            <xs:enumeration value="NameReservationWithReuse"/>
-            <xs:enumeration value="NameReservationDisabled"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="TimeManagementEnum">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="Realtime"/>
-            <xs:enumeration value="TimeConstrained"/>
-            <xs:enumeration value="TimeRegulated"/>
-            <xs:enumeration value="TimeConstrainedAndTimeRegulated"/>
-        </xs:restriction>
-    </xs:simpleType>
+	<xs:simpleType name="NameReservationEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="StrictNameReservation"/>
+			<xs:enumeration value="NameReservationWithReuse"/>
+			<xs:enumeration value="NameReservationDisabled"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TimeManagementEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Realtime"/>
+			<xs:enumeration value="TimeConstrained"/>
+			<xs:enumeration value="TimeRegulated"/>
+			<xs:enumeration value="TimeConstrainedAndTimeRegulated"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="SharingEnum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Publish"/>
 			<xs:enumeration value="Subscribe"/>
 			<xs:enumeration value="PublishSubscribe"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="divestmentPolicyEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NeverDivest" />
+			<xs:enumeration value="DivestConfiguredAttributes" />
+			<xs:enumeration value="AlwaysDivest" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="callbackModelEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Immediate" />
+			<xs:enumeration value="Evoked" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="transportationTypeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BestEffort" />
+			<xs:enumeration value="Reliable" />
+			<xs:enumeration value="FomDefault" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:element name="HlaLib">
@@ -30,16 +50,16 @@
 						<xs:sequence>
 							<xs:element name="name" type="xs:string"/>
 							<xs:element name="fomFile" type="xs:string" minOccurs="0"/>
-                            <xs:element name="fomModule" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                            <xs:element name="rtiFactoryClassName" type="xs:string" minOccurs="0"/>
+							<xs:element name="fomModule" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="rtiFactoryClassName" type="xs:string" minOccurs="0"/>
 							<xs:element name="nameReservationMode" type="NameReservationEnum" minOccurs="0" default="NameReservationWithReuse"/>
-                            <xs:element name="libraries">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name="lib" type="xs:string" maxOccurs="unbounded"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
+							<xs:element name="libraries">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="lib" type="xs:string" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -47,7 +67,22 @@
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="name" type="xs:string"/>
-                            <xs:element name="type" type="xs:string"/>
+							<xs:element name="type" type="xs:string"/>
+							<xs:element name="divestmentPolicy" type="divestmentPolicyEnum" minOccurs="0" default="NeverDivest" />
+							<xs:element name="callbackModel" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="scheme" type="callbackModelEnum" minOccurs="1"/>
+										<xs:element name="tickFrequency" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:decimal">
+													<xs:minExclusive value="0" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
 							<xs:element name="timeManagement" minOccurs="0">
 								<xs:complexType>
 									<xs:sequence>
@@ -62,6 +97,7 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
+							<xs:element name="logDecoderErrors" type="xs:boolean" default="false" />
 							<xs:element name="objectModel" minOccurs="0">
 								<xs:complexType>
 									<xs:sequence>
@@ -72,6 +108,8 @@
 														<xs:complexType>
 															<xs:attribute name="name" type="xs:string" use="required"/>
 															<xs:attribute name="sharing" type="SharingEnum" use="required"/>
+															<xs:attribute name="divest" type="xs:boolean" default="false" />
+															<xs:attribute name="transportation" type="transportationTypeEnum" default="FomDefault" />
 														</xs:complexType>
 													</xs:element>
 												</xs:sequence>
@@ -88,6 +126,7 @@
 											<xs:complexType>
 												<xs:attribute name="name" type="xs:string" use="required"/>
 												<xs:attribute name="sharing" type="SharingEnum" use="required"/>
+												<xs:attribute name="transportation" type="transportationTypeEnum" default="FomDefault" />
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>

@@ -23,6 +23,7 @@
             <scheme>TimeConstrainedAndTimeRegulated</scheme>
             <lookahead>1.0</lookahead>
         </timeManagement>
+        <logDecoderErrors>false</logDecoderErrors>
         <objectModel>
             <objectClass name="HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.Human">
                 <attribute name="EntityType" sharing="Subscribe"/>
