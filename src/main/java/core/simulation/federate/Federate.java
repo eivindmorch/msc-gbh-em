@@ -1,8 +1,9 @@
 package core.simulation.federate;
 
 import core.simulation.SimSettings;
+import core.util.ToStringBuilder;
 import hla.rti1516e.ObjectInstanceHandle;
-import hla.rti1516e.exceptions.RTIexception;
+import hla.rti1516e.exceptions.*;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
 import no.ffi.hlalib.datatypes.enumeratedData.CommandType;
@@ -80,9 +81,10 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
     @Override
     public void remoteObjectDiscovered(HlaObject object) {
+        logger.debug("Remote object discovered: " + object);
+
         if (object instanceof PhysicalEntityObject) {
             PhysicalEntityObject physicalEntity = (PhysicalEntityObject) object;
-            logger.debug("Remote object discovered: " + physicalEntity.getMarking());
             physicalEntity.addObjectUpdateListener(this);
             physicalEntity.requestUpdateOnAllAttributes();
             unitsDiscovered++;
@@ -93,6 +95,8 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
     public void hlaObjectUpdated(HlaObjectUpdatedEvent updatedEvent) {
         if (updatedEvent.getHlaObject() instanceof PhysicalEntityObject) {
             PhysicalEntityObject physicalEntity = (PhysicalEntityObject) updatedEvent.getHlaObject();
+            logger.debug("Updated event received: " + hlaObjectUpdatedEventToString(updatedEvent) + " containing " + physicalEntityObjectToString(physicalEntity));
+
             physicalEntityUpdatedListeners.forEach(
                     physicalEntityUpdatedListener -> physicalEntityUpdatedListener.physicalEntityUpdated(physicalEntity)
             );
@@ -102,10 +106,27 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
     @Override
     public void remoteObjectRemoved(HlaObjectRemovedEvent removedEvent) {
+        logger.debug("Removed event received: " + removedEvent);
+
         ObjectInstanceHandle objectInstanceHandle = removedEvent.getObjectInstanceHandle();
         physicalEntityUpdatedListeners.forEach(
                 physicalEntityUpdatedListener -> physicalEntityUpdatedListener.physicalEntityRemoved(objectInstanceHandle)
         );
+    }
+
+    private String hlaObjectUpdatedEventToString(HlaObjectUpdatedEvent hlaObjectUpdatedEvent) {
+        return ToStringBuilder.toStringBuilder(hlaObjectUpdatedEvent)
+                .add("logicalTime", hlaObjectUpdatedEvent.getLogicalTime())
+                .add("objectInstanceHandle", hlaObjectUpdatedEvent.getObjectInstanceHandle())
+                .add("attributes", hlaObjectUpdatedEvent.getAttributes().size())
+                .toString();
+    }
+
+    private String physicalEntityObjectToString(PhysicalEntityObject physicalEntityObject) {
+        return ToStringBuilder.toStringBuilder(physicalEntityObject)
+                .add("marking", physicalEntityObject.getMarking().getMarking())
+                .add("instanceHandle", physicalEntityObject.getObjectInstanceHandle())
+                .toString();
     }
 
     @Override
@@ -220,6 +241,18 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         holdTimeAdvancement = false;
         synchronized (TIME_ADVANCE_LOCK) {
             TIME_ADVANCE_LOCK.notifyAll();
+        }
+    }
+
+    /**
+     * Requests that all messages queued for this federate in the RTI are delivered now, ignoring message timestamps.
+     */
+    public void requestFlushQueue() {
+        logger.debug("Requesting flush of RTI message queue.");
+        try {
+            federateManager.requestFlushQueue(federateManager.getLogicalTime());
+        } catch (LogicalTimeAlreadyPassed | RequestForTimeRegulationPending | RestoreInProgress | NotConnected | InTimeAdvancingState | InvalidLogicalTime | RTIinternalError | FederateNotExecutionMember | RequestForTimeConstrainedPending | SaveInProgress e) {
+            e.printStackTrace();
         }
     }
 
