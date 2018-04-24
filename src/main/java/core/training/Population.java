@@ -77,6 +77,24 @@ public class Population<C extends Chromosome> {
         return population;
     }
 
+    public static <C extends Chromosome> Population<C> generateTestPopulation(Class<C> chromosomeClass, int numberOfChromosomes) {
+        Population<C> population = new Population<>();
+
+        while (population.getSize() < numberOfChromosomes) {
+            try {
+                Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(TempTask.class);
+
+                TempTask testTree = BehaviorTreeUtil.generateTestTree();
+                C chromosome = chromosomeConstructor.newInstance(testTree);
+                population.add(chromosome);
+
+            } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return population;
+    }
+
     public void add(C btree) {
         chromosomes.add(btree);
     }

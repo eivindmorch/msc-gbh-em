@@ -61,6 +61,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         } catch (InvalidArgumentException | TimeoutException e) {
             e.printStackTrace();
         }
+//        population = Population.generateTestPopulation(NSGA2Chromosome.class, INITIAL_POPULATION_SIZE);
     }
 
     @Override
