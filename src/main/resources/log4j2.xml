@@ -14,19 +14,19 @@
         </Console>
 
         <Console name="ConsoleUnit" target="SYSTEM_OUT">
-            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L - %msg%n}{yellow}"/>
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{yellow}"/>
         </Console>
 
         <Console name="ConsoleFederate" target="SYSTEM_OUT">
-            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L - %msg%n}{green}"/>
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{green}"/>
         </Console>
 
         <Console name="ConsoleSimController" target="SYSTEM_OUT">
-            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L - %msg%n}{blue}"/>
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -   %msg%n}{blue}"/>
         </Console>
 
         <Console name="ConsoleSimEngine" target="SYSTEM_OUT">
-            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L - %msg%n}{cyan}"/>
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{cyan}"/>
         </Console>
 
 
