@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import core.BtreeAlt.TempTask;
 import core.model.btree.Blackboard;
+import core.util.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,5 +46,13 @@ public class ControlledUnit<U extends Unit> {
     @SuppressWarnings("unchecked")
     private static <U extends Unit> Task<Blackboard<U>> getControlledUnitBtree(U unit) {
         return ControlledUnit.controlledUnitBtreeMap.get(unit.getClass()).instantiateTask();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.toStringBuilder(this)
+                .add("unit", unit)
+                .add("btree", btree)
+                .toString();
     }
 }

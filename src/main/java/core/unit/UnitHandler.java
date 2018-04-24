@@ -64,7 +64,7 @@ public abstract class UnitHandler {
     }
 
     public static void addControlledUnit(ControlledUnit controlledUnit) {
-        logger.info("Controlled unit added: " + controlledUnit.getUnit());
+        logger.info("Controlled unit added: " + controlledUnit);
         controlledUnits.put(controlledUnit.getUnit().getHandle(), controlledUnit);
     }
 
