@@ -3,7 +3,6 @@ package core.simulation;
 
 import core.util.ProcessLoggerThread;
 import hla.rti1516e.ObjectInstanceHandle;
-import hla.rti1516e.exceptions.RTIexception;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +58,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         UnitLogger.logAllRegisteredUnits();
         UnitHandler.tickAllControlledUnits();
 
+        // TODO Move to separate method
         // If ticksToPlay == 0, then run infinite number of ticks
         if (ticksToPlay > 0) {
 
@@ -69,6 +69,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
                         ((System.currentTimeMillis() - lastNTicksTimestamp) / SimSettings.numberOfTicksToCalculateAverageTickTime) + "ms");
                 lastNTicksTimestamp = System.currentTimeMillis();
             } else if (totalTicks == 1) {
+                lastNTicksTimestamp = lastPlayTimestamp;
                 logger.debug("First tick");
             }
 
@@ -90,22 +91,30 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         UnitHandler.removeUnit(objectInstanceHandle);
     }
 
-    private void requestDummyTicks(int numOfTicks) {
-        logger.info("Requesting " + numOfTicks + " dummy ticks.");
-        Federate.getInstance().sendCgfPlayInteraction();
-        try {
-            for (int i = 0; i < numOfTicks; i++) {
-                Federate.getInstance().requestTimeAdvanceAndBlock();
-            }
-        } catch (RTIexception | InterruptedException saveInProgress) {
-            saveInProgress.printStackTrace();
-        }
-        Federate.getInstance().sendCgfPauseInteraction();
+    /**
+     * Runs a specified number of ticks before pausing the simulation and notifying the listener.
+     * @param numOfTicks the number of ticks to run
+     */
+    public void play(int numOfTicks) {
+        ticksToPlay = numOfTicks;
+        play();
     }
 
     public void play() {
         simulationRunning = true;
 
+//        waitForScenarioToSuccessfullyLoad();
+        waitForAllUnitsToBeDiscovered(2);
+        waitForAllUnitsToBeUpdated();
+
+        totalTicks = 0;
+        logger.info("Playing scenario for " + ((ticksToPlay != 0) ? ticksToPlay : "unlimited") + " ticks.");
+        lastPlayTimestamp = System.currentTimeMillis();
+        Federate.getInstance().enableTimeAdvancement();
+        Federate.getInstance().sendCgfPlayInteraction();
+    }
+
+//    private void waitForScenarioToSuccessfullyLoad(int secondsToWaitForSuccessfulLoad) {
 //        synchronized (SCENARIO_LOADING_LOCK) {
 //            double initialWaitingForScenarioToLoadTime = System.currentTimeMillis();
 //            while(scenarioLoading) {
@@ -115,8 +124,8 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 //                } catch (InterruptedException e) {
 //                    e.printStackTrace();
 //                }
-//                if (System.currentTimeMillis() - initialWaitingForScenarioToLoadTime >= 30 * 1000) {
-//                    logger.info("Scenario not successfully loaded after 30 seconds.");
+//                if (System.currentTimeMillis() - initialWaitingForScenarioToLoadTime >= secondsToWaitForSuccessfulLoad * 1000) {
+//                    logger.info("Scenario not successfully loaded after " + secondsToWaitForSuccessfulLoad + " seconds.");
 //                    retryLoadScenario();
 //                    initialWaitingForScenarioToLoadTime = System.currentTimeMillis();
 //                }
@@ -124,39 +133,33 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 //        }
 //        logger.info("Scenario successfully loaded -> continuing.");
 //        sleepMilliseconds(500);
+//    }
 
-        logger.info("Waiting for all units to be discovered.");
-        // TODO Include number of units in example file
-        long waitingForUnitsStartTime = System.currentTimeMillis();
-        while (Federate.getInstance().unitsDiscovered < 2) {
+    // TODO Include number of units in example file
+    private void waitForAllUnitsToBeDiscovered(int numOfUnits) {
+        logger.info("START Waiting for all (" + numOfUnits + ") units to be discovered.");
+
+        long timeoutIntervalStartTime = System.currentTimeMillis();
+
+        while (Federate.getInstance().unitsDiscovered < numOfUnits) {
             sleepMilliseconds(500);
-            if (System.currentTimeMillis() - waitingForUnitsStartTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
-                waitingForUnitsStartTime = System.currentTimeMillis();
+            if (System.currentTimeMillis() - timeoutIntervalStartTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
+                timeoutIntervalStartTime = System.currentTimeMillis();
                 logger.warn("Not all units discovered. Reloading scenario.");
-                requestDummyTicks(5);
                 loadScenario(currentScenario);
             }
         }
-        logger.info("All units discovered -> continuing.");
-        sleepMilliseconds(500);
-
-        requestDummyTicks(5);
-
-        totalTicks = 0;
-        logger.info("Playing scenario.");
-        lastPlayTimestamp = System.currentTimeMillis();
-        lastNTicksTimestamp = lastPlayTimestamp;
-        Federate.getInstance().enableTimeAdvancement();
-        Federate.getInstance().sendCgfPlayInteraction();
+        logger.info("DONE All units discovered.");
     }
 
-    /**
-     * Runs a specified number of ticks before pausing the simulation and notifying the listener.
-     * @param numOfTicks the number of ticks to run
-     */
-    public void play(int numOfTicks) {
-        ticksToPlay = numOfTicks;
-        play();
+    // TODO Lock instead of sleep
+    private void waitForAllUnitsToBeUpdated() {
+        logger.info("START Waiting for all (" + Federate.getInstance().unitsDiscovered + ") units to be updated with values. Requesting queued messages from RTI.");
+        while (UnitHandler.getNumOfUnits() < Federate.getInstance().unitsDiscovered) {
+            Federate.getInstance().requestFlushQueue();
+            sleepMilliseconds(1000);
+        }
+        logger.info("DONE All units updated with values.");
     }
 
     public void pause() {
