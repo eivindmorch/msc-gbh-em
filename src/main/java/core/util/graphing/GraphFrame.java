@@ -48,6 +48,7 @@ public class GraphFrame implements Runnable {
             jFrame.setLocation(graphicsDevices[screen].getDefaultConfiguration().getBounds().x, jFrame.getY());
             if (fullscreen) {
                 jFrame.setExtendedState(jFrame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+                jFrame.setExtendedState(jFrame.getExtendedState() | JFrame.ICONIFIED);
             }
         } else if (graphicsDevices.length > 0) {
             jFrame.setLocation(graphicsDevices[0].getDefaultConfiguration().getBounds().x, jFrame.getY());
