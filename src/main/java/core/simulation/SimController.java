@@ -105,7 +105,9 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
 //        waitForScenarioToSuccessfullyLoad();
         waitForAllUnitsToBeDiscovered(2);
+        sleepMilliseconds(1000);
         waitForAllUnitsToBeUpdated();
+        sleepMilliseconds(500);
 
         totalTicks = 0;
         logger.info("Playing scenario for " + ((ticksToPlay != 0) ? ticksToPlay : "unlimited") + " ticks.");
