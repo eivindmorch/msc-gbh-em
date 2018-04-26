@@ -78,8 +78,9 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
                     DISTANCE_FITNESS_EXPONENT);
         }
 
-        logger.debug("ticks=" + numOfTicks + ", fitness=" + value);
+        double normalisedValue = value / numOfTicks;
+        logger.debug("ticks=" + numOfTicks + ", fitness=" + normalisedValue);
 
-        return value / numOfTicks;
+        return normalisedValue;
     }
 }
