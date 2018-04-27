@@ -21,7 +21,7 @@ public class ToStringBuilder {
     }
 
     public ToStringBuilder add(String label, Object value) {
-        properties.add(label + "=" + value.toString());
+        properties.add(label + "=" + ((value != null) ? value.toString() : "null"));
         return this;
     }
 

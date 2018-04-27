@@ -21,7 +21,7 @@
 
         <timeManagement>
             <scheme>TimeConstrainedAndTimeRegulated</scheme>
-            <lookahead>1.0</lookahead>
+            <lookahead>0.125</lookahead>
         </timeManagement>
         <logDecoderErrors>false</logDecoderErrors>
         <objectModel>
@@ -39,8 +39,6 @@
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeading" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.Wait" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.LBMLMessage.LBMLTask.ChangeOrderedSpeed" sharing="Publish"/>
-            <interaction name="HLAinteractionRoot.StartResume" sharing="Publish"/>
-            <interaction name="HLAinteractionRoot.StopFreeze" sharing="Publish"/>
             <interaction name="HLAinteractionRoot.CgfControl" sharing="Publish"/>
         </interactions>
     </federate>

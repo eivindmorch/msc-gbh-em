@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 import static core.util.SystemUtil.sleepMilliseconds;
+import static core.util.SystemUtil.sleepSeconds;
 
 public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
@@ -149,8 +150,9 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
                 }
             }
             try {
-                requestTimeAdvanceAndBlock();
                 tick(federateManager.getLogicalTime());
+                requestTimeAdvanceAndBlock();
+                sleepMilliseconds(50); // TODO THIS FIXES DETERMINISM ISSUES
             } catch (InterruptedException | RTIexception saveInProgress) {
                 saveInProgress.printStackTrace();
             }
@@ -248,7 +250,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
      * Requests that all messages queued for this federate in the RTI are delivered now, ignoring message timestamps.
      */
     public void requestFlushQueue() {
-        logger.debug("Requesting flush of RTI message queue.");
+        logger.debug("Requesting flush of RTI message queue with timestamp " + federateManager.getLogicalTime() + ".");
         try {
             federateManager.requestFlushQueue(federateManager.getLogicalTime());
         } catch (LogicalTimeAlreadyPassed | RequestForTimeRegulationPending | RestoreInProgress | NotConnected | InTimeAdvancingState | InvalidLogicalTime | RTIinternalError | FederateNotExecutionMember | RequestForTimeConstrainedPending | SaveInProgress e) {

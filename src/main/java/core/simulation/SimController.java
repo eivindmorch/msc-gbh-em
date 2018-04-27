@@ -1,7 +1,9 @@
 package core.simulation;
 
 
+import core.unit.Unit;
 import core.util.ProcessLoggerThread;
+import experiments.experiment1.data.rows.RawDataRow;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
@@ -12,6 +14,8 @@ import core.simulation.federate.TickListener;
 import core.unit.UnitHandler;
 import core.unit.UnitLogger;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static core.util.SystemUtil.sleepMilliseconds;
@@ -33,6 +37,10 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     private long lastPlayTimestamp;
     private long lastNTicksTimestamp;
 
+    private float currentSimulationTimestamp = 0;
+    private float lastPlaySimulationTimestamp;
+    private boolean unitWasMovingLastTick;
+
     public volatile boolean simulationRunning;
     public final ReentrantLock SIMULATION_RUNNING_LOCK = new ReentrantLock();
 
@@ -52,9 +60,60 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         return currentScenario;
     }
 
+    private boolean isMoving(Unit unit) {
+        return ((RawDataRow) unit.dataRows.get(0)).getMovementAngle() != null;
+    }
+
+    private boolean isCorrectTimestamp(double timestamp) {
+        HashSet<Double> timestampSet = new HashSet<>(Arrays.asList(
+                2.250,
+                4.125,
+                6.375,
+                7.625,
+                9.875,
+                11.750
+        ));
+        return timestampSet.contains(timestamp - lastPlaySimulationTimestamp);
+    }
+
     @Override
     public void tick(double timestamp) {
         UnitHandler.updateUnits(timestamp);
+
+        for (Unit unit : UnitHandler.getUnits()) {
+
+//            logger.debug(String.format(
+//                    "%5b %5.3f ,%s",
+//                    ((RawDataRow) unit.dataRows.get(0)).getMovementAngle(),
+//                    timestamp - lastPlaySimulationTimestamp,
+//                    unit.dataRows.get(0).toString()));
+
+            if (isMoving(unit) && !unitWasMovingLastTick) {
+                logger.debug(String.format(
+                        "%s %5.3f, %s",
+                        "MOVE",
+                        timestamp - lastPlaySimulationTimestamp,
+                        unit.dataRows.get(0).toString())
+                );
+                unitWasMovingLastTick = true;
+                if (!isCorrectTimestamp(timestamp)) {
+                    logger.error("NOT CORRECT TIMESTAMP");
+                }
+
+            } else if (!isMoving(unit) && unitWasMovingLastTick) {
+                logger.debug(String.format(
+                        "%s %5.3f, %s",
+                        "STOP",
+                        timestamp - lastPlaySimulationTimestamp,
+                        unit.dataRows.get(0).toString())
+                );
+                unitWasMovingLastTick = false;
+                if (!isCorrectTimestamp(timestamp)) {
+                    logger.error("INCORRECT TIMESTAMP");
+                }
+            }
+
+        }
         UnitLogger.logAllRegisteredUnits();
         UnitHandler.tickAllControlledUnits();
 
@@ -79,6 +138,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
                 onSimulationEnd();
             }
         }
+        currentSimulationTimestamp += 0.125;
     }
 
     @Override
@@ -101,10 +161,13 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
     }
 
     public void play() {
+        unitWasMovingLastTick = false;
+
+        lastPlaySimulationTimestamp = currentSimulationTimestamp;
         simulationRunning = true;
 
 //        waitForScenarioToSuccessfullyLoad();
-        waitForAllUnitsToBeDiscovered(2);
+        waitForAllUnitsToBeDiscovered(1);
         sleepMilliseconds(1000);
         waitForAllUnitsToBeUpdated();
         sleepMilliseconds(500);

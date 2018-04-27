@@ -86,7 +86,7 @@ public class RawDataRow extends DataRow {
     @Override
     public String toString() {
         return ToStringBuilder.toStringBuilder(this)
-                .add("timestamp", this.getTimestamp())
+                .add("timestamp", String.format("%5.3f", this.getTimestamp()))
                 .add("position", lla)
                 .add("movementAngle", movementAngle)
                 .toString();
