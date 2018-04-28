@@ -149,8 +149,9 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
                 }
             }
             try {
-                requestTimeAdvanceAndBlock();
                 tick(federateManager.getLogicalTime());
+                requestTimeAdvanceAndBlock();
+                sleepMilliseconds(50); // TODO THIS FIXES DETERMINISM ISSUES
             } catch (InterruptedException | RTIexception saveInProgress) {
                 saveInProgress.printStackTrace();
             }
