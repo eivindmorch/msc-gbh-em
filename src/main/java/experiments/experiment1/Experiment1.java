@@ -16,47 +16,38 @@ import static core.util.SystemUtil.sleepSeconds;
 
 public class Experiment1 {
 
-    public static void main(String[] args) {
-        new Experiment1();
-    }
-
     private Experiment1() {
         Experiment1UnitInfo.init();
         UnitHandler.setAddUnitMethod(new Experiment1AddUnitMethod());
-        run();
     }
 
     private void run() {
-
 //        Rti.getInstance().start();
+//        sleepSeconds(5);
 
-        sleepSeconds(5);
         Federate.getInstance().start();
 
         Federate.getInstance().addTickListener(SimController.getInstance());
         Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
         SimController.getInstance().startSimEngine();
-//        SimController.getInstance().startSimGui();
+        SimController.getInstance().startSimGui();
         sleepSeconds(10);
-
 
         // TODO Population size as argument?
         Algorithm<FollowerEvaluationDataRow, NSGA2Chromosome> algorithm = new NSGA2<>(
-                20,
+                10,
                 10,
                 0.5,
                 0.8,
                 3,
                 12
         );
-
         String[] exampleFileNames = new String[]{
-                "experiment1/brooklyn.csv",
-                "experiment1/village.csv",
-                "experiment1/makland.csv"
+                "experiment1/brooklyn-short.csv",
+//                "experiment1/village.csv",
+//                "experiment1/makland.csv"
         };
-
         Trainer trainer = new Trainer<>(
                 FollowerUnit.class,
                 FollowerEvaluationDataRow.class,
@@ -65,11 +56,11 @@ public class Experiment1 {
                 exampleFileNames
         );
 
-
         trainer.train(100000);
-
-//        sleepSeconds(20);
-//        rti.destroy();
     }
 
+    public static void main(String[] args) {
+        Experiment1 experiment1 = new Experiment1();
+        experiment1.run();
+    }
 }

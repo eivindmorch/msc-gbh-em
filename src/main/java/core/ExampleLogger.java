@@ -11,31 +11,26 @@ import experiments.experiment1.unit.Experiment1AddUnitMethod;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
 
-import static core.util.SystemUtil.sleepSeconds;
-
 public class ExampleLogger {
 
-    public ExampleLogger() {
+    private ExampleLogger() {
+        Experiment1UnitInfo.init();
+        UnitHandler.setAddUnitMethod(new Experiment1AddUnitMethod());
+        UnitLogger.setIntraResourcesWritingDirectory("data/example_logging/" + SystemStatus.START_TIME_STRING + "/");
+        ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, BehaviorTreeUtil.generateTestTree());
+    }
+
+    public void run() {
         Federate.getInstance().start();
 
         Federate.getInstance().addTickListener(SimController.getInstance());
         Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
-        Experiment1UnitInfo.init();
-        UnitHandler.setAddUnitMethod(new Experiment1AddUnitMethod());
-
-        ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, BehaviorTreeUtil.generateTestTree());
-
-        UnitLogger.setIntraResourcesWritingDirectory("example_logging/" + SystemStatus.START_TIME_STRING + "/");
-    }
-
-    public void run() {
         SimController.getInstance().play();
     }
 
     public static void main(String[] args) {
         ExampleLogger exampleLogger = new ExampleLogger();
-        sleepSeconds(5);
         exampleLogger.run();
     }
 }
