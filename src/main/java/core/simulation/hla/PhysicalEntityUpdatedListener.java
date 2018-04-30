@@ -1,4 +1,4 @@
-package core.simulation.federate;
+package core.simulation.hla;
 
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;

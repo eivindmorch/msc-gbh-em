@@ -1,14 +1,14 @@
 package core.simulation;
 
 
+import core.simulation.hla.HlaManager;
 import core.util.ProcessLoggerThread;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import core.simulation.federate.Federate;
-import core.simulation.federate.PhysicalEntityUpdatedListener;
-import core.simulation.federate.TickListener;
+import core.simulation.hla.PhysicalEntityUpdatedListener;
+import core.simulation.hla.TickListener;
 import core.unit.UnitHandler;
 import core.unit.UnitLogger;
 
@@ -112,8 +112,8 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         totalTicks = 0;
         logger.info("Playing scenario for " + ((ticksToPlay != 0) ? ticksToPlay : "unlimited") + " ticks.");
         lastPlayTimestamp = System.currentTimeMillis();
-        Federate.getInstance().enableTimeAdvancement();
-        Federate.getInstance().sendCgfPlayInteraction();
+        HlaManager.getInstance().enableTimeAdvancement();
+        HlaManager.getInstance().sendCgfPlayInteraction();
     }
 
 //    private void waitForScenarioToSuccessfullyLoad(int secondsToWaitForSuccessfulLoad) {
@@ -143,7 +143,7 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
         long timeoutIntervalStartTime = System.currentTimeMillis();
 
-        while (Federate.getInstance().unitsDiscovered < numOfUnits) {
+        while (HlaManager.getInstance().unitsDiscovered < numOfUnits) {
             sleepMilliseconds(500);
             if (System.currentTimeMillis() - timeoutIntervalStartTime > SimSettings.secondsToWaitForUnitsBeforeReload * 1000) {
                 timeoutIntervalStartTime = System.currentTimeMillis();
@@ -156,9 +156,9 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     // TODO Lock instead of sleep
     private void waitForAllUnitsToBeUpdated() {
-        logger.info("START Waiting for all (" + Federate.getInstance().unitsDiscovered + ") units to be updated with values. Requesting queued messages from RTI.");
-        while (UnitHandler.getNumOfUnits() < Federate.getInstance().unitsDiscovered) {
-            Federate.getInstance().requestFlushQueue();
+        logger.info("START Waiting for all (" + HlaManager.getInstance().unitsDiscovered + ") units to be updated with values. Requesting queued messages from RTI.");
+        while (UnitHandler.getNumOfUnits() < HlaManager.getInstance().unitsDiscovered) {
+            HlaManager.getInstance().requestFlushQueue();
             sleepMilliseconds(1000);
         }
         logger.info("DONE All units updated with values.");
@@ -166,13 +166,13 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 
     public void pause() {
         logger.info("Pausing scenario.");
-        Federate.getInstance().sendCgfPauseInteraction();
-        Federate.getInstance().holdTimeAdvancement();
+        HlaManager.getInstance().sendCgfPauseInteraction();
+        HlaManager.getInstance().holdTimeAdvancement();
     }
 
     public void rewind() {
         logger.info("Rewinding scenario.");
-        Federate.getInstance().sendCgfRewindInteraction();
+        HlaManager.getInstance().sendCgfRewindInteraction();
         UnitHandler.reset();
         UnitLogger.reset();
     }
@@ -186,16 +186,16 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
 //                this
 //        );
 
-        Federate.getInstance().holdTimeAdvancement();
+        HlaManager.getInstance().holdTimeAdvancement();
         UnitHandler.reset();
         UnitLogger.reset();
-        Federate.getInstance().sendCgfLoadScenarioInteraction(scenarioPath);
+        HlaManager.getInstance().sendCgfLoadScenarioInteraction(scenarioPath);
         currentScenario = scenarioPath;
     }
 
     private void retryLoadScenario() {
         logger.info("Attempting new loading of scenario " + currentScenario + ".");
-        Federate.getInstance().sendCgfLoadScenarioInteraction(currentScenario);
+        HlaManager.getInstance().sendCgfLoadScenarioInteraction(currentScenario);
     }
 
     public void startSimEngine() {

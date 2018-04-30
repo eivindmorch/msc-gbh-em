@@ -1,4 +1,4 @@
-package core.simulation.federate;
+package core.simulation.hla;
 
 public interface TickListener {
 

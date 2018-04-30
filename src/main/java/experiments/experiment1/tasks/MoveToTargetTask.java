@@ -5,7 +5,7 @@ import com.badlogic.gdx.ai.btree.Task;
 import core.model.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.TaskTickTracker;
-import core.simulation.federate.Federate;
+import core.simulation.hla.HlaManager;
 import experiments.experiment1.unit.FollowerUnit;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
@@ -50,14 +50,14 @@ public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
         interaction.setDestination(geoLocationStruct);
         interaction.setTaskee(getObject().getUnit().getMarking());
 
-        Federate.getInstance().sendInteraction(interaction);
+        HlaManager.getInstance().sendInteraction(interaction);
     }
 
     private void sendLLBMLWaitTask(){
         WaitInteraction interaction = new WaitInteraction();
         interaction.setTaskee(getObject().getUnit().getMarking());
 
-        Federate.getInstance().sendInteraction(interaction);
+        HlaManager.getInstance().sendInteraction(interaction);
     }
 
     @Override

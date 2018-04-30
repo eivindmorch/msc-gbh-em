@@ -17,7 +17,7 @@
             <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{yellow}"/>
         </Console>
 
-        <Console name="ConsoleFederate" target="SYSTEM_OUT">
+        <Console name="ConsoleHlaManager" target="SYSTEM_OUT">
             <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{green}"/>
         </Console>
 
@@ -78,9 +78,9 @@
             <AppenderRef ref="ConsoleUnit"/>
         </Logger>
 
-        <Logger name="core.simulation.federate.Federate" level="debug" additivity="false">
+        <Logger name="core.simulation.hla.HlaManager" level="debug" additivity="false">
             <AppenderRef ref="Simulation"/>
-            <AppenderRef ref="ConsoleFederate"/>
+            <AppenderRef ref="ConsoleHlaManager"/>
         </Logger>
 
         <Logger name="core.simulation.SimController" level="debug" additivity="false">

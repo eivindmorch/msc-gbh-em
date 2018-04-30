@@ -2,7 +2,7 @@ package core;
 
 import core.model.btree.BehaviorTreeUtil;
 import core.simulation.SimController;
-import core.simulation.federate.Federate;
+import core.simulation.hla.HlaManager;
 import core.unit.ControlledUnit;
 import core.unit.UnitHandler;
 import core.unit.UnitLogger;
@@ -21,10 +21,10 @@ public class ExampleLogger {
     }
 
     public void run() {
-        Federate.getInstance().start();
+        HlaManager.getInstance().start();
 
-        Federate.getInstance().addTickListener(SimController.getInstance());
-        Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
+        HlaManager.getInstance().addTickListener(SimController.getInstance());
+        HlaManager.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
         SimController.getInstance().play();
     }

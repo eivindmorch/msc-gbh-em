@@ -1,4 +1,4 @@
-package core.simulation.federate;
+package core.simulation.hla;
 
 import core.simulation.SimSettings;
 import core.util.ToStringBuilder;
@@ -26,11 +26,11 @@ import java.util.ArrayList;
 
 import static core.util.SystemUtil.sleepMilliseconds;
 
-public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
+public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
-    private static Federate instance;
+    private static HlaManager instance;
 
-    private final Logger logger = LoggerFactory.getLogger(Federate.class);
+    private final Logger logger = LoggerFactory.getLogger(HlaManager.class);
 
     private FederateManager federateManager;
 
@@ -46,13 +46,13 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
     public volatile int unitsDiscovered = 0;
 
-    private Federate() {
+    private HlaManager() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
     }
 
-    public static Federate getInstance() {
+    public static HlaManager getInstance() {
         if (instance == null) {
-            instance = new Federate();
+            instance = new HlaManager();
         }
         return instance;
     }
@@ -69,7 +69,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
 
         federateManager.init();
 
-        logger.info("Federate initiated.");
+        logger.info("HlaManager initiated.");
     }
 
     public void addTickListener(TickListener tickListener) {
@@ -234,7 +234,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         cgfControlInteraction.setCommandRecipient(receivingEntity);
 
         logger.info("Sending CgfControlInteraction with command " + cgfCommand.getCommand().name() + ".");
-        Federate.getInstance().sendInteraction(cgfControlInteraction);
+        HlaManager.getInstance().sendInteraction(cgfControlInteraction);
     }
 
     public void holdTimeAdvancement() {

@@ -1,7 +1,7 @@
 package experiments.experiment1;
 
 import core.simulation.SimController;
-import core.simulation.federate.Federate;
+import core.simulation.hla.HlaManager;
 import core.training.Trainer;
 import core.training.algorithms.Algorithm;
 import core.training.algorithms.NSGA2.NSGA2;
@@ -25,10 +25,10 @@ public class Experiment1 {
 //        Rti.getInstance().start();
 //        sleepSeconds(5);
 
-        Federate.getInstance().start();
+        HlaManager.getInstance().start();
 
-        Federate.getInstance().addTickListener(SimController.getInstance());
-        Federate.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
+        HlaManager.getInstance().addTickListener(SimController.getInstance());
+        HlaManager.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
 
         SimController.getInstance().startSimEngine();
         SimController.getInstance().startSimGui();
