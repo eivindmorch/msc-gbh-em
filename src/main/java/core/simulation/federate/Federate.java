@@ -4,6 +4,7 @@ import core.simulation.SimSettings;
 import core.util.ToStringBuilder;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.*;
+import no.ffi.hlalib.HlaInteraction;
 import no.ffi.hlalib.HlaLib;
 import no.ffi.hlalib.HlaObject;
 import no.ffi.hlalib.datatypes.enumeratedData.CommandType;
@@ -187,6 +188,10 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         }
     }
 
+    public void sendInteraction(HlaInteraction interaction) {
+        interaction.sendInteraction();
+    }
+
     public void sendCgfPlayInteraction() {
         CgfCommand cgfCommand = new CgfCommand();
         cgfCommand.setCommand(CommandType.Play);
@@ -229,7 +234,7 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
         cgfControlInteraction.setCommandRecipient(receivingEntity);
 
         logger.info("Sending CgfControlInteraction with command " + cgfCommand.getCommand().name() + ".");
-        cgfControlInteraction.sendInteraction();
+        Federate.getInstance().sendInteraction(cgfControlInteraction);
     }
 
     public void holdTimeAdvancement() {
@@ -256,7 +261,6 @@ public class Federate implements Runnable, HlaObjectListener, HlaObjectUpdateLis
             e.printStackTrace();
         }
     }
-
 }
 
 

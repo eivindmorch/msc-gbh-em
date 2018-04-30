@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.TaskTickTracker;
+import core.simulation.federate.Federate;
 import core.util.Geometer;
 import core.util.LlbmlUtil;
 import core.util.exceptions.IllegalArgumentCombinationException;
@@ -48,7 +49,8 @@ public class TurnToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
         float rad = (float) Math.toRadians(deg);
         interaction.setHeading(rad);
         interaction.setTaskee(getObject().getUnit().getMarking());
-        interaction.sendInteraction();
+
+        Federate.getInstance().sendInteraction(interaction);
     }
 
     private double calculateHeadingAngle() throws IllegalArgumentCombinationException {

@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.btree.Task;
 import core.model.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.TaskTickTracker;
+import core.simulation.federate.Federate;
 import experiments.experiment1.unit.FollowerUnit;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
@@ -15,6 +16,7 @@ public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
 
     private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
 
+    // TODO Fix usage of wait interaction
     @Override
     public Status execute() {
         if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.FIRST) {
@@ -47,13 +49,15 @@ public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
 
         interaction.setDestination(geoLocationStruct);
         interaction.setTaskee(getObject().getUnit().getMarking());
-        interaction.sendInteraction();
+
+        Federate.getInstance().sendInteraction(interaction);
     }
 
     private void sendLLBMLWaitTask(){
         WaitInteraction interaction = new WaitInteraction();
         interaction.setTaskee(getObject().getUnit().getMarking());
-        interaction.sendInteraction();
+
+        Federate.getInstance().sendInteraction(interaction);
     }
 
     @Override

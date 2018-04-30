@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.model.btree.Blackboard;
 import core.model.btree.task.TaskTickTracker;
+import core.simulation.federate.Federate;
 import core.unit.Unit;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
@@ -33,7 +34,8 @@ public class WaitTask extends LeafTask<Blackboard<Unit>> {
     private void sendLLBMLWaitTask(){
         WaitInteraction interaction = new WaitInteraction();
         interaction.setTaskee(getObject().getUnit().getMarking());
-        interaction.sendInteraction();
+
+        Federate.getInstance().sendInteraction(interaction);
     }
 
     @Override
