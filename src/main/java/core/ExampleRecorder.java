@@ -11,9 +11,9 @@ import experiments.experiment1.unit.Experiment1AddUnitMethod;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
 
-public class ExampleLogger {
+public class ExampleRecorder {
 
-    private ExampleLogger() {
+    private ExampleRecorder() {
         Experiment1UnitInfo.init();
         UnitHandler.setAddUnitMethod(new Experiment1AddUnitMethod());
         UnitLogger.setIntraResourcesWritingDirectory("data/example_logging/" + SystemStatus.START_TIME_STRING + "/");
@@ -30,7 +30,7 @@ public class ExampleLogger {
     }
 
     public static void main(String[] args) {
-        ExampleLogger exampleLogger = new ExampleLogger();
-        exampleLogger.run();
+        ExampleRecorder exampleRecorder = new ExampleRecorder();
+        exampleRecorder.run();
     }
 }
