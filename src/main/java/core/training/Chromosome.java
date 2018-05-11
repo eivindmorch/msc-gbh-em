@@ -7,6 +7,7 @@ import core.util.ToStringBuilder;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 /**
  * Wrapper for behavior tree and fitness
@@ -54,5 +55,14 @@ public class Chromosome {
             if (o1.getFitness().get(key) > o2.getFitness().get(key)) return 1;
             return 0;
         };
+    }
+
+    public boolean functionallyEquals(Chromosome o) {
+        for (String key : this.fitness.keySet()) {
+            if (!key.equals("Size") && !Objects.equals(this.fitness.get(key), o.fitness.get(key))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
