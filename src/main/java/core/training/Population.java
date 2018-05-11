@@ -111,6 +111,10 @@ public class Population<C extends Chromosome> {
         return chromosomes.remove(i);
     }
 
+    public void remove(C chromosome) {
+        chromosomes.remove(chromosome);
+    }
+
     public void removeAll(ArrayList<C> chromosomes) {
         this.chromosomes.removeAll(chromosomes);
     }
