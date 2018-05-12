@@ -35,7 +35,7 @@ public class GraphPanel extends JPanel {
     }
 
     GraphPanel(Chromosome chromosome) {
-        this(chromosome.toString(), chromosome.getBtree());
+        this(chromosome.toString(), chromosome.getBehaviourTreeRoot());
     }
 
     GraphPanel(String title, Task root) {

@@ -2,7 +2,6 @@ package experiments.experiment1;
 
 import core.data.DataSet;
 import core.data.rows.DataRow;
-import core.model.btree.BehaviorTreeUtil;
 import core.training.Chromosome;
 import core.training.FitnessEvaluator;
 import core.training.FitnessFunctions;
@@ -46,7 +45,7 @@ public class Experiment1FitnessEvaluator implements FitnessEvaluator {
         }
 
         // Add tree size
-        fitness.put("Size", (double) chromosome.getBtree().getSize());
+        fitness.put("Size", (double) chromosome.getBehaviourTreeRoot().getSize());
         return fitness;
     }
 

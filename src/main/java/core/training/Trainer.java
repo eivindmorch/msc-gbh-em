@@ -18,7 +18,6 @@ import core.unit.ControlledUnit;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -95,7 +94,7 @@ public class Trainer<U extends Unit, D extends DataRow> {
 
             UnitLogger.setIntraResourcesWritingDirectory(getChromosomeFileDirectory(currentEpoch, exampleIndex, chromosome));
 
-            TempTask btree = population.get(chromosomeIndex).getBtree();
+            TempTask btree = population.get(chromosomeIndex).getBehaviourTreeRoot();
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
 
             SimController.getInstance().loadScenario(scenarioPath);

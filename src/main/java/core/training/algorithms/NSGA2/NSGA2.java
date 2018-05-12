@@ -4,10 +4,8 @@ import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.TempTask;
 import core.data.DataSet;
 import core.data.rows.DataRow;
-import core.model.btree.BehaviorTreeUtil;
 import core.model.btree.genops.Crossover;
 import core.model.btree.genops.Mutator;
-import core.training.Chromosome;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
 import core.util.ToStringBuilder;
@@ -16,9 +14,6 @@ import core.util.graphing.GraphTab;
 import core.util.graphing.Grapher;
 import core.util.SystemUtil;
 import core.util.plotting.Plotter;
-import org.jfree.chart.ChartPanel;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,9 +117,9 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             // TODO Fix use of crossoverRate and mutationRate
             TempTask newRoot;
             if (SystemUtil.random.nextDouble() < CROSSOVER_RATE) {
-                newRoot = Crossover.crossover(parent1.getBtree(), parent2.getBtree());
+                newRoot = Crossover.crossover(parent1.getBehaviourTreeRoot(), parent2.getBehaviourTreeRoot());
             } else {
-                newRoot = Mutator.mutate(parent1.getBtree(), trainer.getUnitToTrainClass(), epoch);
+                newRoot = Mutator.mutate(parent1.getBehaviourTreeRoot(), trainer.getUnitToTrainClass(), epoch);
             }
             if (!population.containsChromosomeWithEqualTree(newRoot)
                     && !offspringPopulation.containsChromosomeWithEqualTree(newRoot)

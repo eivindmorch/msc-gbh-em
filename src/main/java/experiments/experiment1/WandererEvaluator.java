@@ -39,7 +39,7 @@ public class WandererEvaluator implements FitnessEvaluator {
         }
 
         // Add tree size
-        fitness.put("Size", (double) chromosome.getBtree().getSize());
+        fitness.put("Size", (double) chromosome.getBehaviourTreeRoot().getSize());
         return fitness;
     }
 

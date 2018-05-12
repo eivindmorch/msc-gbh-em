@@ -145,7 +145,7 @@ public class Population<C extends Chromosome> {
 
     public boolean containsChromosomeWithEqualTree(TempTask root) {
         for (Chromosome chromosome : chromosomes) {
-            if (chromosome.getBtree().structurallyEquals(root)) {
+            if (chromosome.getBehaviourTreeRoot().structurallyEquals(root)) {
                 return true;
             }
         }

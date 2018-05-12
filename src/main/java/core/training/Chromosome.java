@@ -1,8 +1,6 @@
 package core.training;
 
-import com.badlogic.gdx.ai.btree.Task;
 import core.BtreeAlt.TempTask;
-import core.model.btree.BehaviorTreeUtil;
 import core.util.ToStringBuilder;
 
 import java.util.Comparator;
@@ -15,15 +13,15 @@ import java.util.Objects;
 public class Chromosome {
 
     // TODO Rename to behaviorTreeRoot
-    private TempTask btree;
+    private TempTask behaviourTreeRoot;
     private LinkedHashMap<String, Double> fitness;
 
-    public Chromosome(TempTask btree) {
-        this.btree = btree;
+    public Chromosome(TempTask behaviourTreeRoot) {
+        this.behaviourTreeRoot = behaviourTreeRoot;
     }
 
-    public TempTask getBtree() {
-        return btree;
+    public TempTask getBehaviourTreeRoot() {
+        return behaviourTreeRoot;
     }
 
     public LinkedHashMap<String, Double> getFitness() {
@@ -36,7 +34,7 @@ public class Chromosome {
 
 //    @Override
 //    public Chromosome clone(){
-//        Chromosome newEvalBtree = new Chromosome(BehaviorTreeUtil.cloneTree(btree));
+//        Chromosome newEvalBtree = new Chromosome(BehaviorTreeUtil.cloneTree(behaviourTreeRoot));
 //        newEvalBtree.setFitness(fitness);
 //        return newEvalBtree;
 //    }
@@ -45,7 +43,7 @@ public class Chromosome {
     public String toString() {
         return ToStringBuilder.toStringBuilder(this)
                 .add("fitness", (fitness == null) ? "null" : fitness)
-                .add("btree", (btree == null) ? "null" : Integer.toHexString(btree.hashCode()))
+                .add("behaviourTreeRoot", (behaviourTreeRoot == null) ? "null" : Integer.toHexString(behaviourTreeRoot.hashCode()))
                 .toString();
     }
 
