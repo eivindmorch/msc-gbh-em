@@ -11,8 +11,8 @@ public abstract class UnitHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UnitHandler.class);
 
-    public static HashMap<ObjectInstanceHandle, Unit> units = new HashMap<>();
-    public static HashMap<String, ObjectInstanceHandle> unitIdentifierToHandleMap = new HashMap<>();
+    private static HashMap<ObjectInstanceHandle, Unit> units = new HashMap<>();
+    private static HashMap<String, ObjectInstanceHandle> unitIdentifierToHandleMap = new HashMap<>();
 
     private static HashMap<ObjectInstanceHandle, ControlledUnit> controlledUnits = new HashMap<>();
 
