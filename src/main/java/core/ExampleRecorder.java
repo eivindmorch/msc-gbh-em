@@ -21,7 +21,7 @@ public class ExampleRecorder {
     }
 
     public void run() {
-        HlaManager.getInstance().start();
+        HlaManager.getInstance().connectFederate();
 
         HlaManager.getInstance().addTickListener(SimController.getInstance());
         HlaManager.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());

@@ -22,10 +22,9 @@ public class Experiment1 {
     }
 
     private void run() {
-//        Rti.getInstance().start();
-//        sleepSeconds(5);
+//        HlaManager.getInstance().startRti();
 
-        HlaManager.getInstance().start();
+        HlaManager.getInstance().connectFederate();
 
         HlaManager.getInstance().addTickListener(SimController.getInstance());
         HlaManager.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());

@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 import static core.util.SystemUtil.sleepMilliseconds;
+import static core.util.SystemUtil.sleepSeconds;
 
 public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateListener, TimeManagementListener {
 
@@ -33,6 +34,8 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
     private final Logger logger = LoggerFactory.getLogger(HlaManager.class);
 
     private FederateManager federateManager;
+
+    private Rti rti;
 
     private transient boolean running = true;
     private volatile boolean constrained = false;
@@ -48,6 +51,8 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
     private HlaManager() {
         System.setProperty("hlalib-config-filepath", "src/main/resources/HlaLibConfig.xml");
+        tickListeners = new ArrayList<>();
+        physicalEntityUpdatedListeners = new ArrayList<>();
     }
 
     public static HlaManager getInstance() {
@@ -57,10 +62,14 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
         return instance;
     }
 
-    public void start() {
-        tickListeners = new ArrayList<>();
-        physicalEntityUpdatedListeners = new ArrayList<>();
+    public void startRti() {
+        logger.info("Starting Rti process.");
+        rti = new Rti();
+        rti.start();
+        sleepSeconds(5);
+    }
 
+    public void connectFederate() {
         federateManager = HlaLib.init();
         federateManager.addTimeManagementListener(this);
 
@@ -69,7 +78,7 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
 
         federateManager.init();
 
-        logger.info("HlaManager initiated.");
+        logger.info("Federate connected.");
     }
 
     public void addTickListener(TickListener tickListener) {

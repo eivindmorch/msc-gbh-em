@@ -5,53 +5,71 @@
 
     <Appenders>
 
+        <!--CONSOLE-->
+
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %-14logger{1}@%-4L - %msg%n"/>
         </Console>
 
-        <Console name="ConsoleTraining" target="SYSTEM_OUT">
+
+        <Console name="Console-Training" target="SYSTEM_OUT">
             <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L - %msg%n}{magenta}"/>
         </Console>
 
-        <Console name="ConsoleUnit" target="SYSTEM_OUT">
+        <Console name="Console-Unit" target="SYSTEM_OUT">
             <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{yellow}"/>
         </Console>
 
-        <Console name="ConsoleHlaManager" target="SYSTEM_OUT">
-            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{green}"/>
-        </Console>
-
-        <Console name="ConsoleSimController" target="SYSTEM_OUT">
+        <!-- simulation -->
+        <Console name="Console-SimController" target="SYSTEM_OUT">
             <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -   %msg%n}{blue}"/>
         </Console>
-
-        <Console name="ConsoleSimEngine" target="SYSTEM_OUT">
+        <Console name="Console-SimEngine" target="SYSTEM_OUT">
             <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{cyan}"/>
         </Console>
 
+        <!-- simulation.hla -->
+        <Console name="Console-HlaLib" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %-14logger{1}@%-4L -     %msg%n"/>
+        </Console>
+        <Console name="Console-Rti" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %-14logger{1}@%-4L -     %msg%n"/>
+        </Console>
+        <Console name="Console-HlaManager" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d{HH:mm:ss}}{white} %highlight{%-5level} %style{%-14logger{1}@%-4L -     %msg%n}{green}"/>
+        </Console>
 
 
-        <File name="HlaLib" fileName="logs/hlalib/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+
+        <!-- FILE -->
+
+        <File name="File-Training" filename="logs/${date:yyyy-MM-dd-HH-mm-ss}/training-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
-        <File name="Training" filename="logs/training/training-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="File-Unit" fileName="logs/${date:yyyy-MM-dd-HH-mm-ss}/unit-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
-        <File name="Unit" fileName="logs/unit/unit-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <!-- simulation -->
+        <File name="File-SimController" fileName="logs/${date:yyyy-MM-dd-HH-mm-ss}/simulation/simcontroller-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
+        </File>
+        <File name="File-SimEngine" fileName="logs/${date:yyyy-MM-dd-HH-mm-ss}/simulation/simengine-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
+        </File>
+        <File name="File-SimGui" fileName="logs/${date:yyyy-MM-dd-HH-mm-ss}/simulation/simgui-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
-        <File name="Simulation" fileName="logs/simulation/simulation/simulation-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <!-- simulation.hla -->
+        <File name="File-HlaLib" fileName="logs/${date:yyyy-MM-dd-HH-mm-ss}/simulation/hla/hlalib-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
-
-        <File name="SimEngine" fileName="logs/simulation/simengine/simengine-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="File-Rti" fileName="logs/${date:yyyy-MM-dd-HH-mm-ss}/simulation/hla/rti-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
-
-        <File name="SimGui" fileName="logs/simulation/simgui/simgui-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
+        <File name="File-HlaManager" fileName="logs/${date:yyyy-MM-dd-HH-mm-ss}/simulation/hla/hlamanager-${date:yyyy-MM-dd-HH-mm-ss}.log" append="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %logger{36}.%M()@%L - %msg%n}"/>
         </File>
 
@@ -64,37 +82,41 @@
             <appender-ref ref="Console"/>
         </Root>
 
-        <Logger name="no.ffi.hlalib" level="debug" additivity="false">
-            <AppenderRef ref="HlaLib"/>
-        </Logger>
-
         <Logger name="core.training" level="debug" additivity="false">
-            <AppenderRef ref="Training"/>
-            <AppenderRef ref="ConsoleTraining"/>
+            <AppenderRef ref="File-Training"/>
+            <AppenderRef ref="Console-Training"/>
         </Logger>
 
         <Logger name="core.unit" level="debug" additivity="false">
-            <AppenderRef ref="Unit"/>
-            <AppenderRef ref="ConsoleUnit"/>
+            <AppenderRef ref="File-Unit"/>
+            <AppenderRef ref="Console-Unit"/>
         </Logger>
 
-        <Logger name="core.simulation.hla.HlaManager" level="debug" additivity="false">
-            <AppenderRef ref="Simulation"/>
-            <AppenderRef ref="ConsoleHlaManager"/>
-        </Logger>
-
+        <!-- simulation -->
         <Logger name="core.simulation.SimController" level="debug" additivity="false">
-            <AppenderRef ref="Simulation"/>
-            <AppenderRef ref="ConsoleSimController"/>
+            <AppenderRef ref="File-SimController"/>
+            <AppenderRef ref="Console-SimController"/>
         </Logger>
-
         <Logger name="core.simulation.SimEngine" level="debug" additivity="false">
-            <AppenderRef ref="SimEngine"/>
-            <!--<AppenderRef ref="ConsoleSimEngine"/>-->
+            <AppenderRef ref="File-SimEngine"/>
+            <!--<AppenderRef ref="Console-SimEngine"/>-->
+        </Logger>
+        <Logger name="core.simulation.SimGui" level="debug" additivity="false">
+            <AppenderRef ref="File-SimGui"/>
         </Logger>
 
-        <Logger name="core.simulation.SimGui" level="debug" additivity="false">
-            <AppenderRef ref="SimGui"/>
+        <!-- simulation.hla -->
+        <Logger name="no.ffi.hlalib" level="debug" additivity="false">
+            <AppenderRef ref="File-HlaLib"/>
+            <!--<AppenderRef ref="Console-HlaLib"/>-->
+        </Logger>
+        <Logger name="core.simulation.hla.Rti" level="debug" additivity="false">
+            <AppenderRef ref="File-Rti"/>
+            <AppenderRef ref="Console-Rti"/>
+        </Logger>
+        <Logger name="core.simulation.hla.HlaManager" level="debug" additivity="false">
+            <AppenderRef ref="File-HlaManager"/>
+            <AppenderRef ref="Console-HlaManager"/>
         </Logger>
 
     </Loggers>

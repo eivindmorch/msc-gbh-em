@@ -1,4 +1,4 @@
-package core.simulation;
+package core.simulation.hla;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,19 +14,8 @@ import static core.simulation.SimSettings.rtiDirectory;
 
 public class Rti implements Runnable {
 
-    private static Rti instance;
-
     private Logger logger = LoggerFactory.getLogger(Rti.class);
     private CountDownLatch latch;
-
-    private Rti() {}
-
-    public static Rti getInstance() {
-        if (instance == null) {
-            instance = new Rti();
-        }
-        return instance;
-    }
 
     public void start() {
         latch = new CountDownLatch(1);
