@@ -15,7 +15,7 @@ public abstract class Unit {
     private String identifier; //Internal
     private final ObjectInstanceHandle handle;
 
-    public List<DataRow> dataRows; // Used for writing dataRows to file
+    protected List<DataRow> dataRows; // Used for writing dataRows to file
 
     public Unit(String marking, String identifier, ObjectInstanceHandle handle) {
         this.marking = marking;
