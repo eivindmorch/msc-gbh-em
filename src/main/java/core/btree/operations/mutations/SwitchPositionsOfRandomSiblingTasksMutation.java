@@ -1,8 +1,8 @@
-package core.btree.genops.mutations;
+package core.btree.operations.mutations;
 
 import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.TempTask;
-import core.btree.genops.Mutation;
+import core.btree.operations.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
 

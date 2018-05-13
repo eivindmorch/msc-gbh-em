@@ -1,9 +1,9 @@
-package core.btree.genops.mutations;
+package core.btree.operations.mutations;
 
 import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.LeafTasks.TempLeafTask;
 import core.BtreeAlt.TempTask;
-import core.btree.genops.Mutation;
+import core.btree.operations.Mutation;
 import core.unit.Unit;
 import core.unit.UnitTypeInfo;
 import core.util.exceptions.NoAvailableTaskClassException;
