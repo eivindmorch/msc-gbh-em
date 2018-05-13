@@ -9,10 +9,10 @@ import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxPerimeter;
 import com.mxgraph.view.mxStylesheet;
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
-import core.BtreeAlt.LeafTasks.TempConditionTask;
-import core.BtreeAlt.LeafTasks.TempLeafTask;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.composite.CompositeTask;
+import core.btree.tasks.modular.template.leaf.ConditionTask;
+import core.btree.tasks.modular.template.leaf.LeafTask;
+import core.btree.tasks.modular.template.Task;
 import core.btree.BehaviorTreeUtil;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
@@ -107,13 +107,13 @@ abstract class Style {
         return style;
     }
 
-    static String getCellStyle(TempTask tempTask) {
+    static String getCellStyle(Task task) {
         String style = null;
-        if (tempTask instanceof TempCompositeTask) {
+        if (task instanceof CompositeTask) {
             style = COMPOSITE;
-        } else if (tempTask instanceof TempConditionTask) {
+        } else if (task instanceof ConditionTask) {
             style = CONDITION;
-        } else if (tempTask instanceof TempLeafTask) {
+        } else if (task instanceof LeafTask) {
             style = ACTION;
         }
         return style;

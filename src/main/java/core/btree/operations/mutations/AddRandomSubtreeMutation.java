@@ -1,8 +1,8 @@
 package core.btree.operations.mutations;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.modular.template.composite.CompositeTask;
 import core.btree.BehaviorTreeUtil;
 import core.btree.operations.Mutation;
 import core.unit.Unit;
@@ -21,29 +21,29 @@ public class AddRandomSubtreeMutation extends Mutation {
     }
 
     @Override
-    protected boolean canBePerformed(TempTask root) {
+    protected boolean canBePerformed(Task root) {
         return root.getSize() > 0;
     }
 
     @Override
-    protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
-        TempTask newRoot = root.cloneTask();
+    protected Task mutate(Task root, Class<? extends Unit> unitClass) {
+        Task newRoot = root.cloneTask();
 
         try {
-            TempTask randomSubtree;
+            Task randomSubtree;
             if (onlyAddSingleLeafTask) {
                 randomSubtree = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getRandomAvailableLeafTask();
             } else {
                 randomSubtree = BehaviorTreeUtil.generateRandomTree(unitClass, 3, 5);
             }
 
-            TempTask randomTaskInTree = newRoot.getRandomTask(true, TempTask.class);
+            Task randomTaskInTree = newRoot.getRandomTask(true, Task.class);
 
-            if (randomTaskInTree instanceof TempCompositeTask) {
-                ((TempCompositeTask) randomTaskInTree).insertChild(random.nextInt(randomTaskInTree.getChildCount() + 1), randomSubtree);
+            if (randomTaskInTree instanceof CompositeTask) {
+                ((CompositeTask) randomTaskInTree).insertChild(random.nextInt(randomTaskInTree.getChildCount() + 1), randomSubtree);
 
             } else {
-                TempCompositeTask randomComposite = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getRandomAvailableCompositeTask();
+                CompositeTask randomComposite = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getRandomAvailableCompositeTask();
 
                 if (random.nextBoolean()) {
                     randomComposite.addChild(randomTaskInTree.cloneTask());

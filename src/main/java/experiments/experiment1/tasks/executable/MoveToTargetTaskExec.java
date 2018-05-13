@@ -1,10 +1,10 @@
-package experiments.experiment1.tasks;
+package experiments.experiment1.tasks.executable;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.data.Lla;
 import core.btree.Blackboard;
-import core.btree.task.TaskTickTracker;
+import core.btree.tasks.TaskTickTracker;
 import core.simulation.hla.HlaManager;
 import experiments.experiment1.unit.FollowerUnit;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
@@ -12,7 +12,7 @@ import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveTo
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
 
-public class MoveToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
+public class MoveToTargetTaskExec extends LeafTask<Blackboard<FollowerUnit>> {
 
     private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
 

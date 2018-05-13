@@ -1,6 +1,6 @@
 package core.btree.operations;
 
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.btree.operations.mutations.*;
 import core.unit.Unit;
 
@@ -24,7 +24,7 @@ public abstract class Mutator {
         mutations.add(new RandomiseVariablesOfRandomVariableTaskMutation(   1, 1.02));
     }
 
-    public static TempTask mutate(TempTask root, Class<? extends Unit> unitClass, double factorPower) {
+    public static Task mutate(Task root, Class<? extends Unit> unitClass, double factorPower) {
 
         double totalWeight = 0;
         NavigableMap<Double, Mutation> selectionMap = new TreeMap<>();
@@ -39,7 +39,7 @@ public abstract class Mutator {
         double randomValue = random.nextDouble() * totalWeight;
         Mutation selectedMutation = selectionMap.higherEntry(randomValue).getValue();
 
-        TempTask newRoot = selectedMutation.mutate(root.cloneTask(), unitClass);
+        Task newRoot = selectedMutation.mutate(root.cloneTask(), unitClass);
         return newRoot.getCleanVersion();
     }
 }

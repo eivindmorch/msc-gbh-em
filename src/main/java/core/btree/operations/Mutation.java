@@ -1,6 +1,6 @@
 package core.btree.operations;
 
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.unit.Unit;
 
 public abstract class Mutation {
@@ -17,7 +17,7 @@ public abstract class Mutation {
         return weight * Math.pow(factor, factorPower);
     }
 
-    protected abstract boolean canBePerformed(TempTask root);
+    protected abstract boolean canBePerformed(Task root);
 
-    protected abstract TempTask mutate(TempTask root, Class<? extends Unit> unitClass);
+    protected abstract Task mutate(Task root, Class<? extends Unit> unitClass);
 }

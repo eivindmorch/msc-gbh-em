@@ -1,7 +1,7 @@
 package core.btree.operations.mutations;
 
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.composite.CompositeTask;
+import core.btree.tasks.modular.template.Task;
 import core.btree.operations.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
@@ -15,9 +15,9 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
     }
 
     @Override
-    protected boolean canBePerformed(TempTask root) {
+    protected boolean canBePerformed(Task root) {
         try {
-            root.getRandomTask(true, TempCompositeTask.class, 2);
+            root.getRandomTask(true, CompositeTask.class, 2);
         } catch (NoSuchTaskFoundException e) {
             return false;
         }
@@ -25,10 +25,10 @@ public class SwitchPositionsOfRandomSiblingTasksMutation extends Mutation {
     }
 
     @Override
-    protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
-        TempTask newRoot = root.cloneTask();
+    protected Task mutate(Task root, Class<? extends Unit> unitClass) {
+        Task newRoot = root.cloneTask();
         try {
-            TempCompositeTask randomRoot = newRoot.getRandomTask(true, TempCompositeTask.class, 2);
+            CompositeTask randomRoot = newRoot.getRandomTask(true, CompositeTask.class, 2);
 
             int childIndex1 = random.nextInt(randomRoot.getChildCount());
             int childIndex2;

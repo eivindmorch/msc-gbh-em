@@ -1,7 +1,6 @@
 package core.visualisation.graphing;
 
-import com.badlogic.gdx.ai.btree.Task;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 
 import java.util.ArrayList;
 
@@ -22,20 +21,20 @@ public abstract class Grapher {
         }
     }
 
-    public static void quickGraph(String title, TempTask... tempTasks) {
+    public static void quickGraph(String title, Task... tasks) {
         GraphFrame graphFrame = Grapher.createNewFrame(title);
         GraphTab graphTab = new GraphTab(title);
-        for (TempTask tempTask : tempTasks) {
-            graphTab.add(tempTask);
+        for (Task task : tasks) {
+            graphTab.add(task);
         }
         graphFrame.addTab(graphTab);
         graphFrame.display();
     }
 
-    public static void quickGraph(String title, Task... tasks) {
+    public static void quickGraph(String title, com.badlogic.gdx.ai.btree.Task... tasks) {
         GraphFrame graphFrame = Grapher.createNewFrame(title);
         GraphTab graphTab = new GraphTab(title);
-        for (Task task : tasks) {
+        for (com.badlogic.gdx.ai.btree.Task task : tasks) {
             graphTab.add(task);
         }
         graphFrame.addTab(graphTab);

@@ -1,7 +1,6 @@
 package core.visualisation.graphing;
 
-import com.badlogic.gdx.ai.btree.Task;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.training.Chromosome;
 import core.training.Population;
 
@@ -20,12 +19,12 @@ public class GraphTab {
         this.jPanel = new JPanel();
     }
 
-    public GraphTab add(TempTask root) {
+    public GraphTab add(Task root) {
         jPanel.add(new GraphPanel(root));
         return this;
     }
 
-    public GraphTab add(Task root) {
+    public GraphTab add(com.badlogic.gdx.ai.btree.Task root) {
         jPanel.add(new GraphPanel(root));
         return this;
     }

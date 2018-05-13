@@ -1,15 +1,15 @@
 package core.btree.operations;
 
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.util.exceptions.NoSuchTaskFoundException;
 
 public abstract class Crossover {
 
-    public static TempTask crossover(TempTask parent1Root, TempTask parent2Root) {
-        TempTask child = parent1Root.cloneTask();
+    public static Task crossover(Task parent1Root, Task parent2Root) {
+        Task child = parent1Root.cloneTask();
         try {
-            TempTask childRandomSubtreeRoot = child.getRandomTask(false, TempTask.class);
-            TempTask parent2RandomSubtreeRoot = parent2Root.getRandomTask(true, TempTask.class).cloneTask();
+            Task childRandomSubtreeRoot = child.getRandomTask(false, Task.class);
+            Task parent2RandomSubtreeRoot = parent2Root.getRandomTask(true, Task.class).cloneTask();
 
             childRandomSubtreeRoot.getParent().replaceChild(childRandomSubtreeRoot, parent2RandomSubtreeRoot);
         } catch (NoSuchTaskFoundException e) {

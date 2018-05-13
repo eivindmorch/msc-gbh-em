@@ -1,17 +1,17 @@
 package core.btree;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
-import core.BtreeAlt.CompositeTasks.TempSelector;
-import core.BtreeAlt.CompositeTasks.TempSequence;
-import core.BtreeAlt.LeafTasks.TempLeafTask;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.modular.template.composite.CompositeTask;
+import core.btree.tasks.modular.template.composite.Selector;
+import core.btree.tasks.modular.template.composite.Sequence;
+import core.btree.tasks.modular.template.leaf.LeafTask;
 import core.unit.Unit;
 import core.unit.UnitTypeInfo;
-import experiments.experiment1.tasks.temp.TempIsApproachingTask;
-import experiments.experiment1.tasks.temp.TempIsWithinTask;
-import experiments.experiment1.tasks.temp.TempMoveToTargetTask;
-import experiments.experiment1.tasks.temp.TempTurnToTargetTask;
+import experiments.experiment1.tasks.modular.IsApproachingTask;
+import experiments.experiment1.tasks.modular.IsWithinTask;
+import experiments.experiment1.tasks.modular.MoveToTargetTask;
+import experiments.experiment1.tasks.modular.TurnToTargetTask;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ public abstract class BehaviorTreeUtil {
 
     // TODO Test
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public static TempTask generateRandomTree(Class<? extends Unit> unitClass, int minimumTasks, int maximumTasks) throws InvalidArgumentException {
+    public static Task generateRandomTree(Class<? extends Unit> unitClass, int minimumTasks, int maximumTasks) throws InvalidArgumentException {
 
         if (minimumTasks < 3) {
             throw new InvalidArgumentException(new String[]{"minimumTasks must be 3 or more"});
@@ -38,7 +38,7 @@ public abstract class BehaviorTreeUtil {
         int numberOfCompositeTasks = randomOfHalf;
         int numberOfLeafTasks = numberOfTasks - randomOfHalf;
 
-        TempTask root;
+        Task root;
         do {
             root = generateRandomTreeWithSpecificNumberOfTasks(unitClass, numberOfCompositeTasks, numberOfLeafTasks);
             root = root.getCleanVersion();
@@ -46,7 +46,7 @@ public abstract class BehaviorTreeUtil {
         return root;
     }
 
-    private static TempTask generateRandomTreeWithSpecificNumberOfTasks(Class<? extends Unit> unitClass, int numberOfCompositeTasks, int numberOfLeafTasks)
+    private static Task generateRandomTreeWithSpecificNumberOfTasks(Class<? extends Unit> unitClass, int numberOfCompositeTasks, int numberOfLeafTasks)
             throws InvalidArgumentException {
 
         if (numberOfLeafTasks < numberOfCompositeTasks + 1) {
@@ -56,19 +56,19 @@ public abstract class BehaviorTreeUtil {
         UnitTypeInfo unitTypeInfo = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass);
 
         // Create pool of random composite tasks
-        ArrayList<TempCompositeTask> unassignedCompositeTasks = new ArrayList<>(numberOfCompositeTasks);
+        ArrayList<CompositeTask> unassignedCompositeTasks = new ArrayList<>(numberOfCompositeTasks);
         for (int i = 0; i < numberOfCompositeTasks; i++) {
             unassignedCompositeTasks.add(unitTypeInfo.getRandomAvailableCompositeTask());
         }
 
         // Create pool of random leaf tasks
-        ArrayList<TempLeafTask> unassignedLeafTasks = new ArrayList<>(numberOfLeafTasks);
+        ArrayList<LeafTask> unassignedLeafTasks = new ArrayList<>(numberOfLeafTasks);
         for (int i = 0; i < numberOfLeafTasks; i++) {
             unassignedLeafTasks.add(unitTypeInfo.getRandomAvailableLeafTask());
         }
 
         // Contains list of all composites added to the tree
-        ArrayList<TempCompositeTask> compositeTasksAddedToTree = new ArrayList<>();
+        ArrayList<CompositeTask> compositeTasksAddedToTree = new ArrayList<>();
 
         // Add root
         compositeTasksAddedToTree.add(unassignedCompositeTasks.remove(0));
@@ -78,8 +78,8 @@ public abstract class BehaviorTreeUtil {
 
         while (unassignedCompositeTasks.size() + necessaryChildren > numberOfLeafTasks
                 && !unassignedCompositeTasks.isEmpty()) {
-            TempCompositeTask compositeTaskToBeAdded = unassignedCompositeTasks.remove(0);
-            TempCompositeTask chosenParent = compositeTasksAddedToTree.get(random.nextInt(compositeTasksAddedToTree.size()));
+            CompositeTask compositeTaskToBeAdded = unassignedCompositeTasks.remove(0);
+            CompositeTask chosenParent = compositeTasksAddedToTree.get(random.nextInt(compositeTasksAddedToTree.size()));
 
             if (chosenParent.getChildCount() < 2) {
                 necessaryChildren -= 1;
@@ -90,15 +90,15 @@ public abstract class BehaviorTreeUtil {
         }
 
         while (!unassignedCompositeTasks.isEmpty()) {
-            TempCompositeTask compositeTaskToBeAdded = unassignedCompositeTasks.remove(0);
+            CompositeTask compositeTaskToBeAdded = unassignedCompositeTasks.remove(0);
 
-            ArrayList<TempCompositeTask> addedCompositeTasksWithLessThan2Children = new ArrayList<>();
-            for (TempCompositeTask compositeTaskAddedToTree : compositeTasksAddedToTree) {
+            ArrayList<CompositeTask> addedCompositeTasksWithLessThan2Children = new ArrayList<>();
+            for (CompositeTask compositeTaskAddedToTree : compositeTasksAddedToTree) {
                 if (compositeTaskAddedToTree.getChildCount() < 2) {
                     addedCompositeTasksWithLessThan2Children.add(compositeTaskAddedToTree);
                 }
             }
-            TempCompositeTask chosenParent = addedCompositeTasksWithLessThan2Children.get(
+            CompositeTask chosenParent = addedCompositeTasksWithLessThan2Children.get(
                     random.nextInt(addedCompositeTasksWithLessThan2Children.size()
                     )
             );
@@ -107,19 +107,19 @@ public abstract class BehaviorTreeUtil {
         }
 
         // Make sure all composite tasks have at least 2 children
-        for (TempCompositeTask compositeTaskAddedToTree : compositeTasksAddedToTree) {
+        for (CompositeTask compositeTaskAddedToTree : compositeTasksAddedToTree) {
             while (compositeTaskAddedToTree.getChildCount() < 2) {
                 compositeTaskAddedToTree.addChild(unassignedLeafTasks.remove(0));
             }
         }
 
         // Add remaining leaf tasks to random composite task child list
-        for (TempLeafTask leafTask : unassignedLeafTasks) {
+        for (LeafTask leafTask : unassignedLeafTasks) {
             compositeTasksAddedToTree.get(random.nextInt(compositeTasksAddedToTree.size())).addChild(leafTask);
         }
 
         // Shuffle children lists
-        for (TempCompositeTask compositeTaskAddedToTree : compositeTasksAddedToTree) {
+        for (CompositeTask compositeTaskAddedToTree : compositeTasksAddedToTree) {
             compositeTaskAddedToTree.shuffleChildren();
         }
 
@@ -128,10 +128,10 @@ public abstract class BehaviorTreeUtil {
     }
 
 
-    public static TempTask generateTestTree() {
-        TempSelector shouldMoveSelector = new TempSelector(new TempIsApproachingTask(20), new TempIsWithinTask(30));
-        TempSequence shouldNotMoveSequence = new TempSequence(shouldMoveSelector, new TempTurnToTargetTask());
-        return new TempSelector(shouldNotMoveSequence, new TempMoveToTargetTask());
+    public static Task generateTestTree() {
+        Selector shouldMoveSelector = new Selector(new IsApproachingTask(20), new IsWithinTask(30));
+        Sequence shouldNotMoveSequence = new Sequence(shouldMoveSelector, new TurnToTargetTask());
+        return new Selector(shouldNotMoveSequence, new MoveToTargetTask());
     }
 
 }

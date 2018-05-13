@@ -2,19 +2,19 @@ package core.visualisation.graphing;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 
 import java.util.ArrayList;
 
 class  Graph {
 
-    private TempTask root;
+    private Task root;
     private ArrayList<Object> vertices;
     private com.mxgraph.view.mxGraph mxGraph;
     private Object graphParent;
     private mxGraphComponent component;
 
-    Graph(TempTask root) {
+    Graph(Task root) {
         this.root = root;
 
         this.vertices = new ArrayList<>();
@@ -26,7 +26,7 @@ class  Graph {
     }
 
     private mxGraphComponent createGraphComponent() {
-        TempTask rootClone = root.cloneTask();
+        Task rootClone = root.cloneTask();
 
         mxGraph.getModel().beginUpdate();
         try {
@@ -44,9 +44,9 @@ class  Graph {
         return this.component;
     }
 
-    private void graphSubtree(TempTask root, Object rootVertex) {
+    private void graphSubtree(Task root, Object rootVertex) {
 
-        for (TempTask child : root.getChildren()) {
+        for (Task child : root.getChildren()) {
             Object childVertex = addVertex(child);
             addEdge(rootVertex, childVertex);
 
@@ -54,9 +54,9 @@ class  Graph {
         }
     }
 
-    private Object addVertex(TempTask tempTask) {
-        String name = tempTask.getDisplayName();
-        String style = Style.getCellStyle(tempTask);
+    private Object addVertex(Task task) {
+        String name = task.getDisplayName();
+        String style = Style.getCellStyle(task);
         Object vertex = mxGraph.insertVertex(graphParent, null, name, 0, 0, 0, 0, style);
         vertices.add(vertex);
         return vertex;

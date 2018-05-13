@@ -1,15 +1,15 @@
-package core.btree.task.unit;
+package core.btree.tasks.executable;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.btree.Blackboard;
-import core.btree.task.TaskTickTracker;
+import core.btree.tasks.TaskTickTracker;
 import core.simulation.hla.HlaManager;
 import core.unit.Unit;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;
 
 
-public class WaitTask extends LeafTask<Blackboard<Unit>> {
+public class WaitTaskExec extends LeafTask<Blackboard<Unit>> {
 
     private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
 

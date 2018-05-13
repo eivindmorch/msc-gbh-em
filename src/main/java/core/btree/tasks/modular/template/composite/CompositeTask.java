@@ -1,39 +1,38 @@
-package core.BtreeAlt.CompositeTasks;
+package core.btree.tasks.modular.template.composite;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.utils.Array;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 
 import java.util.*;
 
-public abstract class TempCompositeTask extends TempTask {
+public abstract class CompositeTask extends Task {
 
-    public void addChild(TempTask child) {
+    public void addChild(Task child) {
         this.children.add(child);
         setThisAsParentFor(child);
     }
 
-    public void addChildren(List<TempTask> children) {
+    public void addChildren(List<Task> children) {
         this.children.addAll(children);
         setThisAsParentFor(children);
     }
 
-    public void insertChild(int index, TempTask child) {
+    public void insertChild(int index, Task child) {
         this.children.add(index, child);
         setThisAsParentFor(child);
     }
 
-    public void insertChildren(int index, List<TempTask> children) {
+    public void insertChildren(int index, List<Task> children) {
         this.children.addAll(index, children);
         setThisAsParentFor(children);
     }
 
-    public boolean removeChild(TempTask child) {
+    public boolean removeChild(Task child) {
         removeThisAsParentFor(child);
         return children.remove(child);
     }
 
-    public void removeChildren(Collection<TempTask> children) {
+    public void removeChildren(Collection<Task> children) {
         removeThisAsParentFor(children);
         this.children.removeAll(children);
     }
@@ -43,13 +42,13 @@ public abstract class TempCompositeTask extends TempTask {
         this.children = new ArrayList<>();
     }
 
-    public void replaceChild(TempTask childToReplace, TempTask newChild) {
+    public void replaceChild(Task childToReplace, Task newChild) {
         this.children.set(children.indexOf(childToReplace), newChild);
         removeThisAsParentFor(childToReplace);
         setThisAsParentFor(newChild);
     }
 
-    public void replaceChild(TempTask childToReplace, List<TempTask> newChildren) {
+    public void replaceChild(Task childToReplace, List<Task> newChildren) {
         int index = this.children.indexOf(childToReplace);
 
         removeChild(childToReplace);
@@ -67,29 +66,29 @@ public abstract class TempCompositeTask extends TempTask {
         Collections.shuffle(children);
     }
 
-    private void setThisAsParentFor(TempTask... children) {
+    private void setThisAsParentFor(Task... children) {
         setThisAsParentFor(Arrays.asList(children));
     }
 
-    private void setThisAsParentFor(List<TempTask> children) {
-        for (TempTask child : children) {
+    private void setThisAsParentFor(List<Task> children) {
+        for (Task child : children) {
             child.setParent(this);
         }
     }
 
-    private void removeThisAsParentFor(TempTask... children) {
+    private void removeThisAsParentFor(Task... children) {
         removeThisAsParentFor(Arrays.asList(children));
     }
 
-    private void removeThisAsParentFor(Collection<TempTask> children) {
-        for (TempTask child : children) {
+    private void removeThisAsParentFor(Collection<Task> children) {
+        for (Task child : children) {
             child.setParent(null);
         }
     }
 
     Array instantiateChildren() {
-        Array<Task> array = new Array<>();
-        for (TempTask child : children) {
+        Array<com.badlogic.gdx.ai.btree.Task> array = new Array<>();
+        for (Task child : children) {
             array.add(child.instantiateTask());
         }
         return array;

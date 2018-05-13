@@ -1,4 +1,4 @@
-package experiments.experiment1.tasks;
+package experiments.experiment1.tasks.executable;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
@@ -6,11 +6,11 @@ import core.btree.Blackboard;
 import experiments.experiment1.unit.FollowerUnit;
 
 
-public class IsWithinTask extends LeafTask<Blackboard<FollowerUnit>> {
+public class IsWithinTaskExec extends LeafTask<Blackboard<FollowerUnit>> {
 
     private double distanceLimit;
 
-    public IsWithinTask(double distanceLimit) {
+    public IsWithinTaskExec(double distanceLimit) {
         this.distanceLimit = distanceLimit;
     }
 
@@ -25,9 +25,9 @@ public class IsWithinTask extends LeafTask<Blackboard<FollowerUnit>> {
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        IsWithinTask isWithinTask = (IsWithinTask) task;
-        isWithinTask.distanceLimit = this.distanceLimit;
-        return isWithinTask;
+        IsWithinTaskExec isWithinTaskExec = (IsWithinTaskExec) task;
+        isWithinTaskExec.distanceLimit = this.distanceLimit;
+        return isWithinTaskExec;
     }
 
     @Override

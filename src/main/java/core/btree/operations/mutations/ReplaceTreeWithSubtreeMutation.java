@@ -1,7 +1,7 @@
 package core.btree.operations.mutations;
 
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.modular.template.composite.CompositeTask;
 import core.btree.operations.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
@@ -13,9 +13,9 @@ public class ReplaceTreeWithSubtreeMutation extends Mutation{
     }
 
     @Override
-    protected boolean canBePerformed(TempTask root) {
+    protected boolean canBePerformed(Task root) {
         try {
-            root.getRandomTask(false, TempCompositeTask.class, 2);
+            root.getRandomTask(false, CompositeTask.class, 2);
             return true;
         } catch (NoSuchTaskFoundException e) {
             return false;
@@ -23,10 +23,10 @@ public class ReplaceTreeWithSubtreeMutation extends Mutation{
     }
 
     @Override
-    protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
-        TempTask newRoot = root.cloneTask();
+    protected Task mutate(Task root, Class<? extends Unit> unitClass) {
+        Task newRoot = root.cloneTask();
         try {
-            return newRoot.getRandomTask(false, TempCompositeTask.class, 2);
+            return newRoot.getRandomTask(false, CompositeTask.class, 2);
         } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);

@@ -1,7 +1,7 @@
 package core.training.algorithms.NSGA2;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.data.DataSet;
 import core.data.DataRow;
 import core.btree.operations.Crossover;
@@ -115,7 +115,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             NSGA2Chromosome parent2 = population.selectionTournament(2, nonDominationRankAndCrowdingDistanceComparator());
 
             // TODO Fix use of crossoverRate and mutationRate
-            TempTask newRoot;
+            Task newRoot;
             if (SystemUtil.random.nextDouble() < CROSSOVER_RATE) {
                 newRoot = Crossover.crossover(parent1.getBehaviourTreeRoot(), parent2.getBehaviourTreeRoot());
             } else {

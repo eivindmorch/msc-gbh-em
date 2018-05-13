@@ -1,8 +1,7 @@
 package core.visualisation.graphing;
 
-import com.badlogic.gdx.ai.btree.Task;
 import com.mxgraph.swing.mxGraphComponent;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.training.Chromosome;
 
 import javax.swing.*;
@@ -11,7 +10,7 @@ import java.awt.*;
 
 public class GraphPanel extends JPanel {
 
-    GraphPanel(String title, TempTask root) {
+    GraphPanel(String title, Task root) {
         this.setBorder(new EmptyBorder(15, 15, 0, 15));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -30,7 +29,7 @@ public class GraphPanel extends JPanel {
         this.add(mxGraphComponent);
     }
 
-    GraphPanel(TempTask root) {
+    GraphPanel(Task root) {
         this(root.toString(), root);
     }
 
@@ -38,7 +37,7 @@ public class GraphPanel extends JPanel {
         this(chromosome.toString(), chromosome.getBehaviourTreeRoot());
     }
 
-    GraphPanel(String title, Task root) {
+    GraphPanel(String title, com.badlogic.gdx.ai.btree.Task root) {
         this.setBorder(new EmptyBorder(15, 15, 0, 15));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -57,7 +56,7 @@ public class GraphPanel extends JPanel {
         this.add(mxGraphComponent);
     }
 
-    GraphPanel(Task root) {
+    GraphPanel(com.badlogic.gdx.ai.btree.Task root) {
         this(root.toString(), root);
     }
 }

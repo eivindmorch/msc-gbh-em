@@ -1,6 +1,6 @@
 package core.training;
 
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.data.DataSet;
 import core.data.DataRow;
 import core.unit.Unit;
@@ -94,7 +94,7 @@ public class Trainer<U extends Unit, D extends DataRow> {
 
             UnitLogger.setIntraResourcesWritingDirectory(getChromosomeFileDirectory(currentEpoch, exampleIndex, chromosome));
 
-            TempTask btree = population.get(chromosomeIndex).getBehaviourTreeRoot();
+            Task btree = population.get(chromosomeIndex).getBehaviourTreeRoot();
             ControlledUnit.setControlledUnitBtreeMap(unitToTrainClass, btree);
 
             SimController.getInstance().loadScenario(scenarioPath);

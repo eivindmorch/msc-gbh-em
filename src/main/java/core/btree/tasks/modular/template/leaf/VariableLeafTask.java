@@ -1,7 +1,7 @@
-package core.BtreeAlt.LeafTasks;
+package core.btree.tasks.modular.template.leaf;
 
 
-public abstract class TempVariableLeafTask extends TempLeafTask {
+public abstract class VariableLeafTask extends LeafTask {
 
     public abstract void randomiseVariables();
 

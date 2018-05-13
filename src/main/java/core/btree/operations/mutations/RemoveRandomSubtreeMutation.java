@@ -1,6 +1,6 @@
 package core.btree.operations.mutations;
 
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.btree.operations.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
@@ -12,16 +12,16 @@ public class RemoveRandomSubtreeMutation extends Mutation {
     }
 
     @Override
-    protected boolean canBePerformed(TempTask root) {
+    protected boolean canBePerformed(Task root) {
         // TODO Do we need more thorough check?
         return root.getSize() > 3;
     }
 
     @Override
-    protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
-        TempTask newRoot = root.cloneTask();
+    protected Task mutate(Task root, Class<? extends Unit> unitClass) {
+        Task newRoot = root.cloneTask();
         try {
-            TempTask randomRoot = newRoot.getRandomTask(false, TempTask.class);
+            Task randomRoot = newRoot.getRandomTask(false, Task.class);
             randomRoot.removeFromParent();
             return newRoot;
         } catch (NoSuchTaskFoundException e) {

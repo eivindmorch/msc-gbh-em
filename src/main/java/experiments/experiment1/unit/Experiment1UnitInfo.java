@@ -1,13 +1,13 @@
 package experiments.experiment1.unit;
 
-import core.BtreeAlt.CompositeTasks.TempSelector;
-import core.BtreeAlt.CompositeTasks.TempSequence;
-import core.btree.task.unit.temp.TempWaitTask;
+import core.btree.tasks.modular.template.composite.Selector;
+import core.btree.tasks.modular.template.composite.Sequence;
+import core.btree.tasks.modular.WaitTask;
 import core.unit.UnitTypeInfo;
-import experiments.experiment1.tasks.temp.TempIsApproachingTask;
-import experiments.experiment1.tasks.temp.TempIsWithinTask;
-import experiments.experiment1.tasks.temp.TempMoveToTargetTask;
-import experiments.experiment1.tasks.temp.TempTurnToTargetTask;
+import experiments.experiment1.tasks.modular.IsApproachingTask;
+import experiments.experiment1.tasks.modular.IsWithinTask;
+import experiments.experiment1.tasks.modular.MoveToTargetTask;
+import experiments.experiment1.tasks.modular.TurnToTargetTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,15 +18,15 @@ public abstract class Experiment1UnitInfo {
         UnitTypeInfo.add(
                 "Follower", "F", FollowerUnit.class,
                 Arrays.asList(
-                        TempMoveToTargetTask.class,
-                        TempWaitTask.class,
-                        TempIsApproachingTask.class,
-                        TempIsWithinTask.class,
-                        TempTurnToTargetTask.class
+                        MoveToTargetTask.class,
+                        WaitTask.class,
+                        IsApproachingTask.class,
+                        IsWithinTask.class,
+                        TurnToTargetTask.class
                 ),
                 Arrays.asList(
-                        TempSelector.class,
-                        TempSequence.class
+                        Selector.class,
+                        Sequence.class
                 )
         );
         UnitTypeInfo.add(

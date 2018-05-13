@@ -1,15 +1,15 @@
-package experiments.experiment1.tasks;
+package experiments.experiment1.tasks.executable;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.btree.Blackboard;
 import experiments.experiment1.unit.FollowerUnit;
 
-public class IsApproachingTask extends LeafTask<Blackboard<FollowerUnit>> {
+public class IsApproachingTaskExec extends LeafTask<Blackboard<FollowerUnit>> {
 
     private double degreeLimit;
 
-    public IsApproachingTask(double degreeLimit) {
+    public IsApproachingTaskExec(double degreeLimit) {
         this.degreeLimit = degreeLimit;
     }
 
@@ -29,9 +29,9 @@ public class IsApproachingTask extends LeafTask<Blackboard<FollowerUnit>> {
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
-        IsApproachingTask isApproachingTask = (IsApproachingTask) task;
-        isApproachingTask.degreeLimit = this.degreeLimit;
-        return isApproachingTask;
+        IsApproachingTaskExec isApproachingTaskExec = (IsApproachingTaskExec) task;
+        isApproachingTaskExec.degreeLimit = this.degreeLimit;
+        return isApproachingTaskExec;
     }
 
     @Override

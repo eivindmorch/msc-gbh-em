@@ -1,7 +1,7 @@
 package core.training;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.btree.BehaviorTreeUtil;
 import core.unit.Unit;
 import core.util.ToStringBuilder;
@@ -49,10 +49,10 @@ public class Population<C extends Chromosome> {
 
         while (population.getSize() < numberOfChromosomes) {
             try {
-                Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(TempTask.class);
+                Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(Task.class);
 
                 int numberOfAttempts = 0;
-                TempTask randomTree;
+                Task randomTree;
                 do {
                     if (numberOfAttempts == 1000) {
                         throw new TimeoutException(
@@ -82,9 +82,9 @@ public class Population<C extends Chromosome> {
 
         while (population.getSize() < numberOfChromosomes) {
             try {
-                Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(TempTask.class);
+                Constructor<C> chromosomeConstructor = chromosomeClass.getConstructor(Task.class);
 
-                TempTask testTree = BehaviorTreeUtil.generateTestTree();
+                Task testTree = BehaviorTreeUtil.generateTestTree();
                 C chromosome = chromosomeConstructor.newInstance(testTree);
                 population.add(chromosome);
 
@@ -143,7 +143,7 @@ public class Population<C extends Chromosome> {
         return Collections.min(listOfContenders, comparator);
     }
 
-    public boolean containsChromosomeWithEqualTree(TempTask root) {
+    public boolean containsChromosomeWithEqualTree(Task root) {
         for (Chromosome chromosome : chromosomes) {
             if (chromosome.getBehaviourTreeRoot().structurallyEquals(root)) {
                 return true;

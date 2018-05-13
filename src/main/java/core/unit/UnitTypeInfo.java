@@ -1,7 +1,7 @@
 package core.unit;
 
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
-import core.BtreeAlt.LeafTasks.TempLeafTask;
+import core.btree.tasks.modular.template.composite.CompositeTask;
+import core.btree.tasks.modular.template.leaf.LeafTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +16,12 @@ public class UnitTypeInfo {
     private String name;
     private String symbol;
     private Class<? extends Unit> unitClass;
-    private List<Class<? extends TempLeafTask>> availableLeafTasks;
-    private List<Class<? extends TempCompositeTask>> availableCompositeTasks;
+    private List<Class<? extends LeafTask>> availableLeafTasks;
+    private List<Class<? extends CompositeTask>> availableCompositeTasks;
 
     public static void add(String name, String symbol, Class<? extends Unit> unitClass,
-                           List<Class<? extends TempLeafTask>> availableLeafTasks,
-                           List<Class<? extends TempCompositeTask>> availableCompositeTasks) {
+                           List<Class<? extends LeafTask>> availableLeafTasks,
+                           List<Class<? extends CompositeTask>> availableCompositeTasks) {
 
         UnitTypeInfo unitTypeInfo = new UnitTypeInfo(name, symbol, unitClass, availableLeafTasks, availableCompositeTasks);
         UnitTypeInfo.symbolToUnitInfoMap.put(symbol, unitTypeInfo);
@@ -29,8 +29,8 @@ public class UnitTypeInfo {
     }
 
     private UnitTypeInfo(String name, String symbol, Class<? extends Unit> unitClass,
-                         List<Class<? extends TempLeafTask>> availableLeafTasks,
-                         List<Class<? extends TempCompositeTask>> availableCompositeTasks) {
+                         List<Class<? extends LeafTask>> availableLeafTasks,
+                         List<Class<? extends CompositeTask>> availableCompositeTasks) {
         this.name = name;
         this.symbol = symbol;
         this.unitClass = unitClass;
@@ -50,11 +50,11 @@ public class UnitTypeInfo {
         return unitClass;
     }
 
-    public List<Class<? extends TempLeafTask>> getAvailableLeafTaskClasses() {
+    public List<Class<? extends LeafTask>> getAvailableLeafTaskClasses() {
         return new ArrayList<>(availableLeafTasks);
     }
     
-    public TempLeafTask getRandomAvailableLeafTask() {
+    public LeafTask getRandomAvailableLeafTask() {
         try {
             return availableLeafTasks.get(random.nextInt(availableLeafTasks.size())).newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -63,11 +63,11 @@ public class UnitTypeInfo {
         }
     }
 
-    public List<Class<? extends TempCompositeTask>> getAvailableCompositeTaskClasses() {
+    public List<Class<? extends CompositeTask>> getAvailableCompositeTaskClasses() {
         return new ArrayList<>(availableCompositeTasks);
     }
 
-    public TempCompositeTask getRandomAvailableCompositeTask() {
+    public CompositeTask getRandomAvailableCompositeTask() {
         try {
             return availableCompositeTasks.get(random.nextInt(availableCompositeTasks.size())).newInstance();
         } catch (InstantiationException | IllegalAccessException e) {

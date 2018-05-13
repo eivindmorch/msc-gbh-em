@@ -1,9 +1,9 @@
-package experiments.experiment1.tasks;
+package experiments.experiment1.tasks.executable;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.btree.Blackboard;
-import core.btree.task.TaskTickTracker;
+import core.btree.tasks.TaskTickTracker;
 import core.simulation.hla.HlaManager;
 import core.util.Geometer;
 import core.util.LlbmlUtil;
@@ -13,7 +13,7 @@ import experiments.experiment1.unit.FollowerUnit;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
 
 
-public class TurnToTargetTask extends LeafTask<Blackboard<FollowerUnit>> {
+public class TurnToTargetTaskExec extends LeafTask<Blackboard<FollowerUnit>> {
 
     private final TaskTickTracker taskTickTracker = new TaskTickTracker(1);
 

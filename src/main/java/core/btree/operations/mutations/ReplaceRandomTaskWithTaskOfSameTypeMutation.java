@@ -1,8 +1,8 @@
 package core.btree.operations.mutations;
 
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
-import core.BtreeAlt.LeafTasks.TempLeafTask;
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.modular.template.composite.CompositeTask;
+import core.btree.tasks.modular.template.leaf.LeafTask;
 import core.btree.operations.Mutation;
 import core.unit.Unit;
 import core.unit.UnitTypeInfo;
@@ -21,21 +21,21 @@ public class ReplaceRandomTaskWithTaskOfSameTypeMutation extends Mutation {
     }
 
     @Override
-    protected boolean canBePerformed(TempTask root) {
+    protected boolean canBePerformed(Task root) {
         return root.getSize() > 0;
     }
 
     @Override
-    protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
-        TempTask newRoot = root.cloneTask();
+    protected Task mutate(Task root, Class<? extends Unit> unitClass) {
+        Task newRoot = root.cloneTask();
 
         try {
-            TempTask taskToReplace = newRoot.getRandomTask(true, TempTask.class);
+            Task taskToReplace = newRoot.getRandomTask(true, Task.class);
             UnitTypeInfo unitTypeInfo = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass);
 
-            ArrayList<Class<? extends TempTask>> availableTaskClasses = new ArrayList<>();
+            ArrayList<Class<? extends Task>> availableTaskClasses = new ArrayList<>();
 
-            if (taskToReplace instanceof TempLeafTask) {
+            if (taskToReplace instanceof LeafTask) {
                 availableTaskClasses.addAll(unitTypeInfo.getAvailableLeafTaskClasses());
             } else {
                 availableTaskClasses.addAll(unitTypeInfo.getAvailableCompositeTaskClasses());
@@ -50,10 +50,10 @@ public class ReplaceRandomTaskWithTaskOfSameTypeMutation extends Mutation {
                 );
             }
 
-            TempTask newTask = availableTaskClasses.get(random.nextInt(availableTaskClasses.size())).newInstance();
+            Task newTask = availableTaskClasses.get(random.nextInt(availableTaskClasses.size())).newInstance();
 
-            if (taskToReplace instanceof TempCompositeTask) {
-                ((TempCompositeTask) newTask).addChildren(taskToReplace.getChildren());
+            if (taskToReplace instanceof CompositeTask) {
+                ((CompositeTask) newTask).addChildren(taskToReplace.getChildren());
             }
 
             if (taskToReplace == newRoot) {

@@ -1,8 +1,7 @@
-package core.BtreeAlt;
+package core.btree.tasks.modular.template;
 
-import com.badlogic.gdx.ai.btree.Task;
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
-import core.BtreeAlt.CompositeTasks.TempSelector;
+import core.btree.tasks.modular.template.composite.CompositeTask;
+import core.btree.tasks.modular.template.composite.Selector;
 import core.util.exceptions.NoSuchTaskFoundException;
 
 import java.util.ArrayList;
@@ -10,16 +9,16 @@ import java.util.Stack;
 
 import static core.util.SystemUtil.random;
 
-public abstract class TempTask {
+public abstract class Task {
 
-    protected ArrayList<TempTask> children;
-    private TempCompositeTask parent;
+    protected ArrayList<Task> children;
+    private CompositeTask parent;
 
-    public TempTask() {
+    public Task() {
         this.children = new ArrayList<>();
     }
 
-    public ArrayList<TempTask> getChildren() {
+    public ArrayList<Task> getChildren() {
         return new ArrayList<>(children);
     }
 
@@ -27,15 +26,15 @@ public abstract class TempTask {
         return children.size();
     }
 
-    public TempTask getChild(int index) {
+    public Task getChild(int index) {
         return children.get(index);
     }
 
-    public TempCompositeTask getParent() {
+    public CompositeTask getParent() {
         return parent;
     }
 
-    public void setParent(TempCompositeTask parent) {
+    public void setParent(CompositeTask parent) {
         this.parent = parent;
     }
 
@@ -45,7 +44,7 @@ public abstract class TempTask {
 
     public int getSize() {
         int size = 1;
-        for (TempTask child : children) {
+        for (Task child : children) {
             size += child.getSize();
         }
         return size;
@@ -53,26 +52,26 @@ public abstract class TempTask {
 
     public int getDepth() {
         int maxChildDepth = 0;
-        for (TempTask child : children) {
+        for (Task child : children) {
             maxChildDepth = Math.max(maxChildDepth, child.getDepth());
         }
         return 1 + maxChildDepth;
     }
 
-    public <T extends TempTask> ArrayList<T> getTasks(boolean includeRoot, Class<T> taskTypeToSelect) {
+    public <T extends Task> ArrayList<T> getTasks(boolean includeRoot, Class<T> taskTypeToSelect) {
         ArrayList<T> tasks = new ArrayList<>();
 
         if (includeRoot && taskTypeToSelect.isInstance(this)) {
             tasks.add((T) this);
         }
-        Stack<TempTask> stack = new Stack<>();
+        Stack<Task> stack = new Stack<>();
         stack.add(this);
 
         while (!stack.empty()) {
-            TempTask currentRoot = stack.pop();
+            Task currentRoot = stack.pop();
             stack.addAll(currentRoot.getChildren());
 
-            for (TempTask child : currentRoot.getChildren()) {
+            for (Task child : currentRoot.getChildren()) {
                 if (taskTypeToSelect.isInstance(child)) {
                     tasks.add((T) child);
                 }
@@ -81,7 +80,7 @@ public abstract class TempTask {
         return tasks;
     }
 
-    public <T extends TempTask> T getRandomTask(boolean includeRoot, Class<T> taskTypeToSelect) throws NoSuchTaskFoundException {
+    public <T extends Task> T getRandomTask(boolean includeRoot, Class<T> taskTypeToSelect) throws NoSuchTaskFoundException {
         ArrayList<T> tasks = getTasks(includeRoot, taskTypeToSelect);
 
         if (tasks.size() == 0) {
@@ -90,7 +89,7 @@ public abstract class TempTask {
         return tasks.get(random.nextInt(tasks.size()));
     }
 
-    public <T extends TempTask> T getRandomTask(boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTaskFoundException {
+    public <T extends Task> T getRandomTask(boolean includeRoot, Class<T> taskTypeToSelect, int minimumNumberOfChildren) throws NoSuchTaskFoundException {
         ArrayList<T> tasks = getTasks(includeRoot, taskTypeToSelect);
         ArrayList<T> selectionTasks = new ArrayList<>();
 
@@ -106,10 +105,10 @@ public abstract class TempTask {
     }
 
     public boolean structurallyEquals(Object o) {
-        if (!(o instanceof TempTask)) {
+        if (!(o instanceof Task)) {
             return false;
         }
-        TempTask other = (TempTask) o;
+        Task other = (Task) o;
 
         if (!this.getClass().equals(other.getClass()) || this.getChildCount() != other.getChildCount()) {
             return false;
@@ -123,8 +122,8 @@ public abstract class TempTask {
     }
 
     // TODO One method calling all other helpers (private)
-    public TempTask getCleanVersion() {
-        TempTask cleanTask = this.cloneTask();
+    public Task getCleanVersion() {
+        Task cleanTask = this.cloneTask();
         int lastSize;
         do {
             lastSize = cleanTask.getSize();
@@ -139,15 +138,15 @@ public abstract class TempTask {
         return cleanTask;
     }
 
-    public static TempTask removeEmptyAndSingleChildCompositeTasks(TempTask root) {
+    public static Task removeEmptyAndSingleChildCompositeTasks(Task root) {
         // TODO Fix (does not check root, needs to replace root if root has too frew children)
-        TempTask cleanTask = root.cloneTask();
+        Task cleanTask = root.cloneTask();
 
-        ArrayList<TempCompositeTask> compositeTasks = cleanTask.getTasks(false, TempCompositeTask.class);
-        for (TempCompositeTask compositeTask : compositeTasks) {
+        ArrayList<CompositeTask> compositeTasks = cleanTask.getTasks(false, CompositeTask.class);
+        for (CompositeTask compositeTask : compositeTasks) {
             if (compositeTask.getChildCount() == 1) {
-                TempCompositeTask parent = compositeTask.getParent();
-                ArrayList<TempTask> children = compositeTask.getChildren();
+                CompositeTask parent = compositeTask.getParent();
+                ArrayList<Task> children = compositeTask.getChildren();
                 parent.replaceChild(compositeTask, children);
 
             } else if (compositeTask.getChildCount() == 0) {
@@ -161,14 +160,14 @@ public abstract class TempTask {
         return cleanTask;
     }
 
-    public static TempTask removeFollowingTasksOfAlwaysSuccessfulTasks(TempTask root) {
-        TempTask cleanTask = root.cloneTask();
-        ArrayList<TempSelector> selectors = cleanTask.getTasks(true, TempSelector.class);
+    public static Task removeFollowingTasksOfAlwaysSuccessfulTasks(Task root) {
+        Task cleanTask = root.cloneTask();
+        ArrayList<Selector> selectors = cleanTask.getTasks(true, Selector.class);
 
-        for (TempSelector selector : selectors) {
-            ArrayList<TempTask> uncheckedChildren = new ArrayList<>(selector.getChildren());
+        for (Selector selector : selectors) {
+            ArrayList<Task> uncheckedChildren = new ArrayList<>(selector.getChildren());
             while (!uncheckedChildren.isEmpty()) {
-                if (uncheckedChildren.remove(0) instanceof TempAlwaysSuccessfulTask) {
+                if (uncheckedChildren.remove(0) instanceof AlwaysSuccessfulTask) {
                     selector.removeChildren(uncheckedChildren);
                     break;
                 }
@@ -177,15 +176,15 @@ public abstract class TempTask {
         return cleanTask;
     }
 
-    public static TempTask combineNestedCompositesOfSameType(TempTask root) {
-        TempTask cleanTask = root.cloneTask();
-        ArrayList<TempCompositeTask> compositeTasks = cleanTask.getTasks(true, TempCompositeTask.class);
+    public static Task combineNestedCompositesOfSameType(Task root) {
+        Task cleanTask = root.cloneTask();
+        ArrayList<CompositeTask> compositeTasks = cleanTask.getTasks(true, CompositeTask.class);
 
-        for (TempCompositeTask compositeTask : compositeTasks) {
-            for (TempTask child : compositeTask.getChildren()) {
+        for (CompositeTask compositeTask : compositeTasks) {
+            for (Task child : compositeTask.getChildren()) {
                 if (compositeTask.getClass().equals(child.getClass())) {
                     compositeTask.replaceChild(child, child.getChildren());
-                    ((TempCompositeTask) child).removeAllChildren();
+                    ((CompositeTask) child).removeAllChildren();
                 }
             }
         }
@@ -195,8 +194,8 @@ public abstract class TempTask {
     public abstract String getDisplayName();
 
     // TODO Rename?
-    public abstract TempTask cloneTask();
+    public abstract Task cloneTask();
 
     // TODO Rename
-    public abstract Task instantiateTask();
+    public abstract com.badlogic.gdx.ai.btree.Task instantiateTask();
 }

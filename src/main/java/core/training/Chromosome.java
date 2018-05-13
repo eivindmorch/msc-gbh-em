@@ -1,6 +1,6 @@
 package core.training;
 
-import core.BtreeAlt.TempTask;
+import core.btree.tasks.modular.template.Task;
 import core.util.ToStringBuilder;
 
 import java.util.Comparator;
@@ -13,14 +13,14 @@ import java.util.Objects;
 public class Chromosome {
 
     // TODO Rename to behaviorTreeRoot
-    private TempTask behaviourTreeRoot;
+    private Task behaviourTreeRoot;
     private LinkedHashMap<String, Double> fitness;
 
-    public Chromosome(TempTask behaviourTreeRoot) {
+    public Chromosome(Task behaviourTreeRoot) {
         this.behaviourTreeRoot = behaviourTreeRoot;
     }
 
-    public TempTask getBehaviourTreeRoot() {
+    public Task getBehaviourTreeRoot() {
         return behaviourTreeRoot;
     }
 
