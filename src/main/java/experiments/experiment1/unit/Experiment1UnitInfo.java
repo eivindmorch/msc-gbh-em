@@ -2,7 +2,7 @@ package experiments.experiment1.unit;
 
 import core.BtreeAlt.CompositeTasks.TempSelector;
 import core.BtreeAlt.CompositeTasks.TempSequence;
-import core.model.btree.task.unit.temp.TempWaitTask;
+import core.btree.task.unit.temp.TempWaitTask;
 import core.unit.UnitTypeInfo;
 import experiments.experiment1.tasks.temp.TempIsApproachingTask;
 import experiments.experiment1.tasks.temp.TempIsWithinTask;

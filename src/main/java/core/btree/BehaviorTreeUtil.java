@@ -1,4 +1,4 @@
-package core.model.btree;
+package core.btree;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.CompositeTasks.TempCompositeTask;

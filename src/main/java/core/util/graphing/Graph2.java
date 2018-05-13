@@ -9,7 +9,6 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
-import core.model.btree.BehaviorTreeUtil;
 
 import java.util.ArrayList;
 

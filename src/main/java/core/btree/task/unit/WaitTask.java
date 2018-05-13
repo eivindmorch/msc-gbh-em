@@ -1,9 +1,9 @@
-package core.model.btree.task.unit;
+package core.btree.task.unit;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import core.model.btree.Blackboard;
-import core.model.btree.task.TaskTickTracker;
+import core.btree.Blackboard;
+import core.btree.task.TaskTickTracker;
 import core.simulation.hla.HlaManager;
 import core.unit.Unit;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;

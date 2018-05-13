@@ -1,6 +1,6 @@
 package core;
 
-import core.model.btree.BehaviorTreeUtil;
+import core.btree.BehaviorTreeUtil;
 import core.simulation.SimController;
 import core.simulation.hla.HlaManager;
 import core.unit.ControlledUnit;

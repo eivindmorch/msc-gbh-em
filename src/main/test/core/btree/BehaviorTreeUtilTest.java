@@ -1,22 +1,13 @@
-package core.model.btree;
+package core.btree;
 
-import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.btree.branch.Selector;
-import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.CompositeTasks.TempSelector;
 import core.BtreeAlt.CompositeTasks.TempSequence;
 import core.BtreeAlt.LeafTasks.TempVariableLeafTask;
 import core.BtreeAlt.TempTask;
-import core.model.btree.task.unit.WaitTask;
-import core.model.btree.task.unit.temp.TempWaitTask;
+import core.btree.task.unit.temp.TempWaitTask;
 import core.util.exceptions.NoSuchTaskFoundException;
-import core.util.graphing.GraphTab;
-import core.util.graphing.Grapher;
-import experiments.experiment1.tasks.IsWithinTask;
-import experiments.experiment1.tasks.MoveToTargetTask;
-import experiments.experiment1.tasks.TurnToTargetTask;
 import experiments.experiment1.tasks.temp.TempIsApproachingTask;
 import experiments.experiment1.tasks.temp.TempIsWithinTask;
 import experiments.experiment1.tasks.temp.TempMoveToTargetTask;
@@ -32,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import static core.util.SystemUtil.random;
-import static core.util.SystemUtil.sleepSeconds;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BehaviorTreeUtilTest {

@@ -2,7 +2,7 @@ package core.training;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.TempTask;
-import core.model.btree.BehaviorTreeUtil;
+import core.btree.BehaviorTreeUtil;
 import core.unit.Unit;
 import core.util.ToStringBuilder;
 

@@ -3,7 +3,7 @@ package core.unit;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.Task;
 import core.BtreeAlt.TempTask;
-import core.model.btree.Blackboard;
+import core.btree.Blackboard;
 import core.util.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,10 +1,10 @@
-package core.model.btree.task.unit.temp;
+package core.btree.task.unit.temp;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.BtreeAlt.LeafTasks.TempLeafTask;
 import core.BtreeAlt.TempAlwaysSuccessfulTask;
 import core.BtreeAlt.TempTask;
-import core.model.btree.task.unit.WaitTask;
+import core.btree.task.unit.WaitTask;
 
 public class TempWaitTask extends TempLeafTask implements TempAlwaysSuccessfulTask {
 

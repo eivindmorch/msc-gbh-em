@@ -1,4 +1,4 @@
-package core.model.btree.genops;
+package core.btree.genops;
 
 import core.BtreeAlt.TempTask;
 import core.util.exceptions.NoSuchTaskFoundException;

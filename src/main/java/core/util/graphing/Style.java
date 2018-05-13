@@ -13,7 +13,7 @@ import core.BtreeAlt.CompositeTasks.TempCompositeTask;
 import core.BtreeAlt.LeafTasks.TempConditionTask;
 import core.BtreeAlt.LeafTasks.TempLeafTask;
 import core.BtreeAlt.TempTask;
-import core.model.btree.BehaviorTreeUtil;
+import core.btree.BehaviorTreeUtil;
 import experiments.experiment1.unit.Experiment1UnitInfo;
 import experiments.experiment1.unit.FollowerUnit;
 

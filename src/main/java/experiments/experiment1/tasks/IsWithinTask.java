@@ -2,7 +2,7 @@ package experiments.experiment1.tasks;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import core.model.btree.Blackboard;
+import core.btree.Blackboard;
 import experiments.experiment1.unit.FollowerUnit;
 
 

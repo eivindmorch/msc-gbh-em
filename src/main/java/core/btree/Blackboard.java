@@ -1,4 +1,4 @@
-package core.model.btree;
+package core.btree;
 
 import core.unit.Unit;
 

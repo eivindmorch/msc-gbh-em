@@ -1,21 +1,21 @@
-package core.model.btree.genops.mutations;
+package core.btree.genops.mutations;
 
-import core.BtreeAlt.CompositeTasks.TempCompositeTask;
+import core.BtreeAlt.LeafTasks.TempVariableLeafTask;
 import core.BtreeAlt.TempTask;
-import core.model.btree.genops.Mutation;
+import core.btree.genops.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;
 
-public class ReplaceTreeWithSubtreeMutation extends Mutation{
+public class RandomiseVariablesOfRandomVariableTaskMutation extends Mutation {
 
-    public ReplaceTreeWithSubtreeMutation(double weight, double factor) {
+    public RandomiseVariablesOfRandomVariableTaskMutation(double weight, double factor) {
         super(weight, factor);
     }
 
     @Override
     protected boolean canBePerformed(TempTask root) {
         try {
-            root.getRandomTask(false, TempCompositeTask.class, 2);
+            root.getRandomTask(true, TempVariableLeafTask.class);
             return true;
         } catch (NoSuchTaskFoundException e) {
             return false;
@@ -26,7 +26,9 @@ public class ReplaceTreeWithSubtreeMutation extends Mutation{
     protected TempTask mutate(TempTask root, Class<? extends Unit> unitClass) {
         TempTask newRoot = root.cloneTask();
         try {
-            return newRoot.getRandomTask(false, TempCompositeTask.class, 2);
+            TempVariableLeafTask randomTask  = newRoot.getRandomTask(true, TempVariableLeafTask.class);
+            randomTask.randomiseVariables();
+            return newRoot;
         } catch (NoSuchTaskFoundException e) {
             e.printStackTrace();
             System.exit(1);
