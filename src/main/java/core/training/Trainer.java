@@ -6,7 +6,7 @@ import core.data.DataRow;
 import core.unit.Unit;
 import core.unit.UnitLogger;
 import core.util.SystemStatus;
-import core.util.plotting.Plotter;
+import core.visualisation.plotting.Plotter;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;

@@ -1,4 +1,4 @@
-package core.util.graphing;
+package core.visualisation.graphing;
 
 import com.badlogic.gdx.ai.btree.Task;
 import core.BtreeAlt.TempTask;

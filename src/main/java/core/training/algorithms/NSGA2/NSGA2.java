@@ -9,11 +9,11 @@ import core.btree.genops.Mutator;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
 import core.util.ToStringBuilder;
-import core.util.graphing.GraphFrame;
-import core.util.graphing.GraphTab;
-import core.util.graphing.Grapher;
+import core.visualisation.graphing.GraphFrame;
+import core.visualisation.graphing.GraphTab;
+import core.visualisation.graphing.Grapher;
 import core.util.SystemUtil;
-import core.util.plotting.Plotter;
+import core.visualisation.plotting.Plotter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package core.util.plotting;
+package core.visualisation.plotting;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

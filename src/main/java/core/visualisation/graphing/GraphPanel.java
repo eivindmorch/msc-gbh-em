@@ -1,4 +1,4 @@
-package core.util.graphing;
+package core.visualisation.graphing;
 
 import com.badlogic.gdx.ai.btree.Task;
 import com.mxgraph.swing.mxGraphComponent;

@@ -1,4 +1,4 @@
-package core.util.graphing;
+package core.visualisation.graphing;
 
 import javax.swing.*;
 import java.awt.*;

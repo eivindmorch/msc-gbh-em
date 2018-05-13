@@ -1,4 +1,4 @@
-package core.util.graphing;
+package core.visualisation.graphing;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;

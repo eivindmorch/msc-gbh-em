@@ -1,4 +1,4 @@
-package core.util.graphing;
+package core.visualisation.graphing;
 
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.model.mxCell;
