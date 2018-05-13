@@ -1,6 +1,5 @@
 package core.data;
 
-import core.data.rows.DataRow;
 import core.util.Reader;
 import core.util.ToStringBuilder;
 

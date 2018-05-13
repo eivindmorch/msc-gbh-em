@@ -1,6 +1,6 @@
 package experiments.experiment1.data.rows;
 
-import core.data.rows.DataRow;
+import core.data.DataRow;
 import core.util.Geometer;
 import core.util.ToStringBuilder;
 

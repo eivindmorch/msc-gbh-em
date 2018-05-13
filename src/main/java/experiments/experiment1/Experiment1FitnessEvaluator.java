@@ -1,7 +1,7 @@
 package experiments.experiment1;
 
 import core.data.DataSet;
-import core.data.rows.DataRow;
+import core.data.DataRow;
 import core.training.Chromosome;
 import core.training.FitnessEvaluator;
 import core.training.FitnessFunctions;

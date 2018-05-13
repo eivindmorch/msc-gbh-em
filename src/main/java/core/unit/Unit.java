@@ -1,6 +1,6 @@
 package core.unit;
 
-import core.data.rows.DataRow;
+import core.data.DataRow;
 import core.util.ToStringBuilder;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;

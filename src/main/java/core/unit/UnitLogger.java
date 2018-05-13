@@ -1,6 +1,6 @@
 package core.unit;
 
-import core.data.rows.DataRow;
+import core.data.DataRow;
 import core.simulation.SimController;
 import hla.rti1516e.ObjectInstanceHandle;
 import org.slf4j.Logger;

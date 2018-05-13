@@ -1,7 +1,7 @@
 package core.training;
 
 import core.data.DataSet;
-import core.data.rows.DataRow;
+import core.data.DataRow;
 
 import java.util.LinkedHashMap;
 import java.util.List;

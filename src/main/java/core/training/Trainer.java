@@ -2,7 +2,7 @@ package core.training;
 
 import core.BtreeAlt.TempTask;
 import core.data.DataSet;
-import core.data.rows.DataRow;
+import core.data.DataRow;
 import core.unit.Unit;
 import core.unit.UnitLogger;
 import core.util.SystemStatus;

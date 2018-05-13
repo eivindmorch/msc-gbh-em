@@ -1,6 +1,6 @@
 package experiments.experiment1.data.rows;
 
-import core.data.rows.DataRow;
+import core.data.DataRow;
 import core.model.Lla;
 import core.util.ToStringBuilder;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;

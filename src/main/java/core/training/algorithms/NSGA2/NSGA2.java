@@ -3,7 +3,7 @@ package core.training.algorithms.NSGA2;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.BtreeAlt.TempTask;
 import core.data.DataSet;
-import core.data.rows.DataRow;
+import core.data.DataRow;
 import core.model.btree.genops.Crossover;
 import core.model.btree.genops.Mutator;
 import core.training.Population;
