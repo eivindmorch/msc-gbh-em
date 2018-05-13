@@ -49,9 +49,9 @@ class BehaviorTreeUtilTest {
 //                new TurnToTargetTaskExec()
 //        );
 //
-//        Grapher.quickGraph("Original", tempRoot);
-//        Grapher.quickGraph("Instantiated", tempRoot.instantiateTask());
-//        Grapher.quickGraph("Manual", manual);
+//        FrameManager.quickGraph("Original", tempRoot);
+//        FrameManager.quickGraph("Instantiated", tempRoot.instantiateTask());
+//        FrameManager.quickGraph("Manual", manual);
 //        sleepSeconds(100);
 //    }
 

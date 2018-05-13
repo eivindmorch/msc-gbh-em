@@ -12,7 +12,7 @@ import com.mxgraph.view.mxGraph;
 
 import java.util.ArrayList;
 
-class  Graph2 {
+class TaskExecGraph {
 
     private Task root;
     private ArrayList<Object> vertices;
@@ -20,7 +20,7 @@ class  Graph2 {
     private Object graphParent;
     private mxGraphComponent component;
 
-    Graph2(Task root) {
+    TaskExecGraph(Task root) {
         this.root = root;
 
         this.vertices = new ArrayList<>();

@@ -6,8 +6,6 @@ import core.data.DataRow;
 import core.unit.Unit;
 import core.unit.UnitLogger;
 import core.util.SystemStatus;
-import core.visualisation.plotting.Plotter;
-import org.jfree.chart.ChartPanel;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.slf4j.Logger;
@@ -227,23 +225,4 @@ public class Trainer<U extends Unit, D extends DataRow> {
 
         }
     }
-
-    public <C extends Chromosome> ChartPanel getParetoPlot(
-            ArrayList<ArrayList<C>> rankedPopulation,
-            String fitnessKey1,
-            String fitnessKey2
-    ) {
-        XYSeriesCollection paretoSeriesCollection = new XYSeriesCollection();
-
-        for (int i = 0; i < rankedPopulation.size(); i++) {
-            XYSeries paretoSeries = new XYSeries("Rank " + i);
-
-            for (Chromosome chromosome : rankedPopulation.get(i)) {
-                paretoSeries.add(chromosome.getFitness().get(fitnessKey1), chromosome.getFitness().get(fitnessKey2));
-            }
-            paretoSeriesCollection.addSeries(paretoSeries);
-        }
-        return Plotter.getPlot("Pareto", paretoSeriesCollection, fitnessKey1, fitnessKey2, false);
-    }
-
 }

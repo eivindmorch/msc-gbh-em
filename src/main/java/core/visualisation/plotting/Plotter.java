@@ -11,12 +11,11 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
-import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 
-public abstract class Plotter extends JPanel {
+public abstract class Plotter {
 
     public static ChartPanel getPlot(String title, XYSeriesCollection dataSet, String xLabel, String yLabel, boolean lines){
         XYPlot plot = new XYPlot();

@@ -1,14 +1,14 @@
-package core.visualisation.graphing;
+package core.visualisation;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class GraphFrame implements Runnable {
+public class Frame implements Runnable {
 
     private JFrame jFrame;
     private JTabbedPane tabbedPane;
 
-    GraphFrame(String title) {
+    Frame(String title) {
         jFrame = new JFrame(title);
         tabbedPane = new JTabbedPane();
     }
@@ -25,12 +25,12 @@ public class GraphFrame implements Runnable {
         jFrame.setVisible(true);
     }
 
-    public void addTab(GraphTab graphTab) {
-        tabbedPane.addTab(graphTab.getTitle(), graphTab.getPanel());
+    public void addTab(Tab tab) {
+        tabbedPane.addTab(tab.getTitle(), tab.getPanel());
     }
 
-    public void addTab(GraphTab graphTab, boolean setAsDefaultTab) {
-        addTab(graphTab);
+    public void addTab(Tab tab, boolean setAsDefaultTab) {
+        addTab(tab);
         if (setAsDefaultTab) {
             tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
         }

@@ -9,10 +9,11 @@ import core.btree.operations.Mutator;
 import core.training.Population;
 import core.training.algorithms.Algorithm;
 import core.util.ToStringBuilder;
-import core.visualisation.graphing.GraphFrame;
-import core.visualisation.graphing.GraphTab;
-import core.visualisation.graphing.Grapher;
+import core.visualisation.Frame;
+import core.visualisation.FrameManager;
+import core.visualisation.Tab;
 import core.util.SystemUtil;
+import core.visualisation.graphing.Grapher;
 import core.visualisation.plotting.Plotter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,10 +218,10 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
         logger.debug("INITIAL POPULATION\n" + populationClone);
 
-        Grapher.closeAllGraphs();
-        GraphFrame graphFrame = Grapher.createNewFrame("Initial population");
-        graphFrame.addTab(new GraphTab("Initial population").add(populationClone));
-        graphFrame.display();
+        FrameManager.closeAllFrames();
+        Frame frame = FrameManager.createNewFrame("Initial population");
+        frame.addTab(new Tab("Initial population").add(Grapher.getGraphs(populationClone)));
+        frame.display();
     }
 
     private void output(
@@ -245,20 +246,19 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         logger.debug("RANKS\n" + getRanksAsString(rankedPopulationClone));
         logger.debug("NEW POPULATION\n" + newPopulationClone);
 
-        Grapher.closeAllGraphs();
-        GraphFrame graphFrame = Grapher.createNewFrame("Epoch " + epoch);
-        graphFrame.addTab(new GraphTab("Old population").add(oldPopulationClone));
-        graphFrame.addTab(new GraphTab("Offspring").add(offspringClone));
-        graphFrame.addTab(new GraphTab("New population").add(newPopulationClone));
-        graphFrame.addTab(new GraphTab("Non-dominated").add(rankedPopulation.get(0)));
+        FrameManager.closeAllFrames();
+        Frame frame = FrameManager.createNewFrame("Epoch " + epoch);
+        frame.addTab(new Tab("Old population").add(Grapher.getGraphs(oldPopulationClone)));
+        frame.addTab(new Tab("Offspring").add(Grapher.getGraphs(offspringClone)));
+        frame.addTab(new Tab("New population").add(Grapher.getGraphs(newPopulationClone)));
+        frame.addTab(new Tab("Non-dominated").add(Grapher.getGraphs(rankedPopulation.get(0))));
 
-        GraphTab plotTab = new GraphTab("Plot");
+        Tab plotTab = new Tab("Plot");
         for (String fitnessKey : trainer.fitnessHistoryCollections.keySet()) {
             plotTab.add(Plotter.getPlot(fitnessKey, trainer.fitnessHistoryCollections.get(fitnessKey), "Epoch", "Fitness", true));
         }
-//        plotTab.add(trainer.getParetoPlot(rankedPopulation, "Size", "Scenario 0"));
-        graphFrame.addTab(plotTab, true);
+        frame.addTab(plotTab, true);
 
-        graphFrame.display();
+        frame.display();
     }
 }

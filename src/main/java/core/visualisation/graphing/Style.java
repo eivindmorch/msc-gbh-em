@@ -8,14 +8,10 @@ import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxPerimeter;
 import com.mxgraph.view.mxStylesheet;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import core.btree.tasks.modular.template.composite.CompositeTask;
 import core.btree.tasks.modular.template.leaf.ConditionTask;
 import core.btree.tasks.modular.template.leaf.LeafTask;
 import core.btree.tasks.modular.template.Task;
-import core.btree.BehaviorTreeUtil;
-import experiments.experiment1.unit.Experiment1UnitInfo;
-import experiments.experiment1.unit.FollowerUnit;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -143,14 +139,5 @@ abstract class Style {
         treeLayout.setLevelDistance(40);
 
         treeLayout.execute(graphParent);
-    }
-
-    public static void main(String[] args) {
-        Experiment1UnitInfo.init();
-        try {
-            Grapher.quickGraph("asd", BehaviorTreeUtil.generateRandomTree(FollowerUnit.class, 15, 30));
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();
-        }
     }
 }

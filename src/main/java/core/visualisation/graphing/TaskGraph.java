@@ -6,7 +6,7 @@ import core.btree.tasks.modular.template.Task;
 
 import java.util.ArrayList;
 
-class  Graph {
+class TaskGraph {
 
     private Task root;
     private ArrayList<Object> vertices;
@@ -14,7 +14,7 @@ class  Graph {
     private Object graphParent;
     private mxGraphComponent component;
 
-    Graph(Task root) {
+    TaskGraph(Task root) {
         this.root = root;
 
         this.vertices = new ArrayList<>();
