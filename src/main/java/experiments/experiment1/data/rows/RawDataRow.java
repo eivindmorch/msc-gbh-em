@@ -1,7 +1,7 @@
 package experiments.experiment1.data.rows;
 
 import core.data.DataRow;
-import core.model.Lla;
+import core.data.Lla;
 import core.util.ToStringBuilder;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;

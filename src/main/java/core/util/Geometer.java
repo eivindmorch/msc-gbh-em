@@ -1,6 +1,6 @@
 package core.util;
 
-import core.model.Lla;
+import core.data.Lla;
 import net.sf.geographiclib.Constants;
 import net.sf.geographiclib.Geodesic;
 import net.sf.geographiclib.GeodesicData;

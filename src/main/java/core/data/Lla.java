@@ -1,4 +1,4 @@
-package core.model;
+package core.data;
 
 import core.util.ToStringBuilder;
 

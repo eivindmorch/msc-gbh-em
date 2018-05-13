@@ -2,7 +2,7 @@ package experiments.experiment1.tasks;
 
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import core.model.Lla;
+import core.data.Lla;
 import core.model.btree.Blackboard;
 import core.model.btree.task.TaskTickTracker;
 import core.simulation.hla.HlaManager;
