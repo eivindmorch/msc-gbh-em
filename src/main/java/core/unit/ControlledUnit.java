@@ -44,7 +44,7 @@ public class ControlledUnit<U extends Unit> {
 
     @SuppressWarnings("unchecked")
     private static <U extends Unit> com.badlogic.gdx.ai.btree.Task<Blackboard<U>> getControlledUnitBtree(U unit) {
-        return ControlledUnit.controlledUnitBtreeMap.get(unit.getClass()).instantiateTask();
+        return ControlledUnit.controlledUnitBtreeMap.get(unit.getClass()).instantiateExecutableTask();
     }
 
     @Override

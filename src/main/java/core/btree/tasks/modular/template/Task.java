@@ -196,6 +196,5 @@ public abstract class Task {
     // TODO Rename?
     public abstract Task cloneTask();
 
-    // TODO Rename
-    public abstract com.badlogic.gdx.ai.btree.Task instantiateTask();
+    public abstract com.badlogic.gdx.ai.btree.Task instantiateExecutableTask();
 }

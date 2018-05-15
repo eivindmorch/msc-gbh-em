@@ -34,7 +34,7 @@ public class Sequence extends CompositeTask {
     }
 
     @Override
-    public com.badlogic.gdx.ai.btree.Task instantiateTask() {
+    public com.badlogic.gdx.ai.btree.Task instantiateExecutableTask() {
         return new com.badlogic.gdx.ai.btree.branch.Sequence(instantiateChildren());
     }
 }

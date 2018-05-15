@@ -89,7 +89,7 @@ public abstract class CompositeTask extends Task {
     Array instantiateChildren() {
         Array<com.badlogic.gdx.ai.btree.Task> array = new Array<>();
         for (Task child : children) {
-            array.add(child.instantiateTask());
+            array.add(child.instantiateExecutableTask());
         }
         return array;
     }

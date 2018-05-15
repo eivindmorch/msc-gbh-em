@@ -50,12 +50,12 @@ class BehaviorTreeUtilTest {
 //        );
 //
 //        FrameManager.quickGraph("Original", tempRoot);
-//        FrameManager.quickGraph("Instantiated", tempRoot.instantiateTask());
+//        FrameManager.quickGraph("Instantiated", tempRoot.instantiateExecutableTask());
 //        FrameManager.quickGraph("Manual", manual);
 //        sleepSeconds(100);
 //    }
 
-    // TODO Test instantiateTask()
+    // TODO Test instantiateExecutableTask()
     // TODO Test generateRandomTree
     // TODO More thorough testing of all add/remove/insert/swap methods of Task
 

@@ -49,7 +49,7 @@ public class IsWithinTask extends VariableLeafTask implements ConditionTask {
     }
 
     @Override
-    public com.badlogic.gdx.ai.btree.Task instantiateTask() {
+    public com.badlogic.gdx.ai.btree.Task instantiateExecutableTask() {
         return new IsWithinTaskExec(distanceLimit);
     }
 }

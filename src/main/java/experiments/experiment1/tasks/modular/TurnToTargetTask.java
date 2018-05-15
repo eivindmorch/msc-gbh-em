@@ -18,7 +18,7 @@ public class TurnToTargetTask extends LeafTask implements AlwaysSuccessfulTask {
     }
 
     @Override
-    public com.badlogic.gdx.ai.btree.Task instantiateTask() {
+    public com.badlogic.gdx.ai.btree.Task instantiateExecutableTask() {
         return new TurnToTargetTaskExec();
     }
 }
