@@ -11,7 +11,7 @@ public class ToStringBuilder {
     private ArrayList<String> listedElements;
 
     private ToStringBuilder(Object object) {
-        objectReference = object.getClass().getSimpleName() + '@' + Integer.toHexString(object.hashCode());
+        objectReference = object.getClass().getSimpleName() + '@' + String.format("%-8s", Integer.toHexString(object.hashCode()));
         properties = new ArrayList<>();
         listedElements = new ArrayList<>();
     }
