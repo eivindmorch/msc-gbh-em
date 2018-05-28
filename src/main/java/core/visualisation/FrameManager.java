@@ -1,5 +1,8 @@
 package core.visualisation;
 
+import core.btree.tasks.modular.template.Task;
+import core.visualisation.graphing.Grapher;
+
 import java.util.ArrayList;
 
 
@@ -19,21 +22,22 @@ public abstract class FrameManager {
         }
     }
 
-//    public static void quickGraph(String title, Task... tasks) {
-//        Frame frame = FrameManager.createNewFrame(title);
-//        Tab tab = new Tab(title);
-//        for (Task task : tasks) {
-//            tab.add(task);
-//        }
-//        frame.addTab(tab);
-//        frame.display();
-//    }
+    public static Frame quickGraph(String title, Task... tasks) {
+        Frame frame = FrameManager.createNewFrame(title);
+        Tab tab = new Tab(title);
+        for (Task task : tasks) {
+            tab.add(Grapher.getGraph(task));
+        }
+        frame.addTab(tab);
+        frame.display();
+        return frame;
+    }
 //
 //    public static void quickGraph(String title, com.badlogic.gdx.ai.btree.Task... tasks) {
 //        Frame frame = FrameManager.createNewFrame(title);
 //        Tab tab = new Tab(title);
 //        for (com.badlogic.gdx.ai.btree.Task task : tasks) {
-//            tab.add(task);
+//            tab.add(Grapher.getGraph(task));
 //        }
 //        frame.addTab(tab);
 //        frame.display();

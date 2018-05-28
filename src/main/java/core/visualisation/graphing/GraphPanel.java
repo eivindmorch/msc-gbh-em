@@ -8,13 +8,15 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-class GraphPanel extends JPanel {
+public class GraphPanel extends JPanel {
+
+    mxGraphComponent mxGraphComponent;
 
     GraphPanel(String title, Task root) {
         setup(title);
 
         TaskGraph taskGraph = new TaskGraph(root);
-        mxGraphComponent mxGraphComponent = taskGraph.getComponent();
+        mxGraphComponent = taskGraph.getComponent();
         mxGraphComponent.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         this.add(mxGraphComponent);
@@ -32,7 +34,7 @@ class GraphPanel extends JPanel {
         setup(title);
 
         TaskExecGraph graph = new TaskExecGraph(root);
-        mxGraphComponent mxGraphComponent = graph.getComponent();
+        mxGraphComponent = graph.getComponent();
         mxGraphComponent.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         this.add(mxGraphComponent);
@@ -53,5 +55,9 @@ class GraphPanel extends JPanel {
 
         this.setOpaque(true);
         this.setBackground(Color.DARK_GRAY);
+    }
+
+    public mxGraphComponent getMxGraphComponent() {
+        return mxGraphComponent;
     }
 }

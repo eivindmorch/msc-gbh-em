@@ -1,6 +1,6 @@
 package core.visualisation.graphing;
 
-import com.badlogic.gdx.ai.btree.Task;
+import core.btree.tasks.modular.template.Task;
 import core.training.Chromosome;
 import core.training.Population;
 
@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class Grapher {
 
-    public static JPanel getGraph(Task task) {
+    public static GraphPanel getGraph(Task task) {
         return new GraphPanel(task);
     }
 
