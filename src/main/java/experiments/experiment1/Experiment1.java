@@ -12,7 +12,6 @@ import core.util.SystemStatus;
 import experiments.ExperimentInitialiser;
 import experiments.experiment1.datarows.FollowerEvaluationDataRow;
 import experiments.experiment1.unit.Experiment1AddUnitMethod;
-import experiments.experiment1.unit.Experiment1UnitTypeInfoInitialiser;
 import experiments.experiment1.unit.FollowerUnit;
 
 public abstract class Experiment1 {

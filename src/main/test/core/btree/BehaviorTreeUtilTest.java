@@ -12,7 +12,7 @@ import experiments.experiment1.tasks.modular.IsApproachingTask;
 import experiments.experiment1.tasks.modular.IsWithinTask;
 import experiments.experiment1.tasks.modular.MoveToTargetTask;
 import experiments.experiment1.tasks.modular.TurnToTargetTask;
-import experiments.experiment1.unit.Experiment1UnitTypeInfoInitialiser;
+import experiments.experiment1.Experiment1UnitTypeInfoInitialiser;
 import experiments.experiment1.unit.FollowerUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.RepeatedTest;

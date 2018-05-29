@@ -1,4 +1,4 @@
-package experiments.experiment1.unit;
+package experiments.experiment1;
 
 import core.btree.tasks.modular.template.composite.Selector;
 import core.btree.tasks.modular.template.composite.Sequence;
@@ -9,6 +9,8 @@ import experiments.experiment1.tasks.modular.IsApproachingTask;
 import experiments.experiment1.tasks.modular.IsWithinTask;
 import experiments.experiment1.tasks.modular.MoveToTargetTask;
 import experiments.experiment1.tasks.modular.TurnToTargetTask;
+import experiments.experiment1.unit.Experiment1Unit;
+import experiments.experiment1.unit.FollowerUnit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
