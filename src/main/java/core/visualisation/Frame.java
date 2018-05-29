@@ -6,11 +6,11 @@ import java.awt.*;
 public class Frame implements Runnable {
 
     private JFrame jFrame;
-    private JTabbedPane tabbedPane;
+    private JTabbedPane jTabbedPane;
 
     Frame(String title) {
         jFrame = new JFrame(title);
-        tabbedPane = new JTabbedPane();
+        jTabbedPane = new JTabbedPane();
     }
 
     public void display() {
@@ -20,19 +20,19 @@ public class Frame implements Runnable {
     @Override
     public void run() {
         jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        jFrame.add(tabbedPane);
+        jFrame.add(jTabbedPane);
         showOnScreen(0, true);
         jFrame.setVisible(true);
     }
 
     public void addTab(Tab tab) {
-        tabbedPane.addTab(tab.getTitle(), tab.getPanel());
+        jTabbedPane.addTab(tab.getTitle(), tab.getPanel());
     }
 
     public void addTab(Tab tab, boolean setAsDefaultTab) {
         addTab(tab);
         if (setAsDefaultTab) {
-            tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
+            jTabbedPane.setSelectedIndex(jTabbedPane.getComponentCount() - 1);
         }
     }
 
