@@ -1,4 +1,4 @@
-package experiments.experiment1.unit;
+package experiments.experiment1.units;
 
 import experiments.experiment1.datarows.FollowerEvaluationDataRow;
 import experiments.experiment1.datarows.FollowerProcessedDataRow;

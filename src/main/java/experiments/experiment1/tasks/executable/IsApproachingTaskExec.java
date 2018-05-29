@@ -3,7 +3,7 @@ package experiments.experiment1.tasks.executable;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import core.btree.Blackboard;
-import experiments.experiment1.unit.FollowerUnit;
+import experiments.experiment1.units.FollowerUnit;
 
 public class IsApproachingTaskExec extends LeafTask<Blackboard<FollowerUnit>> {
 

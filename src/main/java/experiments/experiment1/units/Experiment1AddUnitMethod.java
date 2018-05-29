@@ -1,4 +1,4 @@
-package experiments.experiment1.unit;
+package experiments.experiment1.units;
 
 import core.unit.ControlledUnit;
 import core.unit.Unit;

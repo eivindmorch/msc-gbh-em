@@ -6,7 +6,7 @@ import core.data.Lla;
 import core.btree.Blackboard;
 import core.btree.tasks.TaskTickTracker;
 import core.simulation.hla.HlaManager;
-import experiments.experiment1.unit.FollowerUnit;
+import experiments.experiment1.units.FollowerUnit;
 import no.ffi.hlalib.datatypes.fixedRecordData.GeodeticLocationStruct;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.MoveToLocationInteraction;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.WaitInteraction;

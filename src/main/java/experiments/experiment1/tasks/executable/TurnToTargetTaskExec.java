@@ -8,8 +8,8 @@ import core.simulation.hla.HlaManager;
 import core.util.Geometer;
 import core.util.LlbmlUtil;
 import core.util.exceptions.IllegalArgumentCombinationException;
-import experiments.experiment1.unit.Experiment1Unit;
-import experiments.experiment1.unit.FollowerUnit;
+import experiments.experiment1.units.Experiment1Unit;
+import experiments.experiment1.units.FollowerUnit;
 import no.ffi.hlalib.interactions.HLAinteractionRoot.LBMLMessage.LBMLTask.TurnToHeadingInteraction;
 
 
