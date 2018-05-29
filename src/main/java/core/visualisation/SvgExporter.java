@@ -18,7 +18,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.Random;
 
-public class SvgExporter {
+public abstract class SvgExporter {
 
     private static String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
 
