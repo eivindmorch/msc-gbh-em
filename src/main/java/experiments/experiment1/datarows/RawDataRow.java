@@ -1,4 +1,4 @@
-package experiments.experiment1.data.rows;
+package experiments.experiment1.datarows;
 
 import core.data.DataRow;
 import core.data.Lla;

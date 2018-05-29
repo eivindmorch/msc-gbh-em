@@ -5,7 +5,7 @@ import core.data.DataRow;
 import core.training.Chromosome;
 import core.training.FitnessEvaluator;
 import core.util.Geometer;
-import experiments.experiment1.data.rows.RawDataRow;
+import experiments.experiment1.datarows.RawDataRow;
 
 import java.util.LinkedHashMap;
 import java.util.List;

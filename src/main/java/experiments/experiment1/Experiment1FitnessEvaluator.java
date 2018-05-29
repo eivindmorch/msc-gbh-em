@@ -5,7 +5,7 @@ import core.data.DataRow;
 import core.training.Chromosome;
 import core.training.FitnessEvaluator;
 import core.training.FitnessFunctions;
-import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
+import experiments.experiment1.datarows.FollowerEvaluationDataRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

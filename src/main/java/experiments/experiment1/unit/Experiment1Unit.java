@@ -1,6 +1,6 @@
 package experiments.experiment1.unit;
 
-import experiments.experiment1.data.rows.RawDataRow;
+import experiments.experiment1.datarows.RawDataRow;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.datatypes.fixedRecordData.VelocityVectorStruct;
 import no.ffi.hlalib.datatypes.fixedRecordData.WorldLocationStruct;
