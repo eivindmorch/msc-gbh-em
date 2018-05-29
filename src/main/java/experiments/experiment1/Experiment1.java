@@ -1,39 +1,46 @@
 package experiments.experiment1;
 
+import core.btree.BehaviorTreeUtil;
 import core.simulation.SimController;
-import core.simulation.hla.HlaManager;
 import core.training.Trainer;
 import core.training.algorithms.Algorithm;
 import core.training.algorithms.NSGA2.NSGA2;
 import core.training.algorithms.NSGA2.NSGA2Chromosome;
-import core.unit.UnitHandler;
+import core.unit.ControlledUnit;
+import core.unit.UnitLogger;
+import core.util.SystemStatus;
+import experiments.ExperimentInitialiser;
 import experiments.experiment1.data.rows.FollowerEvaluationDataRow;
 import experiments.experiment1.unit.Experiment1AddUnitMethod;
-import experiments.experiment1.unit.Experiment1UnitInfo;
+import experiments.experiment1.unit.Experiment1UnitTypeInfoInitialiser;
 import experiments.experiment1.unit.FollowerUnit;
 
-import static core.util.SystemUtil.sleepSeconds;
+public abstract class Experiment1 {
 
-public class Experiment1 {
 
-    private Experiment1() {
-        Experiment1UnitInfo.init();
-        UnitHandler.setAddUnitMethod(new Experiment1AddUnitMethod());
+    private static void record() {
+        ExperimentInitialiser.setup(
+                new Experiment1UnitTypeInfoInitialiser(),
+                new Experiment1AddUnitMethod(),
+                false,
+                false,
+                false
+        );
+
+        UnitLogger.setIntraResourcesWritingDirectory("data/example_logging/" + SystemStatus.START_TIME_STRING + "/");
+        ControlledUnit.setControlledUnitBtreeMap(FollowerUnit.class, BehaviorTreeUtil.generateTestTree());
+        SimController.getInstance().play();
     }
 
-    private void run() {
-//        HlaManager.getInstance().startRti();
+    private static void train() {
+        ExperimentInitialiser.setup(
+                new Experiment1UnitTypeInfoInitialiser(),
+                new Experiment1AddUnitMethod(),
+                false,
+                true,
+                false
+        );
 
-        HlaManager.getInstance().connectFederate();
-
-        HlaManager.getInstance().addTickListener(SimController.getInstance());
-        HlaManager.getInstance().addPhysicalEntityUpdatedListener(SimController.getInstance());
-
-        SimController.getInstance().startSimEngine();
-        SimController.getInstance().startSimGui();
-        sleepSeconds(10);
-
-        // TODO Population size as argument?
         Algorithm<FollowerEvaluationDataRow, NSGA2Chromosome> algorithm = new NSGA2<>(
                 10,
                 10,
@@ -43,7 +50,7 @@ public class Experiment1 {
                 12
         );
         String[] exampleFileNames = new String[]{
-                "experiment1/brooklyn-short.csv",
+                "experiment1/brooklyn-shortened.csv",
 //                "experiment1/village.csv",
 //                "experiment1/makland.csv"
         };
@@ -59,7 +66,6 @@ public class Experiment1 {
     }
 
     public static void main(String[] args) {
-        Experiment1 experiment1 = new Experiment1();
-        experiment1.run();
+        Experiment1.record();
     }
 }

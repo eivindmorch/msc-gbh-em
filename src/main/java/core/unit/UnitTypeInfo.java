@@ -4,7 +4,6 @@ import core.btree.tasks.modular.template.composite.CompositeTask;
 import core.btree.tasks.modular.template.leaf.LeafTask;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static core.util.SystemUtil.random;
@@ -19,18 +18,9 @@ public class UnitTypeInfo {
     private List<Class<? extends LeafTask>> availableLeafTasks;
     private List<Class<? extends CompositeTask>> availableCompositeTasks;
 
-    public static void add(String name, String symbol, Class<? extends Unit> unitClass,
-                           List<Class<? extends LeafTask>> availableLeafTasks,
-                           List<Class<? extends CompositeTask>> availableCompositeTasks) {
-
-        UnitTypeInfo unitTypeInfo = new UnitTypeInfo(name, symbol, unitClass, availableLeafTasks, availableCompositeTasks);
-        UnitTypeInfo.symbolToUnitInfoMap.put(symbol, unitTypeInfo);
-        UnitTypeInfo.unitClassToUnitInfoMap.put(unitClass, unitTypeInfo);
-    }
-
-    private UnitTypeInfo(String name, String symbol, Class<? extends Unit> unitClass,
-                         List<Class<? extends LeafTask>> availableLeafTasks,
-                         List<Class<? extends CompositeTask>> availableCompositeTasks) {
+    UnitTypeInfo(String name, String symbol, Class<? extends Unit> unitClass,
+                 List<Class<? extends LeafTask>> availableLeafTasks,
+                 List<Class<? extends CompositeTask>> availableCompositeTasks) {
         this.name = name;
         this.symbol = symbol;
         this.unitClass = unitClass;
@@ -74,17 +64,5 @@ public class UnitTypeInfo {
             e.printStackTrace();
             return null;
         }
-    }
-
-    // STATIC
-    private static HashMap<String, UnitTypeInfo> symbolToUnitInfoMap = new HashMap<>();
-    private static HashMap<Class<? extends Unit>, UnitTypeInfo> unitClassToUnitInfoMap = new HashMap<>();
-
-    public static UnitTypeInfo getUnitInfoFromSymbol(String symbol) {
-        return symbolToUnitInfoMap.get(symbol);
-    }
-
-    public static UnitTypeInfo getUnitInfoFromUnitClass(Class<? extends Unit> unitClass) {
-        return unitClassToUnitInfoMap.get(unitClass);
     }
 }

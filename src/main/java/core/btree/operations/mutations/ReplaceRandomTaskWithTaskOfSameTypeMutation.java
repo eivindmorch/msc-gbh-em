@@ -5,6 +5,7 @@ import core.btree.tasks.modular.template.composite.CompositeTask;
 import core.btree.tasks.modular.template.leaf.LeafTask;
 import core.btree.operations.Mutation;
 import core.unit.Unit;
+import core.unit.UnitHandler;
 import core.unit.UnitTypeInfo;
 import core.util.exceptions.NoAvailableTaskClassException;
 import core.util.exceptions.NoSuchTaskFoundException;
@@ -31,7 +32,7 @@ public class ReplaceRandomTaskWithTaskOfSameTypeMutation extends Mutation {
 
         try {
             Task taskToReplace = newRoot.getRandomTask(true, Task.class);
-            UnitTypeInfo unitTypeInfo = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass);
+            UnitTypeInfo unitTypeInfo = UnitHandler.getUnitTypeInfoFromUnitClass(unitClass);
 
             ArrayList<Class<? extends Task>> availableTaskClasses = new ArrayList<>();
 

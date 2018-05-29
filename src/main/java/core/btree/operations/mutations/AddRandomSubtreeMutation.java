@@ -6,7 +6,7 @@ import core.btree.tasks.modular.template.composite.CompositeTask;
 import core.btree.BehaviorTreeUtil;
 import core.btree.operations.Mutation;
 import core.unit.Unit;
-import core.unit.UnitTypeInfo;
+import core.unit.UnitHandler;
 import core.util.exceptions.NoSuchTaskFoundException;
 
 import static core.util.SystemUtil.random;
@@ -32,7 +32,7 @@ public class AddRandomSubtreeMutation extends Mutation {
         try {
             Task randomSubtree;
             if (onlyAddSingleLeafTask) {
-                randomSubtree = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getRandomAvailableLeafTask();
+                randomSubtree = UnitHandler.getUnitTypeInfoFromUnitClass(unitClass).getRandomAvailableLeafTask();
             } else {
                 randomSubtree = BehaviorTreeUtil.generateRandomTree(unitClass, 3, 5);
             }
@@ -43,7 +43,7 @@ public class AddRandomSubtreeMutation extends Mutation {
                 ((CompositeTask) randomTaskInTree).insertChild(random.nextInt(randomTaskInTree.getChildCount() + 1), randomSubtree);
 
             } else {
-                CompositeTask randomComposite = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass).getRandomAvailableCompositeTask();
+                CompositeTask randomComposite = UnitHandler.getUnitTypeInfoFromUnitClass(unitClass).getRandomAvailableCompositeTask();
 
                 if (random.nextBoolean()) {
                     randomComposite.addChild(randomTaskInTree.cloneTask());

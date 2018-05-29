@@ -1,5 +1,7 @@
 package core.unit;
 
+import core.btree.tasks.modular.template.composite.CompositeTask;
+import core.btree.tasks.modular.template.leaf.LeafTask;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
@@ -139,6 +141,28 @@ public abstract class UnitHandler {
             addUnitMethod.reset();
         }
     }
+
+    // ---- UNIT TYPE INFO ----
+    static HashMap<String, UnitTypeInfo> symbolToUnitInfoMap = new HashMap<>();
+    static HashMap<Class<? extends Unit>, UnitTypeInfo> unitClassToUnitInfoMap = new HashMap<>();
+
+    public static UnitTypeInfo getUnitTypeInfoFromSymbol(String symbol) {
+        return symbolToUnitInfoMap.get(symbol);
+    }
+
+    public static UnitTypeInfo getUnitTypeInfoFromUnitClass(Class<? extends Unit> unitClass) {
+        return unitClassToUnitInfoMap.get(unitClass);
+    }
+
+    public static void addUnitTypeInfo(String name, String symbol, Class<? extends Unit> unitClass,
+                                       List<Class<? extends LeafTask>> availableLeafTasks,
+                                       List<Class<? extends CompositeTask>> availableCompositeTasks) {
+
+        UnitTypeInfo unitTypeInfo = new UnitTypeInfo(name, symbol, unitClass, availableLeafTasks, availableCompositeTasks);
+        symbolToUnitInfoMap.put(symbol, unitTypeInfo);
+        unitClassToUnitInfoMap.put(unitClass, unitTypeInfo);
+    }
+    // ------------------------
 
 
     public interface AddUnitMethod {

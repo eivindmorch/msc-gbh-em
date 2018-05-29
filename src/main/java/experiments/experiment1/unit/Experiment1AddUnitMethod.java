@@ -3,7 +3,6 @@ package experiments.experiment1.unit;
 import core.unit.ControlledUnit;
 import core.unit.Unit;
 import core.unit.UnitHandler;
-import core.unit.UnitTypeInfo;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
@@ -64,12 +63,12 @@ public class Experiment1AddUnitMethod implements UnitHandler.AddUnitMethod{
 
     private boolean isFollower(String marking) {
         String symbol = marking.substring(0, 1);
-        return UnitTypeInfo.getUnitInfoFromSymbol(symbol).getUnitClass().equals(FollowerUnit.class);
+        return UnitHandler.getUnitTypeInfoFromSymbol(symbol).getUnitClass().equals(FollowerUnit.class);
     }
 
     private boolean isWanderer(String marking) {
         String symbol = marking.substring(0, 1);
-        return UnitTypeInfo.getUnitInfoFromSymbol(symbol).getUnitClass().equals(Experiment1Unit.class);
+        return UnitHandler.getUnitTypeInfoFromSymbol(symbol).getUnitClass().equals(Experiment1Unit.class);
     }
 
     private String getTargetIdentifierFromFollowerMarking(String marking) {

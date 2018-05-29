@@ -7,6 +7,7 @@ import core.btree.tasks.modular.template.composite.Selector;
 import core.btree.tasks.modular.template.composite.Sequence;
 import core.btree.tasks.modular.template.leaf.LeafTask;
 import core.unit.Unit;
+import core.unit.UnitHandler;
 import core.unit.UnitTypeInfo;
 import experiments.experiment1.tasks.modular.IsApproachingTask;
 import experiments.experiment1.tasks.modular.IsWithinTask;
@@ -53,7 +54,7 @@ public abstract class BehaviorTreeUtil {
             throw new InvalidArgumentException(new String[]{"Must have (numberOfCompositeTasks + 1) leaf tasks"});
         }
 
-        UnitTypeInfo unitTypeInfo = UnitTypeInfo.getUnitInfoFromUnitClass(unitClass);
+        UnitTypeInfo unitTypeInfo = UnitHandler.getUnitTypeInfoFromUnitClass(unitClass);
 
         // Create pool of random composite tasks
         ArrayList<CompositeTask> unassignedCompositeTasks = new ArrayList<>(numberOfCompositeTasks);
