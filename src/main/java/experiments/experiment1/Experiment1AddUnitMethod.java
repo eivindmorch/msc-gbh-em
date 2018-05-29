@@ -1,8 +1,10 @@
-package experiments.experiment1.units;
+package experiments.experiment1;
 
 import core.unit.ControlledUnit;
 import core.unit.Unit;
 import core.unit.UnitHandler;
+import experiments.experiment1.units.Experiment1Unit;
+import experiments.experiment1.units.FollowerUnit;
 import hla.rti1516e.ObjectInstanceHandle;
 import no.ffi.hlalib.objects.HLAobjectRoot.BaseEntity.PhysicalEntityObject;
 import org.slf4j.Logger;
