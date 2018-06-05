@@ -6,15 +6,15 @@ import core.unit.Unit;
 public abstract class Mutation {
 
     private double weight;
-    private double factor;
+    private double factorBase;
 
-    public Mutation(double weight, double factor) {
+    public Mutation(double weight, double factorBase) {
         this.weight = weight;
-        this.factor = factor;
+        this.factorBase = factorBase;
     }
 
-    double getWeight(double factorPower) {
-        return weight * Math.pow(factor, factorPower);
+    double getWeight(double factorExponent) {
+        return weight * Math.pow(factorBase, factorExponent);
     }
 
     protected abstract boolean canBePerformed(Task root);
