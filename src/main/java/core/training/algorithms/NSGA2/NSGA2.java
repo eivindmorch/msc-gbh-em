@@ -44,20 +44,25 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         this.MAXIMUM_TREE_SIZE = maximumTreeSize;
     }
 
+    @SuppressWarnings("FieldCanBeLocal")
+    private boolean useTestTrees = false;
     @Override
     public void setup() {
-        try {
-            population = Population.generateRandomPopulation(
-                    trainer.getUnitToTrainClass(),
-                    NSGA2Chromosome.class,
-                    INITIAL_POPULATION_SIZE,
-                    MINIMUM_TREE_SIZE,
-                    MAXIMUM_TREE_SIZE
-            );
-        } catch (InvalidArgumentException | TimeoutException e) {
-            e.printStackTrace();
+        if (useTestTrees) {
+            population = Population.generateTestPopulation(NSGA2Chromosome.class, INITIAL_POPULATION_SIZE);
+        } else {
+            try {
+                population = Population.generateRandomPopulation(
+                        trainer.getUnitToTrainClass(),
+                        NSGA2Chromosome.class,
+                        INITIAL_POPULATION_SIZE,
+                        MINIMUM_TREE_SIZE,
+                        MAXIMUM_TREE_SIZE
+                );
+            } catch (InvalidArgumentException | TimeoutException e) {
+                e.printStackTrace();
+            }
         }
-//        population = Population.generateTestPopulation(NSGA2Chromosome.class, INITIAL_POPULATION_SIZE);
     }
 
     @Override
@@ -79,7 +84,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         Population<NSGA2Chromosome> offspring = createOffspringPopulation(population, epoch);
         trainer.simulatePopulation(offspring, exampleDataSets);
         trainer.setFitness(offspring, epoch);
-        population.addAll(offspring);
+        addNonEqualChromosomesAndReplaceEquals(offspring, population);
 
         // Rank population
         ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation = rankPopulationByNonDomination(population);
@@ -91,6 +96,23 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
         // Output
         output(epoch, oldPopulation, offspring, rankedPopulation, population);
+    }
+
+    private void addNonEqualChromosomesAndReplaceEquals(Population<NSGA2Chromosome> offspring, Population<NSGA2Chromosome> population) {
+        outerloop:
+        for (NSGA2Chromosome offspringChromosome : offspring.getChromosomes()) {
+            for (NSGA2Chromosome populationChromosome : population.getChromosomes()) {
+
+                if (offspringChromosome.functionallyEquals(populationChromosome)) {
+                    if (offspringChromosome.getFitness().get("Size") <= populationChromosome.getFitness().get("Size")) {
+                        population.remove(populationChromosome);
+                        population.add(offspringChromosome);
+                    }
+                    continue outerloop;
+                }
+            }
+            population.add(offspringChromosome);
+        }
     }
 
     private String getRanksAsString(ArrayList<ArrayList<NSGA2Chromosome>> rankedPopulation) {
@@ -253,7 +275,7 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
         frame.addTab(new Tab("New population").add(Grapher.getGraphs(newPopulationClone)));
         frame.addTab(new Tab("Non-dominated").add(Grapher.getGraphs(rankedPopulation.get(0))));
 
-        Tab plotTab = new Tab("Plot");
+        Tab plotTab = new Tab("Fitness history");
         for (String fitnessKey : trainer.fitnessHistoryCollections.keySet()) {
             plotTab.add(Plotter.getPlot(fitnessKey, trainer.fitnessHistoryCollections.get(fitnessKey), "Epoch", "Fitness", true));
         }

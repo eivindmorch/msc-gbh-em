@@ -159,9 +159,10 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
                 }
             }
             try {
+                requestFlushQueue();
                 tick(federateManager.getLogicalTime());
                 requestTimeAdvanceAndBlock();
-                sleepMilliseconds(50); // TODO THIS FIXES DETERMINISM ISSUES
+//                sleepMilliseconds(50); // TODO THIS FIXES DETERMINISM ISSUES -- OR NOT??
             } catch (InterruptedException | RTIexception saveInProgress) {
                 saveInProgress.printStackTrace();
             }
@@ -172,7 +173,7 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
     }
 
     public void requestTimeAdvanceAndBlock() throws RTIexception, InterruptedException {
-        federateManager.requestTimeAdvanceAndBlock(federateManager.getTimestamp());
+        federateManager.requestTimeAdvanceAndBlock(federateManager.getLogicalTime() + SimSettings.tickInterval);
     }
 
     private void tick(double timestamp) {
@@ -198,7 +199,7 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
     }
 
     public void sendInteraction(HlaInteraction interaction) {
-        interaction.sendInteraction();
+        interaction.sendInteraction(HlaLib.getFederateManager().getLogicalTime() + 0.001);
     }
 
     public void sendCgfPlayInteraction() {
@@ -243,7 +244,9 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
         cgfControlInteraction.setCommandRecipient(receivingEntity);
 
         logger.info("Sending CgfControlInteraction with command " + cgfCommand.getCommand().name() + ".");
-        HlaManager.getInstance().sendInteraction(cgfControlInteraction);
+
+//        HlaManager.getInstance().sendInteraction(cgfControlInteraction);
+        cgfControlInteraction.sendInteraction();
     }
 
     public void holdTimeAdvancement() {
@@ -265,7 +268,7 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
     public void requestFlushQueue() {
         logger.debug("Requesting flush of RTI message queue.");
         try {
-            federateManager.requestFlushQueue(federateManager.getLogicalTime());
+            federateManager.requestFlushQueue(federateManager.getLogicalTime() + SimSettings.tickInterval);
         } catch (LogicalTimeAlreadyPassed | RequestForTimeRegulationPending | RestoreInProgress | NotConnected | InTimeAdvancingState | InvalidLogicalTime | RTIinternalError | FederateNotExecutionMember | RequestForTimeConstrainedPending | SaveInProgress e) {
             e.printStackTrace();
         }

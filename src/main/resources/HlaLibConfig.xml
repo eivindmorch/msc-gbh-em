@@ -21,7 +21,7 @@
 
         <timeManagement>
             <scheme>TimeConstrainedAndTimeRegulated</scheme>
-            <lookahead>1.0</lookahead>
+            <lookahead>0</lookahead>
         </timeManagement>
         <logDecoderErrors>false</logDecoderErrors>
         <objectModel>

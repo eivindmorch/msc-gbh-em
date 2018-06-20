@@ -48,7 +48,7 @@ public abstract class Experiment1 {
                 12
         );
         String[] exampleFileNames = new String[]{
-                "experiment1/brooklyn-shortened.csv",
+                "experiment1/brooklyn-display.csv",
 //                "experiment1/village.csv",
 //                "experiment1/makland.csv"
         };
@@ -64,6 +64,6 @@ public abstract class Experiment1 {
     }
 
     public static void main(String[] args) {
-        Experiment1.record();
+        Experiment1.train();
     }
 }

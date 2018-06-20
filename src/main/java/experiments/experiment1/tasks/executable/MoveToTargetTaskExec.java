@@ -24,7 +24,6 @@ public class MoveToTargetTaskExec extends LeafTask<Blackboard<FollowerUnit>> {
         }
         taskTickTracker.tick();
         if (taskTickTracker.getCurrentStatus() == TaskTickTracker.Status.DONE) {
-            sendLLBMLWaitTask();
             return Status.SUCCEEDED;
         }
         return Status.RUNNING;
@@ -53,12 +52,12 @@ public class MoveToTargetTaskExec extends LeafTask<Blackboard<FollowerUnit>> {
         HlaManager.getInstance().sendInteraction(interaction);
     }
 
-    private void sendLLBMLWaitTask(){
-        WaitInteraction interaction = new WaitInteraction();
-        interaction.setTaskee(getObject().getUnit().getMarking());
-
-        HlaManager.getInstance().sendInteraction(interaction);
-    }
+//    private void sendLLBMLWaitTask(){
+//        WaitInteraction interaction = new WaitInteraction();
+//        interaction.setTaskee(getObject().getUnit().getMarking());
+//
+//        HlaManager.getInstance().sendInteraction(interaction);
+//    }
 
     @Override
     protected Task<Blackboard<FollowerUnit>> copyTo(Task<Blackboard<FollowerUnit>> task) {
