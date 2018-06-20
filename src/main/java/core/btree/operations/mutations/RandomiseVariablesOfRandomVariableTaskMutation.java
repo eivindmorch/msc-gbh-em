@@ -8,8 +8,8 @@ import core.util.exceptions.NoSuchTaskFoundException;
 
 public class RandomiseVariablesOfRandomVariableTaskMutation extends Mutation {
 
-    public RandomiseVariablesOfRandomVariableTaskMutation(double weight, double factor) {
-        super(weight, factor);
+    public RandomiseVariablesOfRandomVariableTaskMutation(double weight, double factorBase) {
+        super(weight, factorBase);
     }
 
     @Override

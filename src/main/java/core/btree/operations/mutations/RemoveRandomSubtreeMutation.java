@@ -7,8 +7,8 @@ import core.util.exceptions.NoSuchTaskFoundException;
 
 public class RemoveRandomSubtreeMutation extends Mutation {
 
-    public RemoveRandomSubtreeMutation(double weight, double factor) {
-        super(weight, factor);
+    public RemoveRandomSubtreeMutation(double weight, double factorBase) {
+        super(weight, factorBase);
     }
 
     @Override
