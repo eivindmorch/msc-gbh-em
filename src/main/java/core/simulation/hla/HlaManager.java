@@ -159,7 +159,6 @@ public class HlaManager implements Runnable, HlaObjectListener, HlaObjectUpdateL
                 }
             }
             try {
-                requestFlushQueue();
                 tick(federateManager.getLogicalTime());
                 requestTimeAdvanceAndBlock();
 //                sleepMilliseconds(50); // TODO THIS FIXES DETERMINISM ISSUES -- OR NOT??

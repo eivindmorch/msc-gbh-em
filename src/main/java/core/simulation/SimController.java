@@ -112,8 +112,8 @@ public class SimController implements TickListener, PhysicalEntityUpdatedListene
         totalTicks = 0;
         logger.info("Playing scenario for " + ((ticksToPlay != 0) ? ticksToPlay : "unlimited") + " ticks.");
         lastPlayTimestamp = System.currentTimeMillis();
+        HlaManager.getInstance().sendCgfPlayInteraction(); // TODO Check if order of these two matters
         HlaManager.getInstance().enableTimeAdvancement();
-        HlaManager.getInstance().sendCgfPlayInteraction();
     }
 
 //    private void waitForScenarioToSuccessfullyLoad(int secondsToWaitForSuccessfulLoad) {
