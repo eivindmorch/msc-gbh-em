@@ -40,16 +40,14 @@ public abstract class Experiment1 {
         );
 
         Algorithm<FollowerEvaluationDataRow, NSGA2Chromosome> algorithm = new NSGA2<>(
-                10,
-                10,
+                30,
                 0.5,
-                0.8,
                 3,
                 12
         );
         String[] exampleFileNames = new String[]{
-                "experiment1/brooklyn-display.csv",
-//                "experiment1/village.csv",
+                "experiment1/brooklyn.csv",
+                "experiment1/village.csv",
 //                "experiment1/makland.csv"
         };
         Trainer trainer = new Trainer<>(
@@ -64,6 +62,7 @@ public abstract class Experiment1 {
     }
 
     public static void main(String[] args) {
+//        Experiment1.record();
         Experiment1.train();
     }
 }

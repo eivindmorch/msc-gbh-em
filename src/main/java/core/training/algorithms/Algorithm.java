@@ -26,6 +26,4 @@ public abstract class Algorithm<D extends DataRow, C extends Chromosome> {
 
     @SuppressWarnings("unchecked")
     public abstract void step(int epoch, List<DataSet<D>> exampleDataSets);
-
-    public abstract void cleanup();
 }

@@ -28,18 +28,14 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
 
     private final Logger logger = LoggerFactory.getLogger(NSGA2.class);
 
-    private final int INITIAL_POPULATION_SIZE;
     private final int POPULATION_SIZE;
     private final double CROSSOVER_RATE;
-    private final double MUTATION_RATE;
     private final int MINIMUM_TREE_SIZE;
     private final int MAXIMUM_TREE_SIZE;
 
-    public NSGA2(int initialPopulationSize, int populationSize, double crossoverRate, double mutationRate, int minimumTreeSize, int maximumTreeSize) {
-        this.INITIAL_POPULATION_SIZE = initialPopulationSize;
+    public NSGA2(int populationSize, double crossoverRate, int minimumTreeSize, int maximumTreeSize) {
         this.POPULATION_SIZE = populationSize;
         this.CROSSOVER_RATE = crossoverRate;
-        this.MUTATION_RATE = mutationRate;
         this.MINIMUM_TREE_SIZE = minimumTreeSize;
         this.MAXIMUM_TREE_SIZE = maximumTreeSize;
     }
@@ -49,13 +45,13 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
     @Override
     public void setup() {
         if (useTestTrees) {
-            population = Population.generateTestPopulation(NSGA2Chromosome.class, INITIAL_POPULATION_SIZE);
+            population = Population.generateTestPopulation(NSGA2Chromosome.class, POPULATION_SIZE);
         } else {
             try {
                 population = Population.generateRandomPopulation(
                         trainer.getUnitToTrainClass(),
                         NSGA2Chromosome.class,
-                        INITIAL_POPULATION_SIZE,
+                        POPULATION_SIZE,
                         MINIMUM_TREE_SIZE,
                         MAXIMUM_TREE_SIZE
                 );
@@ -121,11 +117,6 @@ public class NSGA2<D extends DataRow> extends Algorithm<D, NSGA2Chromosome>{
             toStringBuilder.addListedElement(rank.size() + " " + rank.toString());
         }
         return toStringBuilder.toString();
-    }
-
-    @Override
-    public void cleanup() {
-
     }
 
     private Population<NSGA2Chromosome> createOffspringPopulation(Population<NSGA2Chromosome> population, int epoch) {
