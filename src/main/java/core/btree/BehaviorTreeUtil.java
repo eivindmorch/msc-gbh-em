@@ -1,11 +1,11 @@
 package core.btree;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.btree.tasks.modular.template.Task;
-import core.btree.tasks.modular.template.composite.CompositeTask;
-import core.btree.tasks.modular.template.composite.Selector;
-import core.btree.tasks.modular.template.composite.Sequence;
-import core.btree.tasks.modular.template.leaf.LeafTask;
+import core.btree.tasks.blueprint.template.Task;
+import core.btree.tasks.blueprint.template.composite.CompositeTask;
+import core.btree.tasks.blueprint.template.composite.Selector;
+import core.btree.tasks.blueprint.template.composite.Sequence;
+import core.btree.tasks.blueprint.template.leaf.LeafTask;
 import core.unit.Unit;
 import core.unit.UnitHandler;
 import core.unit.UnitTypeInfo;

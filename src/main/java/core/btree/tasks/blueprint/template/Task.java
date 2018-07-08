@@ -1,7 +1,7 @@
-package core.btree.tasks.modular.template;
+package core.btree.tasks.blueprint.template;
 
-import core.btree.tasks.modular.template.composite.CompositeTask;
-import core.btree.tasks.modular.template.composite.Selector;
+import core.btree.tasks.blueprint.template.composite.CompositeTask;
+import core.btree.tasks.blueprint.template.composite.Selector;
 import core.util.exceptions.NoSuchTaskFoundException;
 
 import java.util.ArrayList;

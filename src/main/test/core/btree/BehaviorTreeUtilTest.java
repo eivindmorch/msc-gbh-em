@@ -1,12 +1,12 @@
 package core.btree;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.btree.tasks.modular.WaitTask;
-import core.btree.tasks.modular.template.Task;
-import core.btree.tasks.modular.template.composite.CompositeTask;
-import core.btree.tasks.modular.template.composite.Selector;
-import core.btree.tasks.modular.template.composite.Sequence;
-import core.btree.tasks.modular.template.leaf.VariableLeafTask;
+import core.btree.tasks.blueprint.WaitTask;
+import core.btree.tasks.blueprint.template.Task;
+import core.btree.tasks.blueprint.template.composite.CompositeTask;
+import core.btree.tasks.blueprint.template.composite.Selector;
+import core.btree.tasks.blueprint.template.composite.Sequence;
+import core.btree.tasks.blueprint.template.leaf.VariableLeafTask;
 import core.util.exceptions.NoSuchTaskFoundException;
 import experiments.experiment1.tasks.modular.IsApproachingTask;
 import experiments.experiment1.tasks.modular.IsWithinTask;

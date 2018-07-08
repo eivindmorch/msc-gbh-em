@@ -1,8 +1,8 @@
 package experiments.experiment1.tasks.modular;
 
-import core.btree.tasks.modular.template.Task;
-import core.btree.tasks.modular.template.leaf.LeafTask;
-import core.btree.tasks.modular.template.AlwaysSuccessfulTask;
+import core.btree.tasks.blueprint.template.Task;
+import core.btree.tasks.blueprint.template.leaf.LeafTask;
+import core.btree.tasks.blueprint.template.AlwaysSuccessfulTask;
 import experiments.experiment1.tasks.executable.MoveToTargetTaskExec;
 
 public class MoveToTargetTask extends LeafTask implements AlwaysSuccessfulTask {

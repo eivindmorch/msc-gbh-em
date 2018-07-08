@@ -1,8 +1,8 @@
 package experiments.experiment1;
 
-import core.btree.tasks.modular.template.composite.Selector;
-import core.btree.tasks.modular.template.composite.Sequence;
-import core.btree.tasks.modular.WaitTask;
+import core.btree.tasks.blueprint.template.composite.Selector;
+import core.btree.tasks.blueprint.template.composite.Sequence;
+import core.btree.tasks.blueprint.WaitTask;
 import core.unit.UnitHandler;
 import experiments.UnitTypeInfoInitialiser;
 import experiments.experiment1.tasks.modular.IsApproachingTask;

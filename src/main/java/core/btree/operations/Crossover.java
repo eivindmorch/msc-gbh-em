@@ -1,6 +1,6 @@
 package core.btree.operations;
 
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.util.exceptions.NoSuchTaskFoundException;
 
 public abstract class Crossover {

@@ -1,6 +1,6 @@
 package core.visualisation;
 
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.visualisation.graphing.Grapher;
 
 import java.util.ArrayList;

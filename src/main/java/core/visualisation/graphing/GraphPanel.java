@@ -1,7 +1,7 @@
 package core.visualisation.graphing;
 
 import com.mxgraph.swing.mxGraphComponent;
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.training.Chromosome;
 
 import javax.swing.*;

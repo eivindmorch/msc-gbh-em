@@ -1,7 +1,7 @@
 package core.unit;
 
-import core.btree.tasks.modular.template.composite.CompositeTask;
-import core.btree.tasks.modular.template.leaf.LeafTask;
+import core.btree.tasks.blueprint.template.composite.CompositeTask;
+import core.btree.tasks.blueprint.template.leaf.LeafTask;
 
 import java.util.ArrayList;
 import java.util.List;

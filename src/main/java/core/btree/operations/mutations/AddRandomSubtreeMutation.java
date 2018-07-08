@@ -1,8 +1,8 @@
 package core.btree.operations.mutations;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.btree.tasks.modular.template.Task;
-import core.btree.tasks.modular.template.composite.CompositeTask;
+import core.btree.tasks.blueprint.template.Task;
+import core.btree.tasks.blueprint.template.composite.CompositeTask;
 import core.btree.BehaviorTreeUtil;
 import core.btree.operations.Mutation;
 import core.unit.Unit;

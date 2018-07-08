@@ -1,6 +1,6 @@
 package core.training.algorithms.NSGA2;
 
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.training.Chromosome;
 
 import java.util.Comparator;

@@ -1,7 +1,7 @@
 package core.btree.operations.mutations;
 
-import core.btree.tasks.modular.template.Task;
-import core.btree.tasks.modular.template.leaf.VariableLeafTask;
+import core.btree.tasks.blueprint.template.Task;
+import core.btree.tasks.blueprint.template.leaf.VariableLeafTask;
 import core.btree.operations.Mutation;
 import core.unit.Unit;
 import core.util.exceptions.NoSuchTaskFoundException;

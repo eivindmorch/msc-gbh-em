@@ -1,6 +1,6 @@
-package core.btree.tasks.modular.template.composite;
+package core.btree.tasks.blueprint.template.composite;
 
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 
 import java.util.Arrays;
 import java.util.List;

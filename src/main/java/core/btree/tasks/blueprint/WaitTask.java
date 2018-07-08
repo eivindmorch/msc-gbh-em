@@ -1,9 +1,9 @@
-package core.btree.tasks.modular;
+package core.btree.tasks.blueprint;
 
 import core.btree.tasks.executable.WaitTaskExec;
-import core.btree.tasks.modular.template.leaf.LeafTask;
-import core.btree.tasks.modular.template.AlwaysSuccessfulTask;
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.leaf.LeafTask;
+import core.btree.tasks.blueprint.template.AlwaysSuccessfulTask;
+import core.btree.tasks.blueprint.template.Task;
 
 public class WaitTask extends LeafTask implements AlwaysSuccessfulTask {
 

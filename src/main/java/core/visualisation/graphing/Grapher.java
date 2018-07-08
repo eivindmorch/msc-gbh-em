@@ -1,6 +1,6 @@
 package core.visualisation.graphing;
 
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.training.Chromosome;
 import core.training.Population;
 

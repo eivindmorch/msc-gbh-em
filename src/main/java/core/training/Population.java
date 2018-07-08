@@ -1,7 +1,7 @@
 package core.training;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.btree.BehaviorTreeUtil;
 import core.unit.Unit;
 import core.util.ToStringBuilder;

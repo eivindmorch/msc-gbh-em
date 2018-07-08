@@ -1,6 +1,6 @@
 package core.training;
 
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.data.DataSet;
 import core.data.DataRow;
 import core.unit.Unit;

@@ -40,7 +40,7 @@ public abstract class Experiment1 {
         );
 
         Algorithm<FollowerEvaluationDataRow, NSGA2Chromosome> algorithm = new NSGA2<>(
-                30,
+                10,
                 0.5,
                 3,
                 12

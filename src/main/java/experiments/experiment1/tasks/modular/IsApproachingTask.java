@@ -1,8 +1,8 @@
 package experiments.experiment1.tasks.modular;
 
-import core.btree.tasks.modular.template.Task;
-import core.btree.tasks.modular.template.leaf.ConditionTask;
-import core.btree.tasks.modular.template.leaf.VariableLeafTask;
+import core.btree.tasks.blueprint.template.Task;
+import core.btree.tasks.blueprint.template.leaf.ConditionTask;
+import core.btree.tasks.blueprint.template.leaf.VariableLeafTask;
 import experiments.experiment1.tasks.executable.IsApproachingTaskExec;
 
 import static core.util.SystemUtil.random;

@@ -1,7 +1,7 @@
 package core.training.algorithms.NSGA2;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.data.DataSet;
 import core.data.DataRow;
 import core.btree.operations.Crossover;

@@ -1,6 +1,6 @@
 package core.training;
 
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.util.ToStringBuilder;
 
 import java.util.Comparator;

@@ -2,7 +2,7 @@ package core.visualisation.graphing;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,7 @@
 package core.unit;
 
 import com.badlogic.gdx.ai.btree.BehaviorTree;
-import core.btree.tasks.modular.template.Task;
+import core.btree.tasks.blueprint.template.Task;
 import core.btree.Blackboard;
 import core.util.ToStringBuilder;
 import org.slf4j.Logger;

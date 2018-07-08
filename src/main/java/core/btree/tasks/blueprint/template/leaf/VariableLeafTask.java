@@ -1,4 +1,4 @@
-package core.btree.tasks.modular.template.leaf;
+package core.btree.tasks.blueprint.template.leaf;
 
 
 public abstract class VariableLeafTask extends LeafTask {
